@@ -82,7 +82,7 @@ def deepcfr(OFFSET=100, CFR=3, TRV=10, save_folder = None, NUM_ROUNDS = 50, MAX_
 
                             else:
 
-                                i_sid        = d_fls[f'i_nns_{i_cod}'] 
+                                i_sid        = d_fls[f'i_sid_{i_cod}'] 
                                 t_sum        = torch.zeros(i_sid, dtype = t_val.dtype, device=device)  
                                 t_edg, t_sgm = d_fls[f't_edg_{i_cod}'], d_fls[f't_sgm_{i_cod}']
                                 t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
