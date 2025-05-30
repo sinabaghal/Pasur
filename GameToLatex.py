@@ -1,5 +1,5 @@
 import torch, math 
-from SelfPlay import selfplay 
+from SelfPlay import playrandom
 from NeuralNet import SNN
 from Imports import d_snw, d_scr
 import torch, sys, os, math
@@ -137,7 +137,7 @@ card_to_latex = {
     '1♠': r'\AS',
 }
 
-def tp(t_row, i_ind,b_lst=False):
+def tp(t_row, i_ind):
 
     ## Print the corresponding card for each value 1 inside t_row
     ranks = [math.floor(t.item()) for t in (t_row == i_ind).nonzero(as_tuple=False).flatten()/4]
@@ -161,28 +161,14 @@ def tp2(res, f):
 
 if __name__ == "__main__":
 
-    booster = xgb.Booster()
-    booster.load_model(f"../XGB/xgb_model.json")
-    N = 20
-
-    # Generate random features and labels
-    X = np.random.rand(100, 56)  # 100 samples, 56 features
-    y = np.random.rand(100)      # 100 target values
-    # Create DMatrix
-    dtrain = xgb.DMatrix(X, label=y)
-    params = {
-    "objective": "reg:squarederror",
-    "base_score": 0.0,
-    "tree_method": "hist",
-    "predictor": "cpu_predictor"}
+    N = 10
     
-
-    xrnn_bob = xgb.train(params, dtrain=dtrain, num_boost_round=0)
-    seeds = torch.randint(0, 2**32, (10,), dtype=torch.int64)
-
-    seed = seeds[0]
-    t0_win,  t_ltx_ = selfplay(seed=seed, N=N, to_latex=True, x_alx=booster,  x_bob=xrnn_bob)
-    l_smp = range(N)
+    t_dck = torch.tensor([47, 40, 45, 16, 23, 20,  1,  4, 21, 17, 36, 29, 18, 32, 49,  9, 34, 24,
+        37, 41, 48, 44, 27,  8, 51,  2,  6,  0, 11, 10, 26, 33, 12, 42, 15, 13,
+            3, 50, 39, 35, 43, 28,  7, 46, 30, 22, 19,  5, 25, 38, 31, 14],
+        device='cuda:0')
+    
+    t0_win,  t_ltx_ = playrandom(t_dck, N=N, to_latex=True)
 
 
     # i_gin = 0
@@ -208,7 +194,7 @@ if __name__ == "__main__":
     # t_win, t_ltx_ = selfplay(seed=10, N=N, to_latex = True, snn_alx = snn_alx,snn_bob=snn_bob)
 
 
-    for i_smp in l_smp:
+    for i_smp in range(N):
 
         # if i_smp != 111:
         #     continue
