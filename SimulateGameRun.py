@@ -8,7 +8,8 @@ from RepeatedBlocks import repeatedblocks
 from CleanPool import cleanpool 
 # from Setup import setup
 # from ExternalSampling import extsampling, sorttsid
-# from zstd_store import to_memory
+from zstd_store import to_memory
+import pandas as pd 
 # import xgboost as xgb
 # import numpy as np
 # import matplotlib.pyplot as plt
@@ -17,7 +18,9 @@ from CleanPool import cleanpool
 # from GameToLatex import tp
 
 
-id_keys = [
+
+
+i_cods = [
             f'{i_hnd}_{i_trn}_{i_ply}'
             for i_hnd in range(6)
             for i_trn in range(4)
@@ -27,11 +30,18 @@ id_keys = [
 torch.manual_seed(42)
 torch.cuda.manual_seed(42)
 
-def simulategamerun(t_dck):
+os.makedirs(f"../DATA/FIG/",     exist_ok=True)
+def simulategamerun(t_dck, i_dck):
+
+    os.makedirs(f"../DATA/INF/{i_dck}/", exist_ok=True)
+    os.makedirs(f"../DATA/SGM/{i_dck}/", exist_ok=True)
+    os.makedirs(f"../DATA/SID/{i_dck}/", exist_ok=True)
+    os.makedirs(f"../DATA/SCR/{i_dck}/", exist_ok=True)
    
  
     d_fls = {}
-    t_nns   = {}
+    t_scrs, t_infs, t_sids = {}, {}, {}
+    # t_nns   = {}
 
     t_m52 = torch.tensor([True if i in t_dck[:4] else False for i in range(52)], device=device)
     t_mdd = torch.tensor([False for _ in range(52)], device=device)
@@ -49,6 +59,8 @@ def simulategamerun(t_dck):
     for i_hnd in range(6):
 
         t_nnd = torch.zeros((1,52), device=device)
+
+        t_scrs[i_hnd] = t_scr
         if i_hnd > 0:
             
             i_nnd = 8*i_hnd+4
@@ -93,19 +105,27 @@ def simulategamerun(t_dck):
 
                 ## CONSTRUCT INFOSET I 
                 
-                t_tmp              = t_inf[t_sid[:,0]]
 
-                t_xgl                 = t_tmp[:,1,:]-t_tmp[:,2,:]
-                t_xgl[torch.logical_and(t_tmp[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
-                t_xgl[torch.logical_and(t_tmp[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
+                def get_inf(t_inf, t_sid, t_scr):
 
-                t_xgb          = torch.zeros((t_sid.shape[0],56), dtype=torch.int8, device=device)
-                t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
-                t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
-                t_xgb[:,52:] = t_scr[t_sid[:,1]]
+                    t_tmp              = t_inf[t_sid[:,0]]
+
+                    t_xgl                 = t_tmp[:,1,:]-t_tmp[:,2,:]
+                    t_xgl[torch.logical_and(t_tmp[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
+                    t_xgl[torch.logical_and(t_tmp[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
+
+                    t_xgb          = torch.zeros((t_sid.shape[0],56), dtype=torch.int8, device=device)
+                    t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
+                    t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
+                    t_xgb[:,52:] = t_scr[t_sid[:,1]]
+
+                    return t_xgb
+
+
+
                 t_sgm = 1/torch.repeat_interleave(c_edg, c_edg)
 
-                assert t_sgm.shape[0] == t_xgb.shape[0]
+                # assert t_sgm.shape[0] == t_xgb.shape[0]
 
                 d_fls[f'i_sid_{i_cod}'] = i_sid
                 d_fls[f't_sgm_{i_cod}'] = t_sgm
@@ -113,7 +133,9 @@ def simulategamerun(t_dck):
                 d_fls[f'c_edg_{i_cod}'] = c_edg
                 d_fls[f'c_act_{i_cod}'] = c_act
                 
-                t_nns[i_cod]  = t_xgb
+                # t_nns[i_cod]  = t_xgb
+                t_infs[i_cod]  = t_inf
+                t_sids[i_cod]  = t_sid
           
         if i_hnd ==  5:  t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
 
@@ -159,83 +181,119 @@ def simulategamerun(t_dck):
 
     d_fls['t_scr_6'], d_fls['t_sid_6'] = t_scr, t_sid
 
-    # to_memory(torch.cat([t_nns[id] for id in id_keys], axis=0),  f"../DATA/nns/tensors.pt.zst")
-    # [to_memory(t_nns[id] ,  f"../DATA/nns/t_nns_{id}.pt.zst") for id in id_keys]
+    # l_idx, l_vdx = zip(*[torch.randperm(N)[:max(int(0.4 * N), 2)].chunk(2) for N in [t_nns[id].shape[0] for id in i_cods]])
+    # zz = torch.cat([t_nns[id] for id in i_cods], axis=0).cpu()
+    # ww = torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu()
+    [to_memory(t_infs[i_cod].cpu(), f"../DATA/INF/{i_dck}/t_inf_{i_cod}.pt.zst") for i_cod in i_cods]
+    [to_memory(t_sids[i_cod].cpu(), f"../DATA/SID/{i_dck}/t_sid_{i_cod}.pt.zst") for i_cod in i_cods]
+    [to_memory(t_scrs[i_hnd].cpu(), f"../DATA/SCR/{i_dck}/t_scr_{i_hnd}.pt.zst") for i_hnd in range(6)]
+    # to_memory(torch.cat([t_sid[id] for id in i_cods], axis=0).cpu(),  f"../DATA/NNS/NNS_{i_dck}.pt.zst")
+    # to_memory(torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/NNS/SNNS_{i_dck}.pt.zst")
+    # to_memory(torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_vdx)], axis=0).cpu(),  f"../DATA/NNS/VNNS_{i_dck}.pt.zst")
+
+    # [to_memory(t_nns[id].cpu() ,  f"../DATA/nns/{i_dck}_{id}.pt.zst") for id in i_cods]
 
     return d_fls
+    # return d_fls, l_idx, l_vdx
 
 
 if __name__ == "__main__":
 
-    t_dck = torch.tensor([47, 40, 45, 16, 23, 20,  1,  4, 21, 17, 36, 29, 18, 32, 49,  9, 34, 24,
-        37, 41, 48, 44, 27,  8, 51,  2,  6,  0, 11, 10, 26, 33, 12, 42, 15, 13,
-         3, 50, 39, 35, 43, 28,  7, 46, 30, 22, 19,  5, 25, 38, 31, 14],
-       device='cuda:0')
+    N = 2
+    t_dks = torch.load(f"decks_10000.pt")
+
+    for i_dck in range(N):
     
-    d_fls = simulategamerun(t_dck)
-    d_fls_copy = {k: v.clone() for k, v in d_fls.items() if k[:5]=='t_sgm'}
+        t_dck = t_dks[0,:].to(device)
+        d_fls = simulategamerun(t_dck, i_dck)
+        # d_fls, l_idx, l_vdx = simulategamerun(t_dck, i_dck)
+        d_fls_copy = {k: v.clone() for k, v in d_fls.items() if k[:5]=='t_sgm'}
 
 
+        all_sgm = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods], dim=0)
+
+        t_prm = [torch.randperm(t.size(0))[:int(0.00001 * t.size(0))] for t in [d_fls_copy[f't_sgm_{id}'] for id in i_cods]]
+        t_scr, t_sid = d_fls['t_scr_6'], d_fls['t_sid_6']
+        t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)+t_scr[:,-2]
+        t_vll = t_fsc[t_sid[:,1]].to(torch.float32)
+
+        cnt = 0
+        maxes, means = [], []
+        a_sgm = []
+
+        while cnt < 1000:
+
+        
+            t_val = t_vll
+
+            for i_hnd in reversed(range(6)):
+
+                t_lnk  = d_fls[f't_lnk_{i_hnd}'] 
+                t_val  = t_val[t_lnk]
+                
+                for i_trn in reversed(range(4)):
+                    for i_ply in reversed(range(2)):
 
 
-    t_scr, t_sid = d_fls['t_scr_6'], d_fls['t_sid_6']
-    t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)+t_scr[:,-2]
-    t_vll = t_fsc[t_sid[:,1]].to(torch.float32)
+                        i_cod        = f'{i_hnd}_{i_trn}_{i_ply}'
+                        i_sid        = d_fls[f'i_sid_{i_cod}'] 
+                        t_sum        = torch.zeros(i_sid, dtype = torch.float32, device=device)  
 
-    cnt = 0
-    aa = []
-    bb = []
-    while cnt < 1000:
-
-       
-        t_val = t_vll
-
-        for i_hnd in reversed(range(6)):
-
-            t_lnk  = d_fls[f't_lnk_{i_hnd}'] 
-            t_val  = t_val[t_lnk]
+                        t_edg, c_edg, t_sgm = d_fls[f't_edg_{i_cod}'],  d_fls[f'c_edg_{i_cod}'], d_fls[f't_sgm_{i_cod}']
+                        
+                        t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
+                        
+                        t_reg         = t_val - t_sum[t_edg]
+                        t_val         = t_sum
+                        t_reg         = torch.clamp(t_reg, min=0.01)
+                        
+                    
+                        t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
+                        t_sum.scatter_add_(0, t_edg, t_reg)
+                        t_sgm         = t_reg/t_sum[t_edg]
+                    
+                        d_fls[f't_sgm_{i_cod}'] = t_sgm 
             
-            for i_trn in reversed(range(4)):
-                for i_ply in reversed(range(2)):
+            next_all_sgm = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods], dim=0)
+            all_diff = torch.abs(all_sgm -next_all_sgm)
+            # print(torch.argmax(all_sgm).item())
+
+            new_mean = torch.mean(all_diff).item()
+            new_maxx = torch.max(all_diff).item()
+            
+            
+            all_sgm = next_all_sgm
+            means.append(new_mean); maxes.append(new_maxx)
+
+            if new_maxx < 0.01:
+                # [to_memory(d_fls[f't_sgm_{id}'].cpu(),  f"../DATA/SGM/{i_dck}_{id}.pt.zst") for id in i_cods]
+                [to_memory(d_fls[f't_sgm_{id}'].cpu(), f"../DATA/SGM/{i_dck}/t_sgm_{id}.pt.zst") for id in i_cods]
+                # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/SGM/SSGM_{i_dck}.pt.zst")
+                # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_vdx)], axis=0).cpu(),  f"../DATA/SGM/VSGM_{i_dck}.pt.zst")
 
 
-                    i_cod        = f'{i_hnd}_{i_trn}_{i_ply}'
-                    i_sid        = d_fls[f'i_sid_{i_cod}'] 
-                    t_sum        = torch.zeros(i_sid, dtype = torch.float32, device=device)  
+                break 
 
-                    t_edg, c_edg, t_sgm = d_fls[f't_edg_{i_cod}'],  d_fls[f'c_edg_{i_cod}'], d_fls[f't_sgm_{i_cod}']
-                    
-                    t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
-                    
-                    t_reg         = t_val - t_sum[t_edg]
-                    t_val         = t_sum
-                    t_reg         = torch.clamp(t_reg, min=0.01)
-                    
-                    # os.makedirs(f"../FIGS/{i_cod}/", exist_ok=True)
-                    # plt.hist(t_reg.cpu().numpy(), bins=30); plt.savefig(f"../FIGS/{i_cod}/{cnt}.png");plt.clf()
-
-                    t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
-                    t_sum.scatter_add_(0, t_edg, t_reg)
-                    # t_msk         = t_sum[t_edg] <= 0.01
-                    t_sgm         = t_reg/t_sum[t_edg]
-                    # t_sgm[t_msk]  = d_fls_copy[f't_sgm_{i_cod}'][t_msk]
-                     
-                    
-                    # t_sgm         = torch.zeros(t_sgm.shape[0], dtype = torch.float32, device=device)
-                    # t_szr         = t_sum == 0
-                    
-                    # t_sgm[t_msk]  = 1/torch.repeat_interleave(c_edg[t_szr], c_edg[t_szr])
-                    # t_sgm[~t_msk] = (t_reg[~t_msk]/t_sum[t_edg][~t_msk])
-                    d_fls[f't_sgm_{i_cod}'] = t_sgm 
-        aa.append(d_fls[f't_sgm_0_0_0'][0].item())
-        bb.append(d_fls[f't_sgm_0_0_0'][1].item())
+            
+            # t = torch.cat([d_fls[f't_sgm_{id}'][t_prm[index]] for index, id in enumerate(i_cods)], dim=0).cpu()
+            # t = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods],axis=0)[802772].item()
+            # a_sgm.append(t)
 
 
-        cnt +=  1
 
+            cnt +=  1
 
-    
-    import pdb; pdb.set_trace()
+        df = pd.DataFrame({
+            "mean": means,
+            "max": maxes
+        })
+        df.to_csv(f"../DATA/FIGS/{i_dck}_mean_max.csv", index=False)
+        # import matplotlib.pyplot as plt; plt.plot(a_sgm); plt.show()
+        # a_sgm = torch.stack(a_sgm,axis=0)
+        # import matplotlib.pyplot as plt; plt.plot(a_sgm.cpu().numpy()); plt.show()
+        # import matplotlib.pyplot as plt; plt.plot(means); plt.title("Mean Values"); plt.savefig(f"../FIGS/{i_dck}/{i_dck}_mean.png");plt.clf()
+        # import matplotlib.pyplot as plt; plt.plot(maxes); plt.title("Max Values");  plt.savefig(f"../FIGS/{i_dck}/{i_dck}_max.png"); plt.clf()
+        
 
 
 

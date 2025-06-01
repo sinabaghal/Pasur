@@ -4,18 +4,18 @@ from FindMoves import find_moves
 from ApplyMoves import apply_moves
 from Imports import device, INT8, INT32, d_snw, d_scr
 from CleanPool import cleanpool 
-from NeuralNet import SNN, init_weights_zero
-import torch.nn as nn
+# from NeuralNet import SNN, init_weights_zero
+# import torch.nn as nn
 from Utils import pad_helper
-from tqdm import trange
+# from tqdm import trange
 import xgboost as xgb
-from tqdm import trange, tqdm
-import numpy as np 
-from zstd_store import load_tensor 
-import matplotlib.pyplot as plt
+# from tqdm import trange, tqdm
+# import numpy as np 
+# from zstd_store import load_tensor 
+# import matplotlib.pyplot as plt
 
 
-def playrandom(t_dck, N=1, to_latex = False):
+def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False):
 
 
     t_m52 = torch.tensor([True for i in range(52)], device=device)
@@ -72,7 +72,7 @@ def playrandom(t_dck, N=1, to_latex = False):
             for i_ply in range(2):
                 
                 i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
-                print(i_cod, t_inf.shape[0])
+                # print(i_cod, t_inf.shape[0])
 
                 t_act, c_act  = find_moves(t_inf,i_ply, d_msk, d_pad) 
 
@@ -83,30 +83,51 @@ def playrandom(t_dck, N=1, to_latex = False):
                 t_snw          = torch.repeat_interleave(t_snw, c_act, dim=0)
                 t_inf, t_snw   = apply_moves(t_inf, t_act, t_snw, d_msk,  i_hnd, i_ply, i_trn)
 
-                # t_tmp              = t_inf[t_sid[:,0]]
-                # t_xgl                 = t_tmp[:,1,:]-t_tmp[:,2,:]
-                # t_xgl[torch.logical_and(t_tmp[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
-                # t_xgl[torch.logical_and(t_tmp[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
-
-                # t_xgb          = torch.zeros((t_sid.shape[0],56), dtype=torch.int8, device=device)
-                # t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
-                # t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
 
                 t_xgl                 = t_inf[:,1,:]-t_inf[:,2,:]
-                t_xgl[torch.logical_and(t_inf[:,0,:]==3, t_xgl==0)] = 110  ## already in pool
-                t_xgl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_xgl==0)] = 100 ## holds
+                t_xgl[torch.logical_and(t_inf[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
+                t_xgl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
 
                 t_xgb          = torch.zeros((t_inf.shape[0],56), dtype=torch.int8, device=device)
                 t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
                 t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
                 t_xgb[:,52:] = torch.repeat_interleave(t_scr, c_act, dim=0)
+
+                t_xgb_np = t_xgb.cpu().numpy()  
+                n_xgb = xgb.DMatrix(t_xgb_np)  
+                
+                
+                # t_xgb[:,52:] = t_scr[t_sid[:,1]]
+
+
+                # t_xgl                 = t_inf[:,1,:]-t_inf[:,2,:]
+                # t_xgl[torch.logical_and(t_inf[:,0,:]==3, t_xgl==0)] = 110  ## already in pool
+                # t_xgl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_xgl==0)] = 100 ## holds
+
+                # t_xgb          = torch.zeros((t_inf.shape[0],56), dtype=torch.int8, device=device)
+                # t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
+                # t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
                 
 
                
                 i_max         = c_act.max()
                 t_msk         = torch.arange(i_max, device=device).unsqueeze(0) < c_act.unsqueeze(1)
                 t_mtx         = torch.zeros_like(t_msk, device=device, dtype=torch.float32)
-                t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
+
+                if i_ply == 0:
+                    if x_alx == 'random':
+
+                        t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
+                    else:
+                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_alx.predict(n_xgb)).to(device),0)
+                else:
+                    if x_bob == 'random':
+                        
+                        t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
+                    else:
+                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_bob.predict(n_xgb)).to(device),0)
+
+                
                 t_smp         = torch.multinomial(t_mtx, num_samples=1).squeeze(1) 
 
                 t_gps         = torch.cat([torch.tensor([0], device=device), c_act.cumsum(0)[:-1]]) # group starts 
@@ -146,20 +167,20 @@ def playrandom(t_dck, N=1, to_latex = False):
 
 
     t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)+t_scr[:,-2]
-    t_win = (t_fsc>=0).sum()/t_fsc.shape[0]
-    return t_win, t_ltx
+    # t_win = (t_fsc>=0).sum()/t_fsc.shape[0]
+    return t_fsc, t_ltx
 
 
 
 if __name__ == "__main__":
 
-    t_dck = torch.tensor([47, 40, 45, 16, 23, 20,  1,  4, 21, 17, 36, 29, 18, 32, 49,  9, 34, 24,
-        37, 41, 48, 44, 27,  8, 51,  2,  6,  0, 11, 10, 26, 33, 12, 42, 15, 13,
-            3, 50, 39, 35, 43, 28,  7, 46, 30, 22, 19,  5, 25, 38, 31, 14],
-        device='cuda:0')
-
-    t0_win, ltx = playrandom(t_dck, N=100, to_latex=True)
-
+    bst = xgb.Booster()
+    bst.load_model('../MODEL/model.json')
+    t_dks = torch.load(f"decks_10000.pt")
+    t_dck = t_dks[0,:].to(device)
+        
+    t_fsc, ltx = playrandom(t_dck, N=100, x_alx = bst, x_bob = 'random', to_latex = False)
+    import pdb; pdb.set_trace()
 
 
 

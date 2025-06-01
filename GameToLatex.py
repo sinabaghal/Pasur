@@ -1,16 +1,16 @@
 import torch, math 
 from SelfPlay import playrandom
-from NeuralNet import SNN
+# from NeuralNet import SNN
 from Imports import d_snw, d_scr
 import torch, sys, os, math
 from Imports import device, INT8, INT32, d_snw, d_scr
-from NeuralNet import SNN, init_weights_zero
-import torch.nn as nn
+# from NeuralNet import SNN, init_weights_zero
+# import torch.nn as nn
 import subprocess, re
-from PyPDF2 import PdfMerger  
+# from PyPDF2 import PdfMerger  
 import xgboost as xgb
-from tqdm import trange, tqdm
-import numpy as np 
+# from tqdm import trange, tqdm
+# import numpy as np 
 
 
 RANKS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
@@ -161,14 +161,14 @@ def tp2(res, f):
 
 if __name__ == "__main__":
 
-    N = 10
+    N = 100
     
-    t_dck = torch.tensor([47, 40, 45, 16, 23, 20,  1,  4, 21, 17, 36, 29, 18, 32, 49,  9, 34, 24,
-        37, 41, 48, 44, 27,  8, 51,  2,  6,  0, 11, 10, 26, 33, 12, 42, 15, 13,
-            3, 50, 39, 35, 43, 28,  7, 46, 30, 22, 19,  5, 25, 38, 31, 14],
-        device='cuda:0')
-    
-    t0_win,  t_ltx_ = playrandom(t_dck, N=N, to_latex=True)
+    bst = xgb.Booster()
+    bst.load_model('../MODEL/model.json')
+    t_dks = torch.load(f"decks_10000.pt")
+    t_dck = t_dks[0,:].to(device)
+        
+    t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = bst, x_bob = 'random', to_latex = True)
 
 
     # i_gin = 0
@@ -306,4 +306,4 @@ if __name__ == "__main__":
 
 
 
-        # import pdb; pdb.set_trace()
+    import pdb; pdb.set_trace()

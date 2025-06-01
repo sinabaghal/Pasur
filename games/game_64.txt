@@ -1,0 +1,180 @@
+
+
+\documentclass[a4paper, 12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{graphicx} % For \resizebox
+\input{cardscommands}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage{caption}
+\usepackage{colortbl}
+\arrayrulecolor{black} 
+\usepackage{float} % for [H] placement, optional
+\definecolor{myrowcolor}{HTML}{E0E0E0}  % Light gray
+\begin{document}
+\begin{figure}[H]  % or [htbp] if you want it to float
+\begin{center}
+\resizebox{1\textwidth}{!}{%
+\begin{tabular}{|>{\centering\arraybackslash}p{0.1\textwidth}|
+                >{\centering\arraybackslash}p{0.2\textwidth}|
+                >{\centering\arraybackslash}p{0.2\textwidth}|
+                >{\centering\arraybackslash}p{0.7\textwidth}|
+                >{\centering\arraybackslash}p{0.05\textwidth}|
+                 >{\centering\arraybackslash}p{0.7\textwidth}|
+                >{\centering\arraybackslash}p{0.05\textwidth}|
+                >{\centering\arraybackslash}p{0.05\textwidth}|
+                 >{\centering\arraybackslash}p{0.05\textwidth}|
+                  >{\centering\arraybackslash}p{0.05\textwidth}|
+                   >{\centering\arraybackslash}p{0.05\textwidth}|
+                   >{\centering\arraybackslash}p{0.05\textwidth}|
+                   >{\centering\arraybackslash}p{0.05\textwidth}|
+                   >{\centering\arraybackslash}p{0.05\textwidth}|}
+\hline
+\textbf{Stage}& \textbf{Alex} & \textbf{Bob}& \textbf{Pool} & \textbf{Lay} & \textbf{Pick} & \textbf{Acl} &  \textbf{Bcl} & \textbf{Apt} &  \textbf{Bpt} & \textbf{Asr} & \textbf{Bsr} & \textbf{$\Delta$} & \textbf{L}\\
+\hline
+\rowcolor{myrowcolor}
+
+
+ 0\_0\_0 &$\TwD\;\ThD\;\NC\;\JC$&$\FoD\;\SeS\;\ES\;\KS$&$\FiS\;\NH\;\TeD\;\QC$&$\JC$&$\FiS\;\NH\;\TeD$&1 &0 &4 &0 &0 &0 &0 &A\\ \hline
+
+ 0\_0\_1 &$\TwD\;\ThD\;\NC$&$\FoD\;\SeS\;\ES\;\KS$&$\QC$&$\FoD$&&1 &0 &4 &0 &0 &0 &0 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 0\_1\_0 &$\TwD\;\ThD\;\NC$&$\SeS\;\ES\;\KS$&$\FoD\;\QC$&$\TwD$&&1 &0 &4 &0 &0 &0 &0 &A\\ \hline
+
+ 0\_1\_1 &$\ThD\;\NC$&$\SeS\;\ES\;\KS$&$\TwD\;\FoD\;\QC$&$\KS$&&1 &0 &4 &0 &0 &0 &0 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 0\_2\_0 &$\ThD\;\NC$&$\SeS\;\ES$&$\TwD\;\FoD\;\QC\;\KS$&$\ThD$&&1 &0 &4 &0 &0 &0 &0 &A\\ \hline
+
+ 0\_2\_1 &$\NC$&$\SeS\;\ES$&$\TwD\;\ThD\;\FoD\;\QC\;\KS$&$\SeS$&$\FoD$&1 &0 &4 &0 &0 &0 &0 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 0\_3\_0 &$\NC$&$\ES$&$\TwD\;\ThD\;\QC\;\KS$&$\NC$&$\TwD$&2 &0 &4 &0 &0 &0 &0 &A\\ \hline
+
+ 0\_3\_1 &&$\ES$&$\ThD\;\QC\;\KS$&$\ES$&$\ThD$&2 &0 &4 &0 &0 &0 &0 &B\\ \hline
+ \rowcolor{myrowcolor}
+\hline 
+
+
+ 1\_0\_0 &$\SiS\;\ED\;\TeH\;\TeS$&$\TwC\;\EH\;\JD\;\KC$&$\QC\;\KS$&$\SiS$&&2 &0 &0 &0 &0 &0 &4 &0\\ \hline
+
+ 1\_0\_1 &$\ED\;\TeH\;\TeS$&$\TwC\;\EH\;\JD\;\KC$&$\SiS\;\QC\;\KS$&$\EH$&&2 &0 &0 &0 &0 &0 &4 &0\\ \hline
+ \rowcolor{myrowcolor}
+
+ 1\_1\_0 &$\ED\;\TeH\;\TeS$&$\TwC\;\JD\;\KC$&$\SiS\;\EH\;\QC\;\KS$&$\TeH$&&2 &0 &0 &0 &0 &0 &4 &0\\ \hline
+
+ 1\_1\_1 &$\ED\;\TeS$&$\TwC\;\JD\;\KC$&$\SiS\;\EH\;\TeH\;\QC\;\KS$&$\TwC$&&2 &0 &0 &0 &0 &0 &4 &0\\ \hline
+ \rowcolor{myrowcolor}
+
+ 1\_2\_0 &$\ED\;\TeS$&$\JD\;\KC$&$\TwC\;\SiS\;\EH\;\TeH\;\QC\;\KS$&$\ED$&&2 &0 &0 &0 &0 &0 &4 &0\\ \hline
+
+ 1\_2\_1 &$\TeS$&$\JD\;\KC$&$\TwC\;\SiS\;\ED\;\EH\;\TeH\;\QC\;\KS$&$\KC$&$\KS$&2 &1 &0 &0 &0 &0 &4 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 1\_3\_0 &$\TeS$&$\JD$&$\TwC\;\SiS\;\ED\;\EH\;\TeH\;\QC$&$\TeS$&&2 &1 &0 &0 &0 &0 &4 &B\\ \hline
+
+ 1\_3\_1 &&$\JD$&$\TwC\;\SiS\;\ED\;\EH\;\TeH\;\TeS\;\QC$&$\JD$&$\TwC\;\SiS\;\ED\;\EH\;\TeH\;\TeS$&2 &2 &0 &3 &0 &0 &4 &B\\ \hline
+ \rowcolor{myrowcolor}
+\hline 
+
+
+ 2\_0\_0 &$\AS\;\SiC\;\SiH\;\SeH$&$\ThS\;\FiD\;\FiH\;\KH$&$\QC$&$\SiC$&&2 &2 &0 &0 &0 &0 &1 &0\\ \hline
+
+ 2\_0\_1 &$\AS\;\SiH\;\SeH$&$\ThS\;\FiD\;\FiH\;\KH$&$\SiC\;\QC$&$\FiD$&$\SiC$&2 &3 &0 &0 &0 &0 &1 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 2\_1\_0 &$\AS\;\SiH\;\SeH$&$\ThS\;\FiH\;\KH$&$\QC$&$\SiH$&&2 &3 &0 &0 &0 &0 &1 &B\\ \hline
+
+ 2\_1\_1 &$\AS\;\SeH$&$\ThS\;\FiH\;\KH$&$\SiH\;\QC$&$\ThS$&&2 &3 &0 &0 &0 &0 &1 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 2\_2\_0 &$\AS\;\SeH$&$\FiH\;\KH$&$\ThS\;\SiH\;\QC$&$\SeH$&&2 &3 &0 &0 &0 &0 &1 &B\\ \hline
+
+ 2\_2\_1 &$\AS$&$\FiH\;\KH$&$\ThS\;\SiH\;\SeH\;\QC$&$\KH$&&2 &3 &0 &0 &0 &0 &1 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 2\_3\_0 &$\AS$&$\FiH$&$\ThS\;\SiH\;\SeH\;\QC\;\KH$&$\AS$&$\ThS\;\SeH$&2 &3 &1 &0 &0 &0 &1 &A\\ \hline
+
+ 2\_3\_1 &&$\FiH$&$\SiH\;\QC\;\KH$&$\FiH$&$\SiH$&2 &3 &1 &0 &0 &0 &1 &B\\ \hline
+ \rowcolor{myrowcolor}
+\hline 
+
+
+ 3\_0\_0 &$\AH\;\FiC\;\NS\;\QD$&$\ThH\;\SiD\;\SeD\;\KD$&$\QC\;\KH$&$\FiC$&&2 &3 &0 &0 &0 &0 &2 &0\\ \hline
+
+ 3\_0\_1 &$\AH\;\NS\;\QD$&$\ThH\;\SiD\;\SeD\;\KD$&$\FiC\;\QC\;\KH$&$\SeD$&&2 &3 &0 &0 &0 &0 &2 &0\\ \hline
+ \rowcolor{myrowcolor}
+
+ 3\_1\_0 &$\AH\;\NS\;\QD$&$\ThH\;\SiD\;\KD$&$\FiC\;\SeD\;\QC\;\KH$&$\QD$&$\QC$&3 &3 &0 &0 &0 &0 &2 &A\\ \hline
+
+ 3\_1\_1 &$\AH\;\NS$&$\ThH\;\SiD\;\KD$&$\FiC\;\SeD\;\KH$&$\ThH$&&3 &3 &0 &0 &0 &0 &2 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 3\_2\_0 &$\AH\;\NS$&$\SiD\;\KD$&$\ThH\;\FiC\;\SeD\;\KH$&$\NS$&&3 &3 &0 &0 &0 &0 &2 &A\\ \hline
+
+ 3\_2\_1 &$\AH$&$\SiD\;\KD$&$\ThH\;\FiC\;\SeD\;\NS\;\KH$&$\KD$&$\KH$&3 &3 &0 &0 &0 &0 &2 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 3\_3\_0 &$\AH$&$\SiD$&$\ThH\;\FiC\;\SeD\;\NS$&$\AH$&$\ThH\;\SeD$&3 &3 &1 &0 &0 &0 &2 &A\\ \hline
+
+ 3\_3\_1 &&$\SiD$&$\FiC\;\NS$&$\SiD$&$\FiC$&3 &4 &1 &0 &0 &0 &2 &B\\ \hline
+ \rowcolor{myrowcolor}
+\hline 
+
+
+ 4\_0\_0 &$\AC\;\AD\;\TwS\;\FoH$&$\FoC\;\FoS\;\JH\;\QS$&$\NS$&$\TwS$&$\NS$&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+
+ 4\_0\_1 &$\AC\;\AD\;\FoH$&$\FoC\;\FoS\;\JH\;\QS$&&$\JH$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 4\_1\_0 &$\AC\;\AD\;\FoH$&$\FoC\;\FoS\;\QS$&$\JH$&$\FoH$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+
+ 4\_1\_1 &$\AC\;\AD$&$\FoC\;\FoS\;\QS$&$\FoH\;\JH$&$\FoC$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 4\_2\_0 &$\AC\;\AD$&$\FoS\;\QS$&$\FoC\;\FoH\;\JH$&$\AC$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+
+ 4\_2\_1 &$\AD$&$\FoS\;\QS$&$\AC\;\FoC\;\FoH\;\JH$&$\QS$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 4\_3\_0 &$\AD$&$\FoS$&$\AC\;\FoC\;\FoH\;\JH\;\QS$&$\AD$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+
+ 4\_3\_1 &&$\FoS$&$\AC\;\AD\;\FoC\;\FoH\;\JH\;\QS$&$\FoS$&&3 &4 &0 &0 &5 &0 &3 &A\\ \hline
+ \rowcolor{myrowcolor}
+\hline 
+
+
+ 5\_0\_0 &$\TwH\;\EC\;\TeC\;\JS$&$\ThC\;\SeC\;\ND\;\QH$&$\AC\;\AD\;\FoC\;\FoH\;\FoS\;\JH\;\QS$&$\TwH$&$\AD\;\FoC\;\FoH$&4 &4 &1 &0 &0 &0 &8 &A\\ \hline
+
+ 5\_0\_1 &$\EC\;\TeC\;\JS$&$\ThC\;\SeC\;\ND\;\QH$&$\AC\;\FoS\;\JH\;\QS$&$\SeC$&$\FoS$&4 &5 &1 &0 &0 &0 &8 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 5\_1\_0 &$\EC\;\TeC\;\JS$&$\ThC\;\ND\;\QH$&$\AC\;\JH\;\QS$&$\TeC$&$\AC$&6 &5 &2 &0 &0 &0 &8 &A\\ \hline
+
+ 5\_1\_1 &$\EC\;\JS$&$\ThC\;\ND\;\QH$&$\JH\;\QS$&$\QH$&$\QS$&6 &5 &2 &0 &0 &0 &8 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 5\_2\_0 &$\EC\;\JS$&$\ThC\;\ND$&$\JH$&$\EC$&&6 &5 &2 &0 &0 &0 &8 &B\\ \hline
+
+ 5\_2\_1 &$\JS$&$\ThC\;\ND$&$\EC\;\JH$&$\ND$&&6 &5 &2 &0 &0 &0 &8 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 5\_3\_0 &$\JS$&$\ThC$&$\EC\;\ND\;\JH$&$\JS$&$\EC\;\ND\;\JH$&7 &5 &4 &0 &0 &0 &8 &A\\ \hline
+
+ 5\_3\_1 &&$\ThC$&&$\ThC$&&7 &5 &4 &0 &0 &0 &8 &A\\ \hline
+\hline 
+
+CleanUp &&&&&&8 &5 &4 &0 &0 &0 &8 &A\\ \hline
+\end{tabular}
+}
+\end{center}
+\caption{Game ID = 64}
+\label{fig:game_64}
+\end{figure}
+
+\end{document}
+

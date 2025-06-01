@@ -57,4 +57,8 @@ def setup():
     return t_inf, t_sid, t_scr,t_dck, t_m52, t_mdd, clt_dck
 
 
+if __name__ == "__main__":
 
+    N = 10 
+    t_dcks = generate_valid_decks(N, device=device)
+    torch.save(f"../DECK/t_dcks_{N}.pt")
