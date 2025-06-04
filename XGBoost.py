@@ -3,7 +3,7 @@ from zstd_store import load_tensor
 import numpy as np
 from sklearn.model_selection import train_test_split
 # from sklearn.datasets import dump_svmlight_file
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+# from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import gc 
 # N = 1
 
