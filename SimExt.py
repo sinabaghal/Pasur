@@ -166,24 +166,6 @@ def simulategamerun(t_stk, i_dck):
                 t_mdl[torch.logical_and(t_inf[:,0,:]==3, t_mdl==0)] = 110 ### Card was already in the pool 
                 t_mdl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_mdl==0)] = 100  ### Player has the card
 
-                # dfs[i_cod] = get_prq(t_mdl.cpu(), t_sid.cpu(), t_scr.cpu(), t_m52.cpu(), i_hnd,i_trn,i_ply)
-
-                # def get_inf(t_inf, t_sid, t_scr):
-
-                #     t_tmp              = t_inf[t_sid[:,0]]
-
-                #     t_xgl                 = t_tmp[:,1,:]-t_tmp[:,2,:]
-                #     t_xgl[torch.logical_and(t_tmp[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
-                #     t_xgl[torch.logical_and(t_tmp[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
-
-                #     t_mdl          = torch.zeros((t_sid.shape[0],56), dtype=torch.int8, device=device)
-                #     t_mdl[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
-                #     t_mdl[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_mdl==0)] = -127
-                #     t_mdl[:,52:] = t_scr[t_sid[:,1]]
-
-                #     return t_mdl
-
-
 
                 t_sgm = 1/torch.repeat_interleave(c_edg, c_edg)
 
@@ -256,27 +238,13 @@ def simulategamerun(t_stk, i_dck):
 
     d_fls['t_scr_6'], d_fls['t_sid_6'] = t_scr.contiguous(), t_sid.contiguous() #TODO
 
-    # l_idx, l_vdx = zip(*[torch.randperm(N)[:max(int(0.4 * N), 2)].chunk(2) for N in [t_nns[id].shape[0] for id in i_cods]])
-    # zz = torch.cat([t_nns[id] for id in i_cods], axis=0).cpu()
-    # ww = torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu()
-    # [to_memory(t_infs[i_cod].cpu(), f"../DATA/INF/D{i_dck}_inf_{i_cod}.pt.zst") for i_cod in i_cods]
-    # cpu_dict = {k: v.cpu() for k, v in cuda_dict.items()}
-
     
     
     [to_memory(t_mdls[i_cod].cpu(), f"../DATA/MDL/D{i_dck}_mdl_{i_cod}.pt.zst") for i_cod in i_cods]
     [to_memory(t_sids[i_cod].cpu(), f"../DATA/SID/D{i_dck}_sid_{i_cod}.pt.zst") for i_cod in i_cods]
     [to_memory(t_scrs[i_hnd].cpu(), f"../DATA/SCR/D{i_dck}_scr_{i_hnd}.pt.zst") for i_hnd in i_hnds]
     [to_memory(t_m52s[i_hnd].cpu(), f"../DATA/T52/D{i_dck}_t52_{i_hnd}.pt.zst") for i_hnd in i_hnds]
-    # to_memory(torch.cat([t_sid[id] for id in i_cods], axis=0).cpu(),  f"../DATA/NNS/NNS_{i_dck}.pt.zst")
-    # to_memory(torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/NNS/SNNS_{i_dck}.pt.zst")
-    # to_memory(torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_vdx)], axis=0).cpu(),  f"../DATA/NNS/VNNS_{i_dck}.pt.zst")
-
-    # [to_memory(t_nns[id].cpu() ,  f"../DATA/nns/{i_dck}_{id}.pt.zst") for id in i_cods]
-
-    # return d_fls, t_mdls, t_sids, t_scrs, t_m52s
-    # return d_fls, dfs
-    # return d_fls, l_idx, l_vdx
+    
     return d_fls
 
 if __name__ == "__main__":
@@ -288,13 +256,9 @@ if __name__ == "__main__":
     def find_cfr(i_dck, d_fls):
 
         
-        # d_fls, l_idx, l_vdx = simulategamerun(t_stk, i_dck)
-        # d_fls_copy = {k: v.clone() for k, v in d_fls.items() if k[:5]=='t_sgm'}
-        # t_prm = [torch.randperm(t.size(0))[:int(0.00001 * t.size(0))] for t in [d_fls_copy[f't_sgm_{id}'] for id in i_cods]]
-
+       
        
         all_sgm = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods], dim=0)
-        # all_sgm = torch.cat([d_fls[f't_sgm_{id}'].to(dtype=torch.float32)/255 for id in i_cods], dim=0)
         t_scr, t_sid = d_fls['t_scr_6'], d_fls['t_sid_6']
         t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)
         
@@ -327,7 +291,6 @@ if __name__ == "__main__":
                         
                         t_sum        = torch.zeros(i_sid, dtype = torch.float32, device=device)  
                         t_edg, t_sgm  = d_fls[f't_edg_{i_cod}'],  d_fls[f't_sgm_{i_cod}']
-                        # t_sgm = t_sgm.to(dtype=torch.float32)/255
 
 
                         t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
@@ -341,13 +304,11 @@ if __name__ == "__main__":
                         t_sum.scatter_add_(0, t_edg, t_reg)
                         t_sgm         = t_reg/t_sum[t_edg]
 
-                        # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8) 
                         d_fls[f't_sgm_{i_cod}'] = t_sgm
 
                         del t_reg
                         
             
-            # next_all_sgm = torch.cat([d_fls[f't_sgm_{id}'].to(dtype=torch.float32)/255 for id in i_cods], dim=0)
             next_all_sgm = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods], dim=0)
             all_diff = torch.abs(all_sgm - next_all_sgm)
 
@@ -361,62 +322,17 @@ if __name__ == "__main__":
 
                 pbar.set_postfix(max=new_maxx.item())
                 if new_maxx < 0.01:
-                    # [to_memory(d_fls[f't_sgm_{id}'].cpu(),  f"../DATA/SGM/{i_dck}_{id}.pt.zst") for id in i_cods]
                     [to_memory(d_fls[f't_sgm_{id}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{id}.pt.zst") for id in i_cods]
                     df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
                     df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
                     return 
-                    # t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods} 
-                    # return  t_sgms
-            
+                   
             cnt +=  1
-                    # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/SGM/SSGM_{i_dck}.pt.zst")
-                    # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_vdx)], axis=0).cpu(),  f"../DATA/SGM/VSGM_{i_dck}.pt.zst")
-
-
-
-                
-                # t = torch.cat([d_fls[f't_sgm_{id}'][t_prm[index]] for index, id in enumerate(i_cods)], dim=0).cpu()
-                # t = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods],axis=0)[802772].item()
-                # a_sgm.append(t)
-
+                 
 
         [to_memory(d_fls[f't_sgm_{i_cod}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{i_cod}.pt.zst") for i_cod in i_cods]
         df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
         df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
-        # t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods}  
-        
-        # return t_sgms
-
-
-
-    # def save2parquete(t_mdls, t_sids, t_scrs, t_m52s, t_sgms, i_cod):
-
-
-    #     i_hnd, i_trn, i_ply = [int(x) for x in i_cod.split('_')]
-        
-    #     t_sgm = t_sgms[i_cod]
-    #     t_mdl = t_mdls[i_cod]
-    #     t_sid = t_sids[i_cod]
-
-    #     t_m52 = t_m52s[i_hnd]
-    #     t_scr = t_scrs[i_hnd]
-        
-    #     t_m52 = torch.cat([t_m52,torch.tensor([False, False,False, False,False,False,False,False])])
-    #     t_scr = t_scr[:,[0,1,3]]
-
-    #     t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8)
-    #     t_prq[:,t_m52]       = t_mdl[t_sid[:,0]]
-    #     t_prq[:,52]          = t_sgm   
-    #     t_prq[:,53:56]       = t_scr[t_sid[:,1]] #53,54,55
-    #     t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8) #56,57,58
-    #     data = {get_col(i): t_prq[:, i] for i in range(t_prq.shape[1])}
-    #     df   = pd.DataFrame(data)
-    #     df["D"] = df["D"].astype("int32")
-    #     df["D"] = np.full(len(df), i_dck, dtype=np.int32)
-    #     ddf = dd.from_pandas(pd.DataFrame(data), npartitions=1)
-    #     return ddf
-
 
 
 
@@ -431,126 +347,3 @@ if __name__ == "__main__":
         d_fls  = simulategamerun(t_stk, i_dck)
         find_cfr(i_dck, d_fls)
         
-        # d_fls, t_mdls, t_sids, t_scrs, t_m52s = simulategamerun(t_stk, i_dck)
-        # print('Simulation \u2713')
-
-        # t_mdls = {k: v.cpu() for k, v in t_mdls.items()}
-        # t_scrs = {k: v.cpu() for k, v in t_scrs.items()}
-        # t_sids = {k: v.cpu() for k, v in t_sids.items()}
-        # t_m52s = {k: v.cpu() for k, v in t_m52s.items()}
-
-        # print('TO CPU!')
-        # dfs = {}
-        # tasks = {}
-        
-        # def wrapper(i_hnd, i_trn, i_ply):
-
-        #     i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
-        #     t_mdl = t_mdls[i_cod]
-        #     t_sid = t_sids[i_cod]
-        #     t_scr = t_scrs[i_hnd]
-        #     t_m52 = t_m52s[i_hnd]
-        #     df = get_prq(t_mdl, t_sid, t_scr, t_m52, i_hnd, i_trn, i_ply)
-        #     return i_cod, df
-        
-        # results = Parallel(n_jobs=num_workers)(
-        # delayed(wrapper)(i_hnd, i_trn, i_ply)
-        # for i_hnd in i_hnds
-        # for i_trn in range(4)
-        # for i_ply in range(2)
-        # )
-
-        # dfs = dict(results)
-        # for i_hnd in i_hnds:
-            
-        #     t_m52 = t_m52s[i_hnd]
-        #     t_scr = t_scrs[i_hnd]
-            
-        #     for i_trn in range(4):
-        #         for i_ply in range(2):
-                    
-        #             i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
-        #             t_mdl = t_mdls[i_cod]
-        #             t_sid = t_sids[i_cod]
-        #             tasks[i_cod] = delayed(get_prq)(t_mdl, t_sid, t_scr, t_m52, i_hnd, i_trn, i_ply)
-        #             # dfs[i_cod] = get_prq(t_mdl, t_sid, t_scr, t_m52, i_hnd,i_trn,i_ply)
-
-
-        # # d_fls, dfs = simulategamerun(t_stk, i_dck)
-        # results = compute(*tasks.values())  # Runs all delayed calls in parallel
-        # dfs     = dict(zip(tasks.keys(), results))
-
-        # del t_mdls, t_sids, t_scrs, t_m52s
-        # df = pd.concat([dfs[i_cod] for i_cod in i_cods], axis=0)
-        # del dfs
-        # print('Pandas df \u2713')
-        # t_sgm  = torch.cat([t_sgms[i_cod] for i_cod in i_cods], dim=0) 
-        
-        # del t_sgms
-
-        # df['SGM'] = t_sgm.to(torch.float16)
-        # ddf = dd.from_pandas(df, npartitions=1)
-        
-        # save_path = f"../PRQ/D{i_dck}"
-        # ddf.to_parquet(save_path, engine="pyarrow",  compression="zstd", compression_level=3, write_index=False)
-        # print("Parquete \u2713")
-        # print(100*"***")
-        # success = False
-        # try:
-        #     success = True  
-        # finally:
-        #     if not success and os.path.exists(save_path):
-        #         print(f"Partial save detected. Cleaning up {save_path}...")
-        #         shutil.rmtree(save_path)
-        # ddf.to_parquet(f"../PRQ/D{i_dck}", engine="pyarrow", write_index=False)
-
-        # ddf = dd.read_parquet(f"data/D{i_dck}/", engine="pyarrow").repartition(partition_size="1G")
-        # for delayed_partition in ddf.to_delayed():
-        #     partition = delayed_partition.compute()  # This is now a Pandas DataFrame
-        #     print(partition.shape)
-
-        #     import pdb; pdb.set_trace()
-        # for i_cod in i_cods:
-        #     dfs[i_cod]['SGM'] = 
-        # client = Client(n_workers=12, threads_per_worker=1, memory_limit='500MB')
-
-        # ddf_dict = {}
-
-            # for i_hnd in range(6):
-            #     for i_trn in range(4):
-            #         for i_ply in range(2):
-                        
-            #             i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
-            #             df_delayed = dask.delayed(save2parquete)(t_mdls, t_sids, t_scrs, t_m52s, t_sgms, i_cod)
-            #             ddf = dd.from_delayed([df_delayed])
-            #             ddf_dict[i_cod] = ddf
-
-            # ddf_all = dd.concat(list(ddf_dict.values()), interleave_partitions=True)
-            # ddf_all = ddf_all.repartition(partition_size="1GB")
-            # ddf_all.to_parquet(
-            #     f"merged_data/D{i_dck}/",
-            #     engine="pyarrow",
-            #     write_index=False,
-            #     write_metadata_file=True  # optional
-            # )
-        # except Exception as e:
-        #     print(f"An error occurred for Deck {i_dck}: {e}")
-        #     print(10*"++")
-        #     print("\n")
-            # client.close()
-            # client.close()
-
-        
-        # DO 435 afterwards 
-        # [11,37, 44,49,88,113,146,152,190,230,232,236,239,246,259,278,315,418,424,434]
-        # RUN THESE ON CLOUD: [75, 146,152,190,230,236,239,259,278,315,418,424,446,461,462]
-        # import matplotlib.pyplot as plt; plt.plot(a_sgm); plt.show()
-        # a_sgm = torch.stack(a_sgm,axis=0)
-        # import matplotlib.pyplot as plt; plt.plot(a_sgm.cpu().numpy()); plt.show()
-        # import matplotlib.pyplot as plt; plt.plot(means); plt.title("Mean Values"); plt.savefig(f"../FIGS/{i_dck}/{i_dck}_mean.png");plt.clf()
-        # import matplotlib.pyplot as plt; plt.plot(maxes); plt.title("Max Values");  plt.savefig(f"../FIGS/{i_dck}/{i_dck}_max.png"); plt.clf()
-        
-
-
-
-
