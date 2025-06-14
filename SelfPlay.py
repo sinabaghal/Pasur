@@ -9,6 +9,7 @@ from CleanPool import cleanpool
 from Utils import pad_helper
 # from tqdm import trange
 import xgboost as xgb
+import matplotlib.pyplot as plt
 # from tqdm import trange, tqdm
 # import numpy as np 
 # from zstd_store import load_tensor 
@@ -53,12 +54,14 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
     # t_idx  = torch.arange(t_inf.shape[0], device=t_dck.device).unsqueeze(1).expand(-1, 4)
     t_nnd  = torch.zeros((1,52), dtype =torch.float32, device=device)
     t_scr  = torch.zeros((t_inf.shape[0],len(d_scr)), device=device,dtype=INT8)
-     
+    
+    
 
     for i_hnd in range(6):
 
         t_snw     = torch.zeros((t_inf.shape[0],len(d_snw)), device=device,dtype=INT8)
-
+        tc_scr    = t_scr[:,[0,1,3]].clone()
+        
         if i_hnd > 0: 
             t_nnd[:,clt_dck[:8*i_hnd+4]] = 1
         # torch.cuda.empty_cache()
@@ -84,15 +87,22 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
                 t_inf, t_snw   = apply_moves(t_inf, t_act, t_snw, d_msk,  i_hnd, i_ply, i_trn)
 
 
+                # t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8, device=device)
+                # t_prq[:,t_m52]       = t_mdl[t_sid[:,0]]
+                # t_prq[:,53:56]       = t_scr[t_sid[:,1]] #53,54,55
+                # t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device) #56,57,58
+
+                # t_prq[torch.logical_and(F.pad(t_nnd, (0, 8))==1, t_prq==0)] = -127
+                #  A	B	W	H	T	P	D
                 t_xgl                 = t_inf[:,1,:]-t_inf[:,2,:]
                 t_xgl[torch.logical_and(t_inf[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
                 t_xgl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
 
-                t_xgb          = torch.zeros((t_inf.shape[0],56), dtype=torch.int8, device=device)
-                t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
-                t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
-                t_xgb[:,52:] = torch.repeat_interleave(t_scr, c_act, dim=0)
-
+                t_xgb          = torch.zeros((t_inf.shape[0],58), dtype=torch.int8, device=device)
+                t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False,False,False], device=device)],dim=0)] = t_xgl
+                t_xgb[torch.logical_and(F.pad(t_nnd, (0, 6))==1, t_xgb==0)] = -127
+                t_xgb[:,52:55] = torch.repeat_interleave(tc_scr, c_act, dim=0)
+                t_xgb[:,55:58] = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device)
                 t_xgb_np = t_xgb.cpu().numpy()  
                 n_xgb = xgb.DMatrix(t_xgb_np)  
                 
@@ -175,11 +185,22 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
 if __name__ == "__main__":
 
     bst = xgb.Booster()
-    bst.load_model('../MODEL/model.json')
+    bst.load_model('../MDL/D8/model_8_1000.xgb')
+    
+    bst2 = xgb.Booster()
+    bst2.load_model('../MDL/D8/model_8_0.0.xgb')
+
+
     t_dks = torch.load(f"decks_10000.pt")
-    t_dck = t_dks[0,:].to(device)
-        
-    t_fsc, ltx = playrandom(t_dck, N=100, x_alx = bst, x_bob = 'random', to_latex = False)
+    t_dck = t_dks[8,:].to(device)
+    
+    N = 1000000
+    t_fsc, ltx = playrandom(t_dck, N=N, x_alx = 'random', x_bob = bst2, to_latex = False)
+    
+    plt.plot(Ks := list(range(10000, N+1, 100)), [(t_fsc[:K]).sum().item() / K for K in Ks]); 
+    plt.xlabel('K'); plt.ylabel('Fraction > 0'); 
+    plt.show()
+
     import pdb; pdb.set_trace()
 
 

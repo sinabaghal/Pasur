@@ -86,11 +86,12 @@ os.makedirs(f"../DATA/FIG/", exist_ok=True)
 os.makedirs(f"../DATA/T52/", exist_ok=True)
 time.sleep(5)
 
-def simulategamerun(t_stk, i_dck):
+def simulategamerun(t_stk):
 
     
    
  
+    t_dck   = t_stk.clone()
     d_fls = {}
     t_scrs, t_mdls, t_sids, t_m52s = {}, {}, {}, {}
     # t_scrs, t_infs, t_sids, t_m52s = {}, {}, {}, {}
@@ -102,7 +103,6 @@ def simulategamerun(t_stk, i_dck):
     t_inf        = torch.zeros((1,3,4), dtype=INT8, device=device)
     t_inf[0,0,:] = 3
     
-    t_dck   = t_stk.clone()
     t_stk   = t_stk[4:]
 
     t_scr   = torch.zeros((1,len(d_scr)), device=device,dtype=INT8)
@@ -113,7 +113,7 @@ def simulategamerun(t_stk, i_dck):
 
         t_nnd = torch.zeros((1,52), device=device)
 
-        t_scrs[i_hnd] = t_scr.cpu()
+        t_scrs[i_hnd] = t_scr
         if i_hnd > 0:
             
             i_nnd = 8*i_hnd+4
@@ -136,7 +136,7 @@ def simulategamerun(t_stk, i_dck):
         d_pad = {'i_pad_n': i_pad_n, 'i_pad_k':i_pad_k, 'i_pad_q':i_pad_q, 'i_pad_j':i_pad_j, 't_pad_k':t_pad_k, 't_pad_q':t_pad_q}
         t_snw = torch.zeros((t_inf.shape[0],len(d_snw)), device=device,dtype=INT8)
         # print(t_m52)
-        t_m52s[i_hnd] = t_m52.clone()
+        t_m52s[i_hnd] = torch.cat([t_m52.clone(),torch.tensor([False, False,False, False,False,False,False,False], device=device)])
         # if i_hnd == 5:
         #     import pdb; pdb.set_trace()
         for i_trn in range(4):
@@ -263,21 +263,25 @@ def simulategamerun(t_stk, i_dck):
     # cpu_dict = {k: v.cpu() for k, v in cuda_dict.items()}
 
     
-    
-    [to_memory(t_mdls[i_cod].cpu(), f"../DATA/MDL/D{i_dck}_mdl_{i_cod}.pt.zst") for i_cod in i_cods]
-    [to_memory(t_sids[i_cod].cpu(), f"../DATA/SID/D{i_dck}_sid_{i_cod}.pt.zst") for i_cod in i_cods]
-    [to_memory(t_scrs[i_hnd].cpu(), f"../DATA/SCR/D{i_dck}_scr_{i_hnd}.pt.zst") for i_hnd in i_hnds]
-    [to_memory(t_m52s[i_hnd].cpu(), f"../DATA/T52/D{i_dck}_t52_{i_hnd}.pt.zst") for i_hnd in i_hnds]
+    # t_mdls = {k: v.cpu() for k, v in t_mdls.items()}
+    # t_scrs = {k: v.cpu() for k, v in t_scrs.items()}
+    # t_sids = {k: v.cpu() for k, v in t_sids.items()}
+    # t_m52s = {k: v.cpu() for k, v in t_m52s.items()}
+
+    # [to_memory(t_mdls[i_cod].cpu(), f"../DATA/MDL/D{i_dck}_mdl_{i_cod}.pt.zst") for i_cod in i_cods]
+    # [to_memory(t_sids[i_cod].cpu(), f"../DATA/SID/D{i_dck}_sid_{i_cod}.pt.zst") for i_cod in i_cods]
+    # [to_memory(t_scrs[i_hnd].cpu(), f"../DATA/SCR/D{i_dck}_scr_{i_hnd}.pt.zst") for i_hnd in i_hnds]
+    # [to_memory(t_m52s[i_hnd].cpu(), f"../DATA/T52/D{i_dck}_t52_{i_hnd}.pt.zst") for i_hnd in i_hnds]
     # to_memory(torch.cat([t_sid[id] for id in i_cods], axis=0).cpu(),  f"../DATA/NNS/NNS_{i_dck}.pt.zst")
     # to_memory(torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/NNS/SNNS_{i_dck}.pt.zst")
     # to_memory(torch.cat([t_nns[id][indices] for id, indices in zip(i_cods,l_vdx)], axis=0).cpu(),  f"../DATA/NNS/VNNS_{i_dck}.pt.zst")
 
     # [to_memory(t_nns[id].cpu() ,  f"../DATA/nns/{i_dck}_{id}.pt.zst") for id in i_cods]
 
-    # return d_fls, t_mdls, t_sids, t_scrs, t_m52s
+    return d_fls, t_mdls, t_sids, t_scrs, t_m52s
     # return d_fls, dfs
     # return d_fls, l_idx, l_vdx
-    return d_fls
+    # return d_fls
 
 if __name__ == "__main__":
 
@@ -306,6 +310,11 @@ if __name__ == "__main__":
         # a_sgm = []
 
         pbar = trange(1000, desc=f"Processing Deck {i_dck}")
+
+        d_regs = {f't_reg_{i_cod}': torch.zeros(d_fls[f't_edg_{i_cod}'].shape[0] , dtype = torch.float32, device=device) for i_cod in i_cods}
+
+
+
         for cnt in pbar:
 
             t_val = t_vll
@@ -336,10 +345,10 @@ if __name__ == "__main__":
                         t_val         = t_sum
                         t_reg         = torch.clamp(t_reg, min=0.01)
                         
-                    
+                        d_regs[f't_reg_{i_cod}'] += t_reg
                         t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
-                        t_sum.scatter_add_(0, t_edg, t_reg)
-                        t_sgm         = t_reg/t_sum[t_edg]
+                        t_sum.scatter_add_(0, t_edg, d_regs[f't_reg_{i_cod}'])
+                        t_sgm         = d_regs[f't_reg_{i_cod}']/t_sum[t_edg]
 
                         # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8) 
                         d_fls[f't_sgm_{i_cod}'] = t_sgm
@@ -362,12 +371,12 @@ if __name__ == "__main__":
                 pbar.set_postfix(max=new_maxx.item())
                 if new_maxx < 0.01:
                     # [to_memory(d_fls[f't_sgm_{id}'].cpu(),  f"../DATA/SGM/{i_dck}_{id}.pt.zst") for id in i_cods]
-                    [to_memory(d_fls[f't_sgm_{id}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{id}.pt.zst") for id in i_cods]
+                    # [to_memory(d_fls[f't_sgm_{id}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{id}.pt.zst") for id in i_cods]
                     df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
                     df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
-                    return 
-                    # t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods} 
-                    # return  t_sgms
+                    # return 
+                    t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods} 
+                    return  t_sgms
             
             cnt +=  1
                     # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/SGM/SSGM_{i_dck}.pt.zst")
@@ -381,12 +390,13 @@ if __name__ == "__main__":
                 # a_sgm.append(t)
 
 
-        [to_memory(d_fls[f't_sgm_{i_cod}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{i_cod}.pt.zst") for i_cod in i_cods]
+            # import pdb; pdb.set_trace()
+        # [to_memory(d_fls[f't_sgm_{i_cod}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{i_cod}.pt.zst") for i_cod in i_cods]
         df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
         df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
-        # t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods}  
+        t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods}  
         
-        # return t_sgms
+        return t_sgms
 
 
 
@@ -420,16 +430,92 @@ if __name__ == "__main__":
 
 
 
-    N = 50
+    N = 10
     t_dks = torch.load(f"decks_10000.pt")
     for i_dck in range(N): 
 
         torch.cuda.empty_cache()
         # try:
 
-        t_stk = t_dks[i_dck,:].to(device)
-        d_fls  = simulategamerun(t_stk, i_dck)
-        find_cfr(i_dck, d_fls)
+        t_dck = t_dks[i_dck,:].to(device)
+        d_fls, t_mdls, t_sids, t_scrs, t_m52s  = simulategamerun(t_dck.clone())
+        t_sgms = find_cfr(i_dck, d_fls)
+
+        t_nnd = torch.zeros((1,52), device=device)
+        
+        ddf_dict = {}
+        # bob_dict  = {}
+
+        for i_hnd in i_hnds:
+            
+            t_scr = t_scrs[i_hnd][:,[0,1,3]]
+            t_m52 = t_m52s[i_hnd]
+
+            if i_hnd > 0:
+            
+                i_nnd = 8*i_hnd+4
+                t_nnd[0,t_dck[:i_nnd]] = 1
+            
+            for i_trn in range(4):
+                for i_ply in range(2):
+
+
+
+                    i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
+                    t_sgm = t_sgms[i_cod]
+                    t_mdl = t_mdls[i_cod] 
+                    t_sid = t_sids[i_cod] 
+                    
+                    
+
+                    t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8, device=device)
+                    t_prq[:,t_m52]       = t_mdl[t_sid[:,0]]
+                    t_prq[:,53:56]       = t_scr[t_sid[:,1]] #53,54,55
+                    t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device) #56,57,58
+
+                    t_prq[torch.logical_and(F.pad(t_nnd, (0, 8))==1, t_prq==0)] = -127
+                    t_prq                = t_prq.cpu()
+
+                    data = {get_col(i): t_prq[:, i] for i in range(t_prq.shape[1])}
+                    df   = pd.DataFrame(data)
+
+                    df["D"]   = df["D"].astype("int32")
+                    df["D"]   = np.full(len(df), i_dck, dtype=np.int32)
+                    df["SGM"] = t_sgm.to(torch.float16)
+                    # for col in df.columns:
+                    #     df[col] = df[col].astype("category")
+                    
+                    
+                    ddf = dd.from_pandas(df, npartitions=1)
+                    ddf_dict[i_cod] = ddf
+                    # if i_ply == 0:
+
+                    #     alex_dict[i_cod] = ddf
+                    # else:
+                    #     bob_dict[i_cod] = ddf
+
+        # df_all = pd.concat([df_dict[i_cod] for i_cod in i_cods])
+        # for col in df_all.columns:
+
+        #     if col != "SGM":
+        #         df[col] = df[col].astype("category")
+        
+        # ddf_all["SGM"] = torch.cat([t_sgms[i_cod] for i_cod in i_cods],dim=0).to(torch.float16)
+        ddf_all = dd.concat(list(ddf_dict.values())).repartition(npartitions=1)
+        # bob_all = dd.concat(list(bob_dict.values())).repartition(npartitions=1)
+        ddf_all.to_parquet(
+            f"../PRQ/D{i_dck}",
+            engine="pyarrow",
+            write_index=False,
+            write_metadata_file=False  # optional, suppress _metadata if you want
+        )
+        # bob_all.to_parquet(
+        #     f"../PRQ/Db{i_dck}",
+        #     engine="pyarrow",
+        #     write_index=False,
+        #     write_metadata_file=False  # optional, suppress _metadata if you want
+        # )
+        
         
         # d_fls, t_mdls, t_sids, t_scrs, t_m52s = simulategamerun(t_stk, i_dck)
         # print('Simulation \u2713')

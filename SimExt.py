@@ -174,10 +174,6 @@ def simulategamerun(t_stk, i_dck):
                 d_fls[f'i_sid_{i_cod}'] = i_sid #TODO
                 d_fls[f't_sgm_{i_cod}'] = t_sgm.contiguous().to(torch.float32) #TODO
                 d_fls[f't_edg_{i_cod}'] = t_edg.contiguous() #TODO
-                # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8)
-                # d_fls[f'c_edg_{i_cod}'] = c_edg
-                # d_fls[f'c_act_{i_cod}'] = c_act
-                
                 t_mdls[i_cod]  = t_mdl.clone()
                 t_sids[i_cod]  = t_sid.clone()
 

@@ -50,7 +50,7 @@ print("Data Ready!")
 # print(X_train.nbytes / 1024**2)
 # print(X_val.nbytes / 1024**2)
 params = {
-    "max_depth": 12,
+    "max_depth": 16,
     "objective": "reg:squarederror",
     "eval_metric": "rmse",
     "tree_method": "gpu_hist",
