@@ -2,15 +2,27 @@ import pandas as pd
 import xgboost as xgb
 import os 
 import numpy as np 
-from catboost import CatBoostRegressor
-os.makedirs(f"../MDL/", exist_ok=True)
-def trainsinglexgboost(i_dck, gamma):
+from Imports import gammas, gamma_ids
 
+os.makedirs(f"../MDL/", exist_ok=True)
+csv_file = '../MDL/rmse_log.csv'
+
+if not os.path.isfile(csv_file):
+    pd.DataFrame(columns=['DECK', 'Gamma_ID', 'Iter', 'RMSE']).to_csv(csv_file, index=False)
+
+
+
+def trainsinglexgboost(i_dck, id_gamma):
+
+    gamma = gammas[id_gamma]
     df = pd.read_parquet(f"../PRQ/D{i_dck}")
 
     os.makedirs(f"../MDL/D{i_dck}", exist_ok=True)
+
     X = df.drop(["SGM", "D"], axis=1)
     y = df["SGM"]
+    
+    # mask = (df.H== 0)  & (df.P==1) & (df['T'] == 0) 
     # mask = (df.H==5) & (df.A==3) & (df.B == 6) & (df.W == 0) 
     # mask = df.H == 4
     # X = X[mask]
@@ -66,7 +78,18 @@ def trainsinglexgboost(i_dck, gamma):
     )
     bins = np.arange(0, 1.05, 0.05)  # bins from 0 to 1 in steps of 0.05
 
+    rmse_values = evals_result['train']['rmse']
+    
+    df = pd.DataFrame({
+    'Deck': i_dck,
+    'Gamma_ID': id_gamma,
+    'Iter': range(len(rmse_values)),
+    'RMSE': rmse_values
+    })
+
+    df.to_csv(csv_file, mode='a', header=False, index=False)
     y_pred = np.clip(model.predict(dtrain), 0, 1)
+    # import pdb; pdb.set_trace()
     max_abs_error = np.abs(y - y_pred)
     hist, _ = np.histogram(max_abs_error, bins=bins)
 
@@ -83,13 +106,14 @@ def trainsinglexgboost(i_dck, gamma):
     #     df_results.to_csv(f"../MDL/D{i}/res{i}_{i_hnd}.csv")
     # # return y, y_pred
     # # Save model if needed
-    model.save_model(f"../MDL/D{i_dck}/model_{i_dck}_{gamma}.xgb")
+    model.save_model(f"../MDL/D{i_dck}/model_{i_dck}_{id_gamma}.xgb")
 
 
 if __name__ == '__main__':
 
-    for gamma in np.array([1000]):
+    for i_dck in [9]:
+        for id_gamma in [0]:
+            trainsinglexgboost(i_dck, id_gamma)
 
-        trainsinglexgboost(8, gamma)
     # df_eval = pd.DataFrame(evals_result["train"])
     

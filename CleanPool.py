@@ -1,7 +1,7 @@
 from Imports import  INT8, d_snw
 
 def cleanpool(t_inf, t_snw, d_msk):
-
+    # import pdb; pdb.set_trace()
     tm_p     = d_msk['cur_p']
     tm_s     = d_msk['cur_s']
     tm_c     = d_msk['cur_c']
@@ -23,4 +23,5 @@ def cleanpool(t_inf, t_snw, d_msk):
     t_snw[tm_la,d_snw['a_pts']] += (t_pla[:,tm_p]*tm_s).sum(dim=1).to(INT8)
     t_snw[tm_lb,d_snw['b_pts']] += (t_plb[:,tm_p]*tm_s).sum(dim=1).to(INT8)
 
+    # import pdb; pdb.set_trace()
     return t_inf, t_snw

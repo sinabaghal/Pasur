@@ -161,16 +161,17 @@ def tp2(res, f):
 
 if __name__ == "__main__":
 
-    N = 100
-    
+    N = 10
+    id_dck = 9
+
     bst = xgb.Booster()
-    bst.load_model('../MODEL/model.json')
+    bst.load_model(f'../MDL/D{id_dck}/model_{id_dck}_0.xgb')
+    
     t_dks = torch.load(f"decks_10000.pt")
-    t_dck = t_dks[0,:].to(device)
+    t_dck = t_dks[id_dck,:].to(device)
         
-    t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = bst, x_bob = 'random', to_latex = True)
-
-
+    t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = 'random', x_bob = bst, to_latex = True)
+    
     # i_gin = 0
 
     # with tqdm(seeds, desc="SelfPlaying:") as pbar:
@@ -302,7 +303,6 @@ if __name__ == "__main__":
             
             print(r"\\ \hline", file=f)
             print(latex_1(i_smp), file=f)
-
 
 
 

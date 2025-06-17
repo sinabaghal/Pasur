@@ -7,9 +7,12 @@ from CleanPool import cleanpool
 # from NeuralNet import SNN, init_weights_zero
 # import torch.nn as nn
 from Utils import pad_helper
+from Imports import gammas, gamma_ids
 # from tqdm import trange
 import xgboost as xgb
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd 
 # from tqdm import trange, tqdm
 # import numpy as np 
 # from zstd_store import load_tensor 
@@ -21,7 +24,7 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
 
     t_m52 = torch.tensor([True for i in range(52)], device=device)
     find_dm = lambda lm :  torch.tensor([idx in lm for idx in torch.arange(52, device=device)], dtype = bool, device=device)
-    find = lambda t_s, t_l: (t_s[:, None, :] == t_l[None, :, :]).all(dim=2).float().argmax(dim=1)
+    # find = lambda t_s, t_l: (t_s[:, None, :] == t_l[None, :, :]).all(dim=2).float().argmax(dim=1)
 
     d_msk = {}
     d_msk['cur_k'] = find_dm(torch.arange(48,52, device=device))
@@ -159,20 +162,23 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
 
         t_snw[:,d_snw['pts_dlt']]   = t_snw[:,d_snw['a_pts']] + t_snw[:,d_snw['a_sur']] - t_snw[:,d_snw['b_pts']] - t_snw[:,d_snw['b_sur']]
         
+        if i_hnd ==  5: 
+            t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
+            # if i_hnd ==  5: import pdb; pdb.set_trace()
+            if to_latex: 
+                t_ltx['t_snw_6'] = t_snw.squeeze(0).clone()
+
         t_scr[:,:3] = t_scr[:,:3]+t_snw[:,:3].clone()
+        # if i_hnd ==  5: import pdb; pdb.set_trace()
         t_mal = t_scr[:,d_scr['a_clb']]>=7
         t_mbb = t_scr[:,d_scr['b_clb']]>=7
         t_scr[:,d_scr['max_clb']][t_mal]= 1
         t_scr[:,d_scr['max_clb']][t_mbb]= 2
         t_mcl = t_scr[:,d_scr['max_clb']]>0
         t_scr[:,0:2].masked_fill_(t_mcl.unsqueeze(-1), 0)
-        if i_hnd ==  5: 
-            t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
-            if to_latex: 
-                t_ltx['t_snw_6'] = t_snw.squeeze(0).clone()
 
 
-        t_inf        = t_inf[:,0,:].unsqueeze(1)
+        t_inf = t_inf[:,0,:].unsqueeze(1)
         t_inf = F.pad(t_inf, (0, 0, 0, 2))
 
 
@@ -184,24 +190,146 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
 
 if __name__ == "__main__":
 
-    bst = xgb.Booster()
-    bst.load_model('../MDL/D8/model_8_1000.xgb')
-    
-    bst2 = xgb.Booster()
-    bst2.load_model('../MDL/D8/model_8_0.0.xgb')
-
-
+    N = 10000
+    csv_file = '../MDL/scores_log.csv'
     t_dks = torch.load(f"decks_10000.pt")
-    t_dck = t_dks[8,:].to(device)
-    
-    N = 1000000
-    t_fsc, ltx = playrandom(t_dck, N=N, x_alx = 'random', x_bob = bst2, to_latex = False)
-    
-    plt.plot(Ks := list(range(10000, N+1, 100)), [(t_fsc[:K]).sum().item() / K for K in Ks]); 
-    plt.xlabel('K'); plt.ylabel('Fraction > 0'); 
-    plt.show()
 
-    import pdb; pdb.set_trace()
+    if not os.path.isfile(csv_file):
+        pd.DataFrame(columns=['DECK', 'Alex_Gamma', 'Bob_Gamma', 'Win Rate']).to_csv(csv_file, index=False)
+
+    def load_model(id_dck, id_gamma):
+
+        bst = xgb.Booster()
+        bst.load_model(f'../MDL/D{id_dck}/model_{id_dck}_{id_gamma}.xgb')
+        return bst 
+    
+    # gamma_ids = [0,1,10]
+    for i_dck in [9]:
+
+        models = {id_gamma:load_model(i_dck, id_gamma) for id_gamma in gamma_ids}
+        models[-1] = 'random'
+        
+        t_dck = t_dks[i_dck,:].to(device)
+
+        scores = {}
+        # gamma_ids + [-1]
+        for id_gamma_1 in [0,-1]:
+            for id_gamma_2 in [0,-1]:
+
+                t_fsc, _ = playrandom(t_dck, N=N, x_alx = models[id_gamma_1] , x_bob = models[id_gamma_2])
+                
+                scores[(id_gamma_1, id_gamma_2)] = (t_fsc>0).sum().item() / t_fsc.shape[0]
+                
+
+        df = pd.DataFrame([{'DECK': i_dck, 'Alex_Gamma': k[0], 'Bob_Gamma': k[1], 'Win Rate': v} for k, v in scores.items()])
+        df.to_csv(csv_file, mode='a', header=False, index=False)
+
+
+        # csv_file = '../MDL/scores_log.csv'
+        # fig, axes = plt.subplots(nrows=1, ncols=7, figsize=(24, 4))  # 7 heatmaps in a row
+
+    
+        
+    
+    # bst10 = xgb.Booster()
+    # bst10.load_model('../MDL/D8/model_8_10.xgb')
+    
+    # bst100 = xgb.Booster()
+    # bst100.load_model('../MDL/D8/model_8_100.xgb')
+
+
+
+    
+    
+    # Ks = list(range(int(N/100), N+1, 100))
+    # dict = {}
+
+    # plt.clf()
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst0 , x_bob = 'random')
+    # dict['0vsr'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = 'random' , x_bob = bst0)
+    # dict['rvs0'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst10 , x_bob = 'random')
+    # dict['10vsr'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = 'random' , x_bob = bst10)
+    # dict['rvs10'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst100 , x_bob = 'random')
+    # dict['100vsr'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = 'random' , x_bob = bst100)
+    # dict['rvs100'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+    
+    # ######## 100 vs 0 ###############    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst0 , x_bob = bst100)
+    # dict['0vs100'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst100 , x_bob = bst0)
+    # dict['100vs0'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # ######## 100 vs 10 ###############    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst10 , x_bob = bst100)
+    # dict['10vs100'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst100 , x_bob = bst10)
+    # dict['100vs10'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # ######## 0 vs 10 ###############    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst0 , x_bob = bst10)
+    # dict['0vs10'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst10, x_bob = bst0)
+    # dict['10vs0'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+    
+
+
+
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst10 , x_bob = bst10)
+    # dict['10vs10'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+ 
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst100 , x_bob = bst100)
+    # dict['100vs100'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+    
+    # t_fsc, _ = playrandom(t_dck, N=N, x_alx = bst0 , x_bob = bst0)
+    # dict['0vs0'] = [(t_fsc[:K]>0).sum().item() / K for K in Ks]
+
+    # def plot(keys):
+
+    #     for key in keys:
+            
+    #         plt.plot(Ks, dict[key], label=key)
+
+    #     plt.legend()
+    #     plt.show()
+    
+
+    # def plotpt(values, labels):
+
+    #     plt.figure(figsize=(6, 2))
+    #     y = [1] * len(values)
+    #     plt.plot(values, y, 'o')
+
+    #     # Add vertical labels below each point
+    #     for x, label in zip(values, labels):
+    #         plt.text(x, 0.99, label, fontsize=8, ha='center', va='top', rotation=90)
+
+    #     plt.yticks([])  # Hide y-axis
+    #     plt.xlim(0, 1.05)
+    #     plt.ylim(0.9, 1.05)
+    #     plt.title("Labeled Values (Vertical Below)")
+    #     plt.grid(True, axis='x')
+    #     plt.show()
+
+
+
+
+    # keys = dict.keys()
+    # values = [dict[key][-1] for key in keys]
+
 
 
 

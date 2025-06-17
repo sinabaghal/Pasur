@@ -207,15 +207,23 @@ def simulategamerun(t_stk):
         # d_scr = {'a_clb':0, 'b_clb':1, 'pts_dlt':2, 'max_clb':3}
         # d_snw = {'a_clb':0,'b_clb':1,'pts_dlt':2, 'lst_pck':3,'a_pts':4,'a_sur':5,'b_pts':6,'b_sur':7}
         
-        if i_hnd ==  5:  t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
+        if i_hnd ==  5:  
+            
+            # t_t = t_snw.clone()
+            t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
+            # if i_hnd ==  5: import pdb; pdb.set_trace()
+
 
         t_inf        = t_inf[:,0,:]
         t_snw[:,d_snw['pts_dlt']]   = t_snw[:,d_snw['a_pts']] + t_snw[:,d_snw['a_sur']] - t_snw[:,d_snw['b_pts']] - t_snw[:,d_snw['b_sur']]
         d_fls[f't_snw_{i_hnd}']     = t_snw[:,2].contiguous()
         
-        t_snw[:,2]   = 0 
-        t_snw        = t_snw[:,:4]
-        t_snw[:,-1]  = 0    
+        # d_snw = {'a_clb':0,'b_clb':1,'pts_dlt':2, 'lst_pck':3,'a_pts':4,'a_sur':5,'b_pts':6,'b_sur':7}
+        # d_scr = {'a_clb':0, 'b_clb':1, 'pts_dlt':2, 'max_clb':3}
+        
+        t_snw         = t_snw[:,:4]
+        t_snw[:,-1]   = 0    
+        t_snw[:,-2]   = 0 
 
 
         t_inf, t_lnk = torch.unique(t_inf,dim=0, sorted=False, return_inverse=True)
@@ -230,15 +238,18 @@ def simulategamerun(t_stk):
 
         t_mal = t_scr[:,d_scr['a_clb']]>=7
         t_mbb = t_scr[:,d_scr['b_clb']]>=7
+
         t_scr[:,d_scr['max_clb']][t_mal]= 1
         t_scr[:,d_scr['max_clb']][t_mbb]= 2
+        
         t_mcl = t_scr[:,d_scr['max_clb']]>0
         t_scr[:,0:2].masked_fill_(t_mcl.unsqueeze(-1), 0)
 
-
-        t_scr,t_fid  = torch.unique(t_scr, dim=0,sorted=False,return_inverse=True)
+        t_scr, t_fid  = torch.unique(t_scr, dim=0,sorted=False,return_inverse=True)
+        
         t_sid[:,1]   = t_fid[t_pid]
         t_sid, t_lnk = torch.unique(t_sid,dim=0,return_inverse=True)
+
         # if saving:  to_zstd([t_lnk], ['t_lnk'], folder, i_hnd) 
         d_fls[f't_lnk_{i_hnd}'] = t_lnk
         
@@ -255,6 +266,7 @@ def simulategamerun(t_stk):
             t_inf = F.pad(t_inf, (0, 0, 0, 2))
 
     d_fls['t_scr_6'], d_fls['t_sid_6'] = t_scr.contiguous(), t_sid.contiguous() #TODO
+    # import pdb; pdb.set_trace()
 
     # l_idx, l_vdx = zip(*[torch.randperm(N)[:max(int(0.4 * N), 2)].chunk(2) for N in [t_nns[id].shape[0] for id in i_cods]])
     # zz = torch.cat([t_nns[id] for id in i_cods], axis=0).cpu()
@@ -304,7 +316,7 @@ if __name__ == "__main__":
         
         # t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)+t_scr[:,-2]
         t_vll = t_fsc[t_sid[:,1]].to(torch.float32)
-
+       
         cnt = 0
         maxes, means = [], []
         # a_sgm = []
@@ -314,7 +326,7 @@ if __name__ == "__main__":
         d_regs = {f't_reg_{i_cod}': torch.zeros(d_fls[f't_edg_{i_cod}'].shape[0] , dtype = torch.float32, device=device) for i_cod in i_cods}
 
 
-
+        max_cnt = 0 
         for cnt in pbar:
 
             t_val = t_vll
@@ -324,7 +336,6 @@ if __name__ == "__main__":
                 t_lnk  = d_fls[f't_lnk_{i_hnd}'] 
                 t_snw  = d_fls[f't_snw_{i_hnd}']
                 t_val  = t_val[t_lnk] + t_snw[t_lnk]
-
 
                 for i_trn in reversed(range(4)):
                     for i_ply in reversed(range(2)):
@@ -338,18 +349,33 @@ if __name__ == "__main__":
                         t_edg, t_sgm  = d_fls[f't_edg_{i_cod}'],  d_fls[f't_sgm_{i_cod}']
                         # t_sgm = t_sgm.to(dtype=torch.float32)/255
 
-
+                        # t_val = - t_val
                         t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
-                        
                         t_reg         = t_val - t_sum[t_edg]
-                        t_val         = t_sum
-                        t_reg         = torch.clamp(t_reg, min=0.01)
                         
-                        d_regs[f't_reg_{i_cod}'] += t_reg
-                        t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
-                        t_sum.scatter_add_(0, t_edg, d_regs[f't_reg_{i_cod}'])
-                        t_sgm         = d_regs[f't_reg_{i_cod}']/t_sum[t_edg]
+                        # import pdb; pdb.set_trace()
+                        if i_ply == 1:  t_reg = - t_reg
 
+                            # import pdb; pdb.set_trace()
+                        t_reg         = torch.clamp(t_reg, min=0.00)
+                        d_regs[f't_reg_{i_cod}'] += t_reg
+
+                        
+                        # import pdb; pdb.set_trace()
+                        
+                        # if i_ply == 0:
+                            
+                        # else:
+                        #     t_reg         = t_sum[t_edg] - t_val
+                        # if i_hnd == 0 and i_ply == 0 and i_trn == 0:
+                        #     import pdb; pdb.set_trace()
+                        t_val         = t_sum.clone()
+                        # import pdb; pdb.set_trace()
+                        
+                        
+                        t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
+                        t_sum.scatter_add_(0, t_edg, torch.clamp(d_regs[f't_reg_{i_cod}'], min=0.0001))
+                        t_sgm         = d_regs[f't_reg_{i_cod}']/t_sum[t_edg]
                         # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8) 
                         d_fls[f't_sgm_{i_cod}'] = t_sgm
 
@@ -366,21 +392,26 @@ if __name__ == "__main__":
             all_sgm = next_all_sgm
             means.append(new_mean); maxes.append(new_maxx)
 
-            if cnt % 10 ==0 : 
+            if cnt % 10 ==0 : pbar.set_postfix(max=new_maxx.item())
+            if new_maxx < 0.0001: max_cnt += 1
+            else:  max_cnt =  0
 
-                pbar.set_postfix(max=new_maxx.item())
-                if new_maxx < 0.01:
-                    # [to_memory(d_fls[f't_sgm_{id}'].cpu(),  f"../DATA/SGM/{i_dck}_{id}.pt.zst") for id in i_cods]
-                    # [to_memory(d_fls[f't_sgm_{id}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{id}.pt.zst") for id in i_cods]
-                    df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
-                    df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
-                    # return 
-                    t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods} 
-                    return  t_sgms
-            
             cnt +=  1
+
+
                     # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_idx)], axis=0).cpu(),  f"../DATA/SGM/SSGM_{i_dck}.pt.zst")
                     # to_memory(torch.cat([d_fls[f't_sgm_{id}'][indices] for id, indices in zip(i_cods,l_vdx)], axis=0).cpu(),  f"../DATA/SGM/VSGM_{i_dck}.pt.zst")
+                
+                
+                
+                #     # [to_memory(d_fls[f't_sgm_{id}'].cpu(),  f"../DATA/SGM/{i_dck}_{id}.pt.zst") for id in i_cods]
+                #     # [to_memory(d_fls[f't_sgm_{id}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{id}.pt.zst") for id in i_cods]
+                #     df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
+                #     df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
+                #     # return 
+                #     t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods} 
+                #     return  t_sgms
+            
 
 
 
@@ -392,6 +423,10 @@ if __name__ == "__main__":
 
             # import pdb; pdb.set_trace()
         # [to_memory(d_fls[f't_sgm_{i_cod}'].cpu(), f"../DATA/SGM/D{i_dck}_sgm_{i_cod}.pt.zst") for i_cod in i_cods]
+
+            # if max_cnt > 50:
+            #     break 
+
         df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
         df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
         t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods}  
@@ -432,7 +467,7 @@ if __name__ == "__main__":
 
     N = 10
     t_dks = torch.load(f"decks_10000.pt")
-    for i_dck in range(N): 
+    for i_dck in [9]: 
 
         torch.cuda.empty_cache()
         # try:
@@ -459,15 +494,11 @@ if __name__ == "__main__":
             for i_trn in range(4):
                 for i_ply in range(2):
 
-
-
                     i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
                     t_sgm = t_sgms[i_cod]
                     t_mdl = t_mdls[i_cod] 
                     t_sid = t_sids[i_cod] 
                     
-                    
-
                     t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8, device=device)
                     t_prq[:,t_m52]       = t_mdl[t_sid[:,0]]
                     t_prq[:,53:56]       = t_scr[t_sid[:,1]] #53,54,55
@@ -481,7 +512,7 @@ if __name__ == "__main__":
 
                     df["D"]   = df["D"].astype("int32")
                     df["D"]   = np.full(len(df), i_dck, dtype=np.int32)
-                    df["SGM"] = t_sgm.to(torch.float16)
+                    df["SGM"] = torch.clamp(t_sgm.to(torch.float16), min=0.001)
                     # for col in df.columns:
                     #     df[col] = df[col].astype("category")
                     
