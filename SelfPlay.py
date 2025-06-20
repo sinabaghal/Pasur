@@ -63,7 +63,7 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
     for i_hnd in range(6):
 
         t_snw     = torch.zeros((t_inf.shape[0],len(d_snw)), device=device,dtype=INT8)
-        tc_scr    = t_scr[:,[0,1,3]].clone()
+        ct_scr    = t_scr[:,[0,1,3]].clone()
         
         if i_hnd > 0: 
             t_nnd[:,clt_dck[:8*i_hnd+4]] = 1
@@ -104,7 +104,7 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
                 t_xgb          = torch.zeros((t_inf.shape[0],58), dtype=torch.int8, device=device)
                 t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False,False,False], device=device)],dim=0)] = t_xgl
                 t_xgb[torch.logical_and(F.pad(t_nnd, (0, 6))==1, t_xgb==0)] = -127
-                t_xgb[:,52:55] = torch.repeat_interleave(tc_scr, c_act, dim=0)
+                t_xgb[:,52:55] = torch.repeat_interleave(ct_scr, c_act, dim=0)
                 t_xgb[:,55:58] = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device)
                 t_xgb_np = t_xgb.cpu().numpy()  
                 n_xgb = xgb.DMatrix(t_xgb_np)  
@@ -132,13 +132,13 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
 
                         t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
                     else:
-                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_alx.predict(n_xgb)).to(device),0)
+                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_alx.predict(n_xgb)).to(device),0.00001)
                 else:
                     if x_bob == 'random':
                         
                         t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
                     else:
-                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_bob.predict(n_xgb)).to(device),0)
+                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_bob.predict(n_xgb)).to(device),0.00001)
 
                 
                 t_smp         = torch.multinomial(t_mtx, num_samples=1).squeeze(1) 
@@ -160,7 +160,7 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
 
         
 
-        t_snw[:,d_snw['pts_dlt']]   = t_snw[:,d_snw['a_pts']] + t_snw[:,d_snw['a_sur']] - t_snw[:,d_snw['b_pts']] - t_snw[:,d_snw['b_sur']]
+        # d_snw = {'a_clb':0,'b_clb':1,'pts_dlt':2, 'lst_pck':3,'a_pts':4,'a_sur':5,'b_pts':6,'b_sur':7}
         
         if i_hnd ==  5: 
             t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
@@ -168,6 +168,7 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
             if to_latex: 
                 t_ltx['t_snw_6'] = t_snw.squeeze(0).clone()
 
+        t_snw[:,d_snw['pts_dlt']]   = t_snw[:,d_snw['a_pts']] + t_snw[:,d_snw['a_sur']] - t_snw[:,d_snw['b_pts']] - t_snw[:,d_snw['b_sur']]
         t_scr[:,:3] = t_scr[:,:3]+t_snw[:,:3].clone()
         # if i_hnd ==  5: import pdb; pdb.set_trace()
         t_mal = t_scr[:,d_scr['a_clb']]>=7
@@ -181,7 +182,7 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
         t_inf = t_inf[:,0,:].unsqueeze(1)
         t_inf = F.pad(t_inf, (0, 0, 0, 2))
 
-
+    # import pdb; pdb.set_trace()
     t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)+t_scr[:,-2]
     # t_win = (t_fsc>=0).sum()/t_fsc.shape[0]
     return t_fsc, t_ltx
@@ -192,7 +193,15 @@ if __name__ == "__main__":
 
     N = 10000
     csv_file = '../MDL/scores_log.csv'
+    res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
+    
     t_dks = torch.load(f"decks_10000.pt")
+    
+    tw_dks = torch.empty_like(t_dks)
+    tw_dks[:,res==0] = t_dks[:,res == 1]
+    tw_dks[:,res==1] = t_dks[:,res == 0]
+    tw_dks[:,res==3] = t_dks[:,res == 3]
+
 
     if not os.path.isfile(csv_file):
         pd.DataFrame(columns=['DECK', 'Alex_Gamma', 'Bob_Gamma', 'Win Rate']).to_csv(csv_file, index=False)
@@ -204,12 +213,17 @@ if __name__ == "__main__":
         return bst 
     
     # gamma_ids = [0,1,10]
-    for i_dck in [9]:
+    M = 11
+    for i_dck in list(range(M))+[f'{x}m' for x in range(M)]:
 
         models = {id_gamma:load_model(i_dck, id_gamma) for id_gamma in gamma_ids}
         models[-1] = 'random'
         
-        t_dck = t_dks[i_dck,:].to(device)
+        if isinstance(i_dck, str):
+
+            t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
+        else:
+            t_dck = t_dks[i_dck,:].to(device)
 
         scores = {}
         # gamma_ids + [-1]
@@ -223,7 +237,7 @@ if __name__ == "__main__":
 
         df = pd.DataFrame([{'DECK': i_dck, 'Alex_Gamma': k[0], 'Bob_Gamma': k[1], 'Win Rate': v} for k, v in scores.items()])
         df.to_csv(csv_file, mode='a', header=False, index=False)
-
+        # import pdb; pdb.set_trace()
 
         # csv_file = '../MDL/scores_log.csv'
         # fig, axes = plt.subplots(nrows=1, ncols=7, figsize=(24, 4))  # 7 heatmaps in a row

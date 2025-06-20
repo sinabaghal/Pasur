@@ -161,149 +161,162 @@ def tp2(res, f):
 
 if __name__ == "__main__":
 
-    N = 10
-    id_dck = 9
+    N = 100
+    i_dcks = [0]
 
-    bst = xgb.Booster()
-    bst.load_model(f'../MDL/D{id_dck}/model_{id_dck}_0.xgb')
-    
-    t_dks = torch.load(f"decks_10000.pt")
-    t_dck = t_dks[id_dck,:].to(device)
+    for i_dck in i_dcks:
+
+        bst = xgb.Booster()
+        bst.load_model(f'../MDL/D{i_dck}/model_{i_dck}_0.xgb')
         
-    t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = 'random', x_bob = bst, to_latex = True)
-    
-    # i_gin = 0
+        res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
+        
+        t_dks = torch.load(f"decks_10000.pt")
+        
+        tw_dks = torch.empty_like(t_dks)
+        tw_dks[:,res==0] = t_dks[:,res == 1]
+        tw_dks[:,res==1] = t_dks[:,res == 0]
+        tw_dks[:,res==3] = t_dks[:,res == 3]
+        if isinstance(i_dck, str):
 
-    # with tqdm(seeds, desc="SelfPlaying:") as pbar:
-
-    #     for seed in pbar:
-
+            t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
+        else:
+            t_dck = t_dks[i_dck,:].to(device)
             
-    #         # t0_win, _ = selfplay(seed=seed, N=1000, to_latex=True, x_alx=booster,  x_bob=xrnn_bob)
-    #         # t1_win, _ = selfplay(seed=seed, N=10000, to_latex=False, x_alx=xrnn_alx, x_bob=xrnn_bob)
+        t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = bst, x_bob = bst, to_latex = True)
+        
+        # i_gin = 0
 
-    #         # i_gin += (t0_win - t1_win).item()
-    #         i_gin   += t0_win.item() 
-    #         pbar.set_postfix(gain=f"{i_gin / (pbar.n + 1):.4f}")
+        # with tqdm(seeds, desc="SelfPlaying:") as pbar:
 
+        #     for seed in pbar:
 
-    # i_inp = 4*52+4
-    # layer_dims = [i_inp, 64, 32,1]
-    # snn_alx = SNN(layer_dims, activation=nn.Sigmoid, dropout_p=0.3).to(device).apply(init_weights_zero)
-    # snn_bob = SNN(layer_dims, activation=nn.Sigmoid, dropout_p=0.3).to(device).apply(init_weights_zero)
-    # N = 1000
-    # t_win, t_ltx_ = selfplay(seed=10, N=N, to_latex = True, snn_alx = snn_alx,snn_bob=snn_bob)
-
-
-    for i_smp in range(N):
-
-        # if i_smp != 111:
-        #     continue
-        # print(i_smp)
-        t_ltx = {key:t_ltx_[key][i_smp,:] for key in t_ltx_.keys()}
-    
-        with open(f"games/game_{i_smp}.txt", "w") as f:
-
-            print(latex_0, file=f)
-
-            for i_hnd in range(6):
                 
-                t_scr = t_ltx[f't_scr_{i_hnd}']
+        #         # t0_win, _ = selfplay(seed=seed, N=1000, to_latex=True, x_alx=booster,  x_bob=xrnn_bob)
+        #         # t1_win, _ = selfplay(seed=seed, N=10000, to_latex=False, x_alx=xrnn_alx, x_bob=xrnn_bob)
 
-                for i_trn in range(4):
-                    for i_ply in range(2):
+        #         # i_gin += (t0_win - t1_win).item()
+        #         i_gin   += t0_win.item() 
+        #         pbar.set_postfix(gain=f"{i_gin / (pbar.n + 1):.4f}")
 
-                        i_cod   = f'{i_hnd}_{i_trn}_{i_ply}'
-                        print(f'\n {i_hnd}\_{i_trn}\_{i_ply} &', file=f, end='')
-                        
-                        clt_inf = t_ltx['t_dck_'+i_cod]
-                        clt_act = t_ltx['t_act_'+i_cod] 
-                        t_snw   = t_ltx['t_snw_'+i_cod] 
-                        # print('t_snw_'+i_cod)
-                        # print(t_snw)
 
-                        alx     =  tp(clt_inf,1)
-                        bob     =  tp(clt_inf,2)
-                        pol     =  tp(clt_inf,3)
-                        lay     =  tp(clt_act[0],1)
-                        pck     =  tp(clt_act[1],1)
-                        dlt     =  t_scr[d_scr['pts_dlt']]
-                        lst     =  t_snw[d_snw['lst_pck']]
-                        # if f'{i_trn}_{i_ply}' == '3_1':
-                        #     import pdb; pdb.set_trace()
-                        if lst == 1:   lst = 'A'
-                        elif lst == 2: lst = 'B'
-                        elif lst == 0:
-                            pass
-                        else:
-                            NotImplementedError('ERROR')
-                        
-                        tp2(alx,f)
-                        tp2(bob,f)
-                        tp2(pol,f)
-                        tp2(lay,f)
-                        tp2(pck,f)
+        # i_inp = 4*52+4
+        # layer_dims = [i_inp, 64, 32,1]
+        # snn_alx = SNN(layer_dims, activation=nn.Sigmoid, dropout_p=0.3).to(device).apply(init_weights_zero)
+        # snn_bob = SNN(layer_dims, activation=nn.Sigmoid, dropout_p=0.3).to(device).apply(init_weights_zero)
+        # N = 1000
+        # t_win, t_ltx_ = selfplay(seed=10, N=N, to_latex = True, snn_alx = snn_alx,snn_bob=snn_bob)
 
-                        # import pdb; pdb.set_trace()
-                        # \textbf{Acl} &  \textbf{Bcl} & \textbf{Apt} &  \textbf{Bpt} & \textbf{Asr} & \textbf{Bsr} & \textbf{$\Delta$}\\
-                        a_clb, a_sur, a_pt = t_snw[d_snw['a_clb']], t_snw[d_snw['a_sur']], t_snw[d_snw['a_pts']] 
-                        b_clb, b_sur, b_pt = t_snw[d_snw['b_clb']], t_snw[d_snw['b_sur']], t_snw[d_snw['b_pts']] 
 
-                        a_clb += t_scr[d_scr['a_clb']]
-                        b_clb += t_scr[d_scr['b_clb']]
-                        
-                        print(f'{a_clb} &', end='',file=f)
-                        print(f'{b_clb} &', end='',file=f)
-                        print(f'{a_pt} &', end='',file=f)
-                        print(f'{b_pt} &', end='',file=f)
-                        print(f'{a_sur} &', end='',file=f)
-                        print(f'{b_sur} &', end='',file=f)
-                        print(f'{dlt} &', end='',file=f)
-                        print(f'{lst}', end='',file=f)
-                        # if f'{i_hnd}_{i_trn}_{i_ply}' == '3_3_0':
-                        #     import pdb; pdb.set_trace()
-                        # print(f'{i_cod}, {a_sur},{b_sur} &')
-                        # print(f'{i_cod}, {b_sur} &')
-                        # if a_sur+b_sur> 0:
-                        #     import pdb; pdb.set_trace()
-                        print(r"\\ \hline", file=f)
-                        if i_ply == 1:
-                            if i_hnd == 5 and i_trn ==3:
-                                pass 
-                            else:
-                                print(r" \rowcolor{myrowcolor}", file=f)
+        for i_smp in range(N):
 
-                        
-                        
+            # if i_smp != 111:
+            #     continue
+            # print(i_smp)
+            t_ltx = {key:t_ltx_[key][i_smp,:] for key in t_ltx_.keys()}
+        
+            with open(f"games/game_{i_smp}.txt", "w") as f:
+
+                print(latex_0, file=f)
+
+                for i_hnd in range(6):
                     
+                    t_scr = t_ltx[f't_scr_{i_hnd}']
 
-                print("\hline \n", file=f)
-                # break 
-            print(f'CleanUp &', file=f, end='')
-            tp2(torch.empty(0),f)
-            tp2(torch.empty(0),f)
-            tp2(torch.empty(0),f)
-            tp2(torch.empty(0),f)
-            tp2(torch.empty(0),f)
-            t_snw  = t_ltx['t_snw_6'] 
-            a_clb, a_sur, a_pt = t_snw[d_snw['a_clb']], t_snw[d_snw['a_sur']], t_snw[d_snw['a_pts']] 
-            b_clb, b_sur, b_pt = t_snw[d_snw['b_clb']], t_snw[d_snw['b_sur']], t_snw[d_snw['b_pts']] 
+                    for i_trn in range(4):
+                        for i_ply in range(2):
 
-            a_clb += t_scr[d_scr['a_clb']]
-            b_clb += t_scr[d_scr['b_clb']]
-            
-            print(f'{a_clb} &', end='',file=f)
-            print(f'{b_clb} &', end='',file=f)
-            print(f'{a_pt} &', end='',file=f)
-            print(f'{b_pt} &', end='',file=f)
-            print(f'{a_sur} &', end='',file=f)
-            print(f'{b_sur} &', end='',file=f)
-            print(f'{dlt} &', end='',file=f)
-            print(f'{lst}', end='',file=f)
-            
-            print(r"\\ \hline", file=f)
-            print(latex_1(i_smp), file=f)
+                            i_cod   = f'{i_hnd}_{i_trn}_{i_ply}'
+                            print(f'\n {i_hnd}\_{i_trn}\_{i_ply} &', file=f, end='')
+                            
+                            clt_inf = t_ltx['t_dck_'+i_cod]
+                            clt_act = t_ltx['t_act_'+i_cod] 
+                            t_snw   = t_ltx['t_snw_'+i_cod] 
+                            # print('t_snw_'+i_cod)
+                            # print(t_snw)
+
+                            alx     =  tp(clt_inf,1)
+                            bob     =  tp(clt_inf,2)
+                            pol     =  tp(clt_inf,3)
+                            lay     =  tp(clt_act[0],1)
+                            pck     =  tp(clt_act[1],1)
+                            dlt     =  t_scr[d_scr['pts_dlt']]
+                            lst     =  t_snw[d_snw['lst_pck']]
+                            # if f'{i_trn}_{i_ply}' == '3_1':
+                            #     import pdb; pdb.set_trace()
+                            if lst == 1:   lst = 'A'
+                            elif lst == 2: lst = 'B'
+                            elif lst == 0:
+                                pass
+                            else:
+                                NotImplementedError('ERROR')
+                            
+                            tp2(alx,f)
+                            tp2(bob,f)
+                            tp2(pol,f)
+                            tp2(lay,f)
+                            tp2(pck,f)
+
+                            # import pdb; pdb.set_trace()
+                            # \textbf{Acl} &  \textbf{Bcl} & \textbf{Apt} &  \textbf{Bpt} & \textbf{Asr} & \textbf{Bsr} & \textbf{$\Delta$}\\
+                            a_clb, a_sur, a_pt = t_snw[d_snw['a_clb']], t_snw[d_snw['a_sur']], t_snw[d_snw['a_pts']] 
+                            b_clb, b_sur, b_pt = t_snw[d_snw['b_clb']], t_snw[d_snw['b_sur']], t_snw[d_snw['b_pts']] 
+
+                            a_clb += t_scr[d_scr['a_clb']]
+                            b_clb += t_scr[d_scr['b_clb']]
+                            
+                            print(f'{a_clb} &', end='',file=f)
+                            print(f'{b_clb} &', end='',file=f)
+                            print(f'{a_pt} &', end='',file=f)
+                            print(f'{b_pt} &', end='',file=f)
+                            print(f'{a_sur} &', end='',file=f)
+                            print(f'{b_sur} &', end='',file=f)
+                            print(f'{dlt} &', end='',file=f)
+                            print(f'{lst}', end='',file=f)
+                            # if f'{i_hnd}_{i_trn}_{i_ply}' == '3_3_0':
+                            #     import pdb; pdb.set_trace()
+                            # print(f'{i_cod}, {a_sur},{b_sur} &')
+                            # print(f'{i_cod}, {b_sur} &')
+                            # if a_sur+b_sur> 0:
+                            #     import pdb; pdb.set_trace()
+                            print(r"\\ \hline", file=f)
+                            if i_ply == 1:
+                                if i_hnd == 5 and i_trn ==3:
+                                    pass 
+                                else:
+                                    print(r" \rowcolor{myrowcolor}", file=f)
+
+                            
+                            
+                        
+
+                    print("\hline \n", file=f)
+                    # break 
+                print(f'CleanUp &', file=f, end='')
+                tp2(torch.empty(0),f)
+                tp2(torch.empty(0),f)
+                tp2(torch.empty(0),f)
+                tp2(torch.empty(0),f)
+                tp2(torch.empty(0),f)
+                t_snw  = t_ltx['t_snw_6'] 
+                a_clb, a_sur, a_pt = t_snw[d_snw['a_clb']], t_snw[d_snw['a_sur']], t_snw[d_snw['a_pts']] 
+                b_clb, b_sur, b_pt = t_snw[d_snw['b_clb']], t_snw[d_snw['b_sur']], t_snw[d_snw['b_pts']] 
+
+                a_clb += t_scr[d_scr['a_clb']]
+                b_clb += t_scr[d_scr['b_clb']]
+                
+                print(f'{a_clb} &', end='',file=f)
+                print(f'{b_clb} &', end='',file=f)
+                print(f'{a_pt} &', end='',file=f)
+                print(f'{b_pt} &', end='',file=f)
+                print(f'{a_sur} &', end='',file=f)
+                print(f'{b_sur} &', end='',file=f)
+                print(f'{dlt} &', end='',file=f)
+                print(f'{lst}', end='',file=f)
+                
+                print(r"\\ \hline", file=f)
+                print(latex_1(i_smp), file=f)
 
 
 
-    import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()

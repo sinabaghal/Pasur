@@ -190,10 +190,11 @@ def simulategamerun(t_stk):
                 # assert t_sgm.shape[0] == t_mdl.shape[0]
 
                 d_fls[f'i_sid_{i_cod}'] = i_sid #TODO
+                # d_fls[f't_sgm_{i_cod}'] = torch.zeros_like(t_sgm, device=device).to(torch.float32)
                 d_fls[f't_sgm_{i_cod}'] = t_sgm.contiguous().to(torch.float32) #TODO
                 d_fls[f't_edg_{i_cod}'] = t_edg.contiguous() #TODO
                 # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8)
-                # d_fls[f'c_edg_{i_cod}'] = c_edg
+                d_fls[f'c_edg_{i_cod}'] = c_edg.contiguous()
                 # d_fls[f'c_act_{i_cod}'] = c_act
                 
                 t_mdls[i_cod]  = t_mdl.clone()
@@ -321,9 +322,10 @@ if __name__ == "__main__":
         maxes, means = [], []
         # a_sgm = []
 
-        pbar = trange(1000, desc=f"Processing Deck {i_dck}")
+        pbar = trange(200, desc=f"Processing Deck {i_dck}")
 
         d_regs = {f't_reg_{i_cod}': torch.zeros(d_fls[f't_edg_{i_cod}'].shape[0] , dtype = torch.float32, device=device) for i_cod in i_cods}
+        d_sgms = {f't_sgm_{i_cod}': d_fls[f't_sgm_{i_cod}'].clone() for i_cod in i_cods}
 
 
         max_cnt = 0 
@@ -345,20 +347,23 @@ if __name__ == "__main__":
                         i_cod               = f'{i_hnd}_{i_trn}_{i_ply}'
                         i_sid    = d_fls[f'i_sid_{i_cod}'] 
                         
-                        t_sum        = torch.zeros(i_sid, dtype = torch.float32, device=device)  
+                        t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
                         t_edg, t_sgm  = d_fls[f't_edg_{i_cod}'],  d_fls[f't_sgm_{i_cod}']
+                        c_edg         = d_fls[f'c_edg_{i_cod}']
                         # t_sgm = t_sgm.to(dtype=torch.float32)/255
 
                         # t_val = - t_val
                         t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
                         t_reg         = t_val - t_sum[t_edg]
-                        
+                        tc_val = t_val.clone()
                         # import pdb; pdb.set_trace()
                         if i_ply == 1:  t_reg = - t_reg
+                        # t_reg         = torch.clamp(t_reg, min=0.0)
+                        # d_regs[f't_reg_{i_cod}'] = torch.clamp(t_reg, min=0.0)
+                        d_regs[f't_reg_{i_cod}'] = torch.clamp(d_regs[f't_reg_{i_cod}'] +t_reg, min=0.0)
+                        # d_regs[f't_reg_{i_cod}'] += t_reg
 
                             # import pdb; pdb.set_trace()
-                        t_reg         = torch.clamp(t_reg, min=0.00)
-                        d_regs[f't_reg_{i_cod}'] += t_reg
 
                         
                         # import pdb; pdb.set_trace()
@@ -369,32 +374,70 @@ if __name__ == "__main__":
                         #     t_reg         = t_sum[t_edg] - t_val
                         # if i_hnd == 0 and i_ply == 0 and i_trn == 0:
                         #     import pdb; pdb.set_trace()
-                        t_val         = t_sum.clone()
                         # import pdb; pdb.set_trace()
                         
                         
+                        t_val         = t_sum.clone()
                         t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
-                        t_sum.scatter_add_(0, t_edg, torch.clamp(d_regs[f't_reg_{i_cod}'], min=0.0001))
-                        t_sgm         = d_regs[f't_reg_{i_cod}']/t_sum[t_edg]
+                        # t_tmp         = torch.clamp(d_regs[f't_reg_{i_cod}']/(cnt+1), min=0.0) + (1e-8)
+                        # d_regs[f't_reg_{i_cod}'] = torch.clamp(d_regs[f't_reg_{i_cod}'], min=1e-32)
+                        # t_sum.scatter_add_(0, t_edg, t_tmp)
+                        t_rts = torch.clamp(d_regs[f't_reg_{i_cod}'], min=0.0)
+                        # t_rts = torch.clamp(d_regs[f't_reg_{i_cod}']/(cnt+1), min=0.0)
+                        t_sum.scatter_add_(0, t_edg, t_rts)
+                        t_msk         = t_sum[t_edg] == 0
+                        # t_sgm[t_msk]  = tc_val[t_msk]
+                        # t_sgm[t_msk]  = 1/c_edg[t_edg][t_msk]
+                        # t_sum = torch.clamp(t_sum, min=1e-8)
+                        # t_sgm         = torch.zeros(t_reg.shape[0], dtype = torch.float32, device=device)  
+                        # t_sgm[~t_msk]  = torch.clamp(d_regs[f't_reg_{i_cod}'][~t_msk]/(cnt+1), min=0.0)/t_sum[t_edg][~t_msk]
+                        # t_sgm  = t_tmp/t_sum[t_edg]
+                        # t_sgm  = torch.clamp(d_regs[f't_reg_{i_cod}']/(cnt+1), min=0.0)
+                        # t_sgm         = (1-1/(cnt+1))*t_sgm+(1/(cnt+1))*torch.clamp(d_regs[f't_reg_{i_cod}'], min=0.0)/t_sum[t_edg]
+                        # t_sgm         = (1-1/(cnt+1))*t_sgm+(1/(cnt+1))*torch.clamp(d_regs[f't_reg_{i_cod}'], min=0.0)/t_sum[t_edg]
+                        t_sgm[~t_msk]  = t_rts[~t_msk]/t_sum[t_edg][~t_msk]
+                        # t_sgm[t_msk]  = torch.tensor(0.0000000001, device=device)
+                        t_sgm[t_msk]  = torch.tensor(0.0, device=device)
+                        # t_sgm[t_msk]  = d_sgms[f't_sgm_{i_cod}'][t_msk]/(cnt+1)
+                        # t_sgm[t_msk]  = 1/c_edg[t_edg][t_msk]
+
+                        # if torch.any(t_msk):
+                        #     import pdb; pdb.set_trace()
+
+                        # t_sgm[~t_msk] = d_regs[f't_reg_{i_cod}'][~t_msk]/t_sum[t_edg][~t_msk]
+                        # import pdb; pdb.set_trace()
                         # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8) 
-                        d_fls[f't_sgm_{i_cod}'] = t_sgm
+                        # t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
+                        # t_sum.scatter_add_(0, t_edg, t_sgm)
+                        # t_sgm = t_sgm/t_sum[t_edg]
+                        d_sgms[f't_sgm_{i_cod}']  += t_sgm
+                        d_fls[f't_sgm_{i_cod}']   =  t_sgm
 
                         del t_reg
-                        
+
+            av_reg = torch.tensor([torch.clamp(d_regs[f't_reg_{i_cod}'],min=0.0).mean() for i_cod in i_cods]).mean()/(cnt+1)
+            # print(av_reg)
+            # import pdb; pdb.set_trace()
             
+            # for i_cod in i_cods: d_fls[f't_sgm_{i_cod}'] = d_sgms[f't_sgm_{i_cod}']/(cnt+1)
+                # for i_cod in i_cods: d_sgms[f't_sgm_{i_cod}'] += d_fls[f't_sgm_{i_cod}']
+
+                # [d_fls[f't_sgm_{i_cod}'] d_fls[f't_sgm_{i_cod}']/(cnt+1) for i_cod in i_cods]
             # next_all_sgm = torch.cat([d_fls[f't_sgm_{id}'].to(dtype=torch.float32)/255 for id in i_cods], dim=0)
-            next_all_sgm = torch.cat([d_fls[f't_sgm_{id}'] for id in i_cods], dim=0)
-            all_diff = torch.abs(all_sgm - next_all_sgm)
+            # next_all_sgm = torch.cat([d_fls[f't_sgm_{i_cod}'] for i_cod in i_cods], dim=0)
+            # next_all_sgm = torch.cat([d_sgms[f't_sgm_{i_cod}']/torch.sum(torch.arange(cnt, device=device)) for i_cod in i_cods], dim=0)
+            # all_diff = torch.abs(all_sgm - next_all_sgm)
 
-            new_mean = torch.mean(all_diff)
-            new_maxx = torch.max(all_diff)
+            # new_mean = torch.mean(all_diff)
+            # new_maxx = torch.max(all_diff)
 
-            all_sgm = next_all_sgm
-            means.append(new_mean); maxes.append(new_maxx)
+            # all_sgm = next_all_sgm
+            # means.append(new_mean); maxes.append(new_maxx)
 
-            if cnt % 10 ==0 : pbar.set_postfix(max=new_maxx.item())
-            if new_maxx < 0.0001: max_cnt += 1
-            else:  max_cnt =  0
+            # pbar.set_postfix(av_regx=av_reg.item())
+            if cnt % 10 ==0 : pbar.set_postfix(av_regx=av_reg.item())
+            # if new_maxx < 0.001: max_cnt += 1
+            # else:  max_cnt =  0
 
             cnt +=  1
 
@@ -429,7 +472,22 @@ if __name__ == "__main__":
 
         df = pd.DataFrame({"mean": torch.tensor(means).cpu().numpy(),"max": torch.tensor(maxes).cpu().numpy()})
         df.to_csv(f"../DATA/FIG/D{i_dck}_mean_max.csv", index=False)
+        # t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods}  
+        # t_sgms = {i_cod: d_sgms[f't_sgm_{i_cod}'].cpu()/torch.sum(torch.arange(cnt)) for i_cod in i_cods}  
+        for i_cod in i_cods:
+
+            i_sid    = d_fls[f'i_sid_{i_cod}'] 
+            t_edg, t_sgm  = d_fls[f't_edg_{i_cod}'], d_sgms[f't_sgm_{i_cod}']/cnt
+            t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)  
+            
+            t_sum.scatter_add_(0, t_edg, t_sgm)
+            # if t_sum.min().item()<0.2:
+            #     print(i_cod)
+            t_sgm = t_sgm/t_sum[t_edg]
+            # print(i_cod, t_sum.max().item(),t_sum.min().item())
+
         t_sgms = {i_cod: d_fls[f't_sgm_{i_cod}'].cpu() for i_cod in i_cods}  
+        # t_sgms = {i_cod: d_sgms[f't_sgm_{i_cod}'].cpu()/cnt for i_cod in i_cods}  
         
         return t_sgms
 
@@ -466,13 +524,27 @@ if __name__ == "__main__":
 
 
     N = 10
+    res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
+    
     t_dks = torch.load(f"decks_10000.pt")
+    
+    tw_dks = torch.empty_like(t_dks)
+    tw_dks[:,res==0] = t_dks[:,res == 1]
+    tw_dks[:,res==1] = t_dks[:,res == 0]
+    tw_dks[:,res==3] = t_dks[:,res == 3]
+
     for i_dck in [9]: 
+    # for i_dck in range(N): 
+    # for i_dck in list(range(N))+[f'{x}m' for x in range(N)]: 
 
         torch.cuda.empty_cache()
         # try:
+        if isinstance(i_dck, str):
 
-        t_dck = t_dks[i_dck,:].to(device)
+            t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
+        else:
+            t_dck = t_dks[i_dck,:].to(device)
+
         d_fls, t_mdls, t_sids, t_scrs, t_m52s  = simulategamerun(t_dck.clone())
         t_sgms = find_cfr(i_dck, d_fls)
 
@@ -511,8 +583,12 @@ if __name__ == "__main__":
                     df   = pd.DataFrame(data)
 
                     df["D"]   = df["D"].astype("int32")
-                    df["D"]   = np.full(len(df), i_dck, dtype=np.int32)
-                    df["SGM"] = torch.clamp(t_sgm.to(torch.float16), min=0.001)
+                    if isinstance(i_dck, str):
+                        df["D"]   = np.full(len(df), -int(i_dck[:-1]), dtype=np.int32)
+                    else:
+                        df["D"]   = np.full(len(df), i_dck, dtype=np.int32)
+                    
+                    df["SGM"] = torch.clamp(t_sgm.to(torch.float16), min=0.0, max=1.0)
                     # for col in df.columns:
                     #     df[col] = df[col].astype("category")
                     
