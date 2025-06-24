@@ -35,7 +35,8 @@ def apply_moves(t_inf, t_act, t_snw, d_msk, i_hnd, i_ply, i_trn):
         t_msr = torch.logical_and(torch.logical_and(t_mpk, tm_pick_notj), t_sur)
         # if torch.any(t_msr):
         #     import pdb; pdb.set_trace()
-        t_snw[t_msr,surs_cntr] += 5
+        t_snw[t_msr,surs_cntr] += 5 ### PUT BACK
+        # import pdb; pdb.set_trace()
         # if f'{i_hnd}_{i_trn}_{i_ply}' == '3_3_0':
         #     import pdb; pdb.set_trace()
         # if t_msr.sum()>0: import pdb; pdb.set_trace()

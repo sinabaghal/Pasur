@@ -20,8 +20,11 @@ def cleanpool(t_inf, t_snw, d_msk):
 
     t_snw[tm_la,d_snw['a_clb']] += t_pla[:,tm_c].count_nonzero(dim=1).to(INT8)
     t_snw[tm_lb,d_snw['b_clb']] += t_plb[:,tm_c].count_nonzero(dim=1).to(INT8)
+
+    # import pdb; pdb.set_trace()
+    # t_snw[:,d_snw['a_pts']].unique()
     t_snw[tm_la,d_snw['a_pts']] += (t_pla[:,tm_p]*tm_s).sum(dim=1).to(INT8)
     t_snw[tm_lb,d_snw['b_pts']] += (t_plb[:,tm_p]*tm_s).sum(dim=1).to(INT8)
 
-    # import pdb; pdb.set_trace()
+    # import pdb; pdb.set_tracet_snw()
     return t_inf, t_snw
