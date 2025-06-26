@@ -27,4 +27,5 @@ def cleanpool(t_inf, t_snw, d_msk):
     t_snw[tm_lb,d_snw['b_pts']] += (t_plb[:,tm_p]*tm_s).sum(dim=1).to(INT8)
 
     # import pdb; pdb.set_tracet_snw()
+    t_inf[:,0,:] = 0
     return t_inf, t_snw

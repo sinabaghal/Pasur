@@ -180,8 +180,8 @@ def simulategamerun(t_stk):
             
             # t_t = t_snw.clone()
             # if i_hnd == 5: import pdb; pdb.set_trace()
-            # t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
-            pass 
+            t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
+            # pass 
             # pass
             # if i_hnd ==  5: import pdb; pdb.set_trace()
 
@@ -313,15 +313,15 @@ def find_utl(i_hnd, t_utl, b_flg, d_fls, tr_sgm, tf_sgms, d0_rpr, d1_rpr, alg):
             c_edg, t_edg, t_sgm  = d_fls[f'c_edg_{i_cod}'], d_fls[f't_edg_{i_cod}'], tr_sgm[f't_sgm_{i_cod}']
             
             t_pt2         = torch.zeros(i_sid, dtype = torch.float64, device=device) 
-            t_pt2.scatter_add_(0, t_edg, t_opp*t_val) 
+            t_pt2.scatter_add_(0, t_edg, t_sgm*t_val) 
 
-            t_pt1         = torch.zeros(i_sid, dtype = torch.float64, device=device) 
-            t_pt1.scatter_add_(0, t_edg, t_opp) 
-            t_reg         = (1-2*i_ply)*(t_pt1[t_edg]*t_val-t_pt2[t_edg])
+            # t_pt1         = torch.zeros(i_sid, dtype = torch.float64, device=device) 
+            # t_pt1.scatter_add_(0, t_edg, t_opp) 
+            t_reg         = (1-2*i_ply)*t_opp*(t_val-t_pt2[t_edg])
 
-            t_sum         = torch.zeros(i_sid, dtype = torch.float64, device=device) 
-            t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
-            t_val         =  t_sum.clone()
+            # t_sum         = torch.zeros(i_sid, dtype = torch.float64, device=device) 
+            # t_sum.scatter_add_(0, t_edg, t_sgm*t_val)
+            t_val         =  t_pt2.clone()
 
             # # t_sum2         = torch.zeros(i_sid, dtype = torch.float64, device=device)  
             # # t_sum2.scatter_add_(0, t_edg, t_opp)
@@ -353,11 +353,12 @@ def find_utl(i_hnd, t_utl, b_flg, d_fls, tr_sgm, tf_sgms, d0_rpr, d1_rpr, alg):
 
             # if i_ply == 1:   t_tmp  = t_sgm*d0_rpr[i_cod]
             # else:            t_tmp  = t_sgm*d1_rpr[i_cod]
-            t_cc         = torch.zeros(i_sid, dtype = torch.float64, device=device)  
-            t_cc.scatter_add_(0, t_edg, t_ply)
+            # t_cc         = torch.zeros(i_sid, dtype = torch.float64, device=device)  
+            # t_cc.scatter_add_(0, t_edg, t_ply)
+            # import pdb; pdb.set_trace() 
             if b_flg:
-                if   alg == 'cfr' : tf_sgms[f't_sgm_{i_cod}']  += t_sgm*t_cc[t_edg]
-                elif alg == 'cfr+': tf_sgms[f't_sgm_{i_cod}']  += t_sgm*t_cc[t_edg]
+                if   alg == 'cfr' : tf_sgms[f't_sgm_{i_cod}']  += t_sgm*t_ply
+                elif alg == 'cfr+': tf_sgms[f't_sgm_{i_cod}']  += t_sgm*t_ply
             
             tr_sgm[f't_sgm_{i_cod}']   =  t_sgm.clone()
 
@@ -370,7 +371,7 @@ if __name__ == "__main__":
     t_dks = torch.load(f"decks_10000.pt")
     i_dck = 9
     alg = 'cfr+'
-    i_iter = 10000
+    i_iter = 1000
     t_dck = t_dks[i_dck,:].to(device)
     d_fls, t_mdls, t_sids, t_scrs, t_m52s  = simulategamerun(t_dck.clone())
     l_smp  = []
