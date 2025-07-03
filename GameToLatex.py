@@ -162,26 +162,26 @@ def tp2(res, f):
 if __name__ == "__main__":
 
     N = 100
-    i_dcks = [0]
+    i_dcks = [9]
 
     for i_dck in i_dcks:
 
         bst = xgb.Booster()
         bst.load_model(f'../MDL/D{i_dck}/model_{i_dck}_0.xgb')
-        
-        res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
-        
         t_dks = torch.load(f"decks_10000.pt")
+        t_dck = t_dks[i_dck,:].to(device)
+        # res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
         
-        tw_dks = torch.empty_like(t_dks)
-        tw_dks[:,res==0] = t_dks[:,res == 1]
-        tw_dks[:,res==1] = t_dks[:,res == 0]
-        tw_dks[:,res==3] = t_dks[:,res == 3]
-        if isinstance(i_dck, str):
+        
+        # tw_dks = torch.empty_like(t_dks)
+        # tw_dks[:,res==0] = t_dks[:,res == 1]
+        # tw_dks[:,res==1] = t_dks[:,res == 0]
+        # tw_dks[:,res==3] = t_dks[:,res == 3]
+        # if isinstance(i_dck, str):
 
-            t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
-        else:
-            t_dck = t_dks[i_dck,:].to(device)
+        #     t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
+        # else:
+        #     t_dck = t_dks[i_dck,:].to(device)
             
         t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = bst, x_bob = bst, to_latex = True)
         

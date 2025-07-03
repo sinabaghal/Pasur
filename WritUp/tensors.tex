@@ -1,0 +1,43 @@
+
+\begin{table}[h!]
+\centering
+\scriptsize
+\caption{Summary of Tensors Used in Game Tree Construction}
+\label{tab:gametree_tensors_detailed}
+\begin{tabular}{
+>{\centering\arraybackslash}m{1.3cm}  % Component
+>{\centering\arraybackslash}m{1.3cm}  % Tensor
+>{\centering\arraybackslash}m{1cm}    % Shape
+>{\centering\arraybackslash}m{1.3cm}  % Type
+>{\centering\arraybackslash}m{2cm}    % Update
+>{\raggedright\arraybackslash}p{5.5cm}% Description (left-aligned)
+}
+\toprule
+\textbf{Component} & \textbf{Tensor} & \textbf{Shape} & \textbf{Type} & \textbf{Update} & \textbf{Description} \\
+\midrule
+Game & \py{t\_gme} & \py{[M,3,N]} & \py{int8} & Per turn & Encodes state and action history per node. Each slice represents a singleton node in the tree layer. \\
+\midrule
+In-Play Cards & \py{t\_inp} & \py{[52]} & \py{int8} & Per round & Boolean indicator for whether each of the 52 cards is still in play (held or in pool). \\
+\midrule
+Dealt Cards & \py{t\_dlt} & \py{[52]} & \py{int8} & Per round & Boolean indicator marking cards that have been dealt in previous rounds. \\
+\midrule
+Full Game & \py{t\_fgm} & \py{[Q, 2]} & \py{int32} & Per turn / round & Each row \py{[i, s]} in \py{t\_fgm} indicates that node \py{i} in the game tree \py{t\_gme} inherits the score with ID \py{s} from \py{t\_scr}. Here, \py{Q} denotes the number of nodes in the current layer of the Full Game Tree.
+ \\
+\midrule
+Scores & \py{t\_scr} & \py{[S,4]} & \py{int8} & Per round & Unique score triples in the form (Alex clubs, Bob clubs, Point Difference). \\
+\midrule
+Action & \py{t\_act} & \py{[M',2,N]} & \py{int8} & Per turn & Action representation per node. \py{[0,:]} encodes the lay card; \py{[1,:]} encodes picked cards. Here, \py{M'} denotes the number of nodes in the next layer of the Game Tree. \\
+\midrule
+Branch Factor & \py{t\_brf} & \py{[M]} & \py{int8} & Per turn & Number of valid actions available from each node; used to replicate game states before applying actions. \\
+\midrule
+Linkage & \py{t\_lnk} & \py{[M,2]} & \py{int8} & Per round & Connects nodes between consecutive hands to identify how scores and states map across hands. Used during in-between-hand updates. \\
+\midrule
+Edge & \py{t\_edg} & \py{[Q',2]} & \py{int32} & Per turn & Records edges between nodes in the full game tree to track the structure of the overall graph. Here, \py{Q'} denotes the number of nodes in the next layer of the Full Game Tree. \\
+\midrule
+Strategy & \py{t\_sgm} & \py{[Q]} & \py{float32} & Per turn & Stores the strategy values (e.g., probabilities) associated with each node in the Full Game Tree. \\
+\midrule
+Infoset & \py{t\_inf} & \py{[Q,58]} & \py{int8} & Per turn & Encodes information available to the player whose turn it is. \py{t\_inf} hides information that is not observable by the acting player. It also includes metadata such as round index, turn counter, and cumulative score up to the previous round. \\
+\bottomrule
+\end{tabular}
+\label{table:tensors}
+\end{table}

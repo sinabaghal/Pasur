@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+    % Define grid dimensions
+    \def\n{5} % N = 5 rows
+    \def\m{5} % M = 5 columns
+    \def\cellsize{0.8} % Size of each cell
+
+    % Draw the grid
+    \foreach \i in {0,...,\n} {
+        \draw[lightgray] (0,\i*\cellsize) -- (\m*\cellsize,\i*\cellsize); % Horizontal lines
+    }
+    \foreach \j in {0,...,\m} {
+        \draw[lightgray] (\j*\cellsize,0) -- (\j*\cellsize,\n*\cellsize); % Vertical lines
+    }
+
+    % Fill specific cells with diagonal lines (approximating the pattern)
+    \fill[pattern=north east lines] (0,0) rectangle (2*\cellsize, 2*\cellsize); % Bottom-left 2x2 block
+    \fill[pattern=north east lines] (3*\cellsize, 3*\cellsize) rectangle (5*\cellsize, 5*\cellsize); % Top-right 2x2 block
+
+    % Place dots in the middle row (row 3, columns 2, 3, and 4)
+    \foreach \j in {1,2,3} {
+        \fill[black] (\j*\cellsize + 0.4*\cellsize, 2*\cellsize + 0.4*\cellsize) circle (0.05); % Dots
+    }
+
+    % Draw the outer rectangle
+    \draw[black] (0,0) rectangle (\m*\cellsize, \n*\cellsize);
+
+    % Add the shape label below the grid
+    \node[below] at (2.5*\cellsize, -0.5*\cellsize) {shape $N=5 \times M=5$};
+
+    \draw[->, thin, decorate, decoration={coil, segment length=3mm, amplitude=2mm}] 
+        (\m*\cellsize+0.1, \n*\cellsize+0.1) -- ++(2,1) % Arrow starts at (5,5) and extends 2 units right
+        node[right] {Some text}; % Text at the end of the arrow
+\end{tikzpicture}

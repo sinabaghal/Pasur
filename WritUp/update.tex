@@ -1,0 +1,23 @@
+\begin{figure}[h]
+    \centering
+    \begin{adjustbox}{max width=\linewidth, nofloat=figure, margin=0cm 0cm 0cm 0cm}
+        \begin{tikzpicture}
+        
+    %     [
+    %     % Define node style (unfilled, small circles)
+    %     nnnode/.style={circle, draw, minimum size=4mm, inner sep=0pt}
+    % ]
+            \input{update/t_z}
+            \input{update/exp_t_z}
+            \input{update/t_act}
+            \input{update/exp_t_act}
+            \input{update/t_scr}
+            \input{update/exp_t_scr}
+            \input{update/t_nn}
+            \input{update/t_nn2}
+            \input{update/nn}
+            \label{fig:card_cube}
+        \end{tikzpicture}
+    \end{adjustbox}
+\end{figure}
+% \caption{\small Tensor \pyvar{t\_z[:,0,:]} represents the cards laid in the pool and held by Alex and Bob. For example, \pyvar{t\_z[0,0,0]=3}, \pyvar{t\_z[0,0,2]=1}, and \pyvar{t\_z[0,0,51]=2} indicate that the pool contains $A\clubsuit$, Alex holds $A\heartsuit$, and Bob holds $K\spadesuit$, respectively.}

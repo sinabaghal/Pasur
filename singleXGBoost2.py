@@ -113,7 +113,7 @@ if __name__ == '__main__':
 
     N = 11
     # for i_dck in [f'{x}m' for x in range(N)]:
-    for i_dck in [0]:
+    for i_dck in [9]:
     # for i_dck in list(range(N))+[f'{x}m' for x in range(N)]:
         for id_gamma in [0]:
             trainsinglexgboost(i_dck, id_gamma)

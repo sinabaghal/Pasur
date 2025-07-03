@@ -1,0 +1,42 @@
+
+\begin{algorithm}
+\caption{PlayStep}
+\label{alg:your_algorithm}
+\begin{algorithmic}[1]
+%%%%%%%%%%%%%%%
+\State Input \py{t\_inf}, \py{c\_scr}, \py{t\_snw}, \py{t\_sid}
+\hfill \textcolor{green!50!black}{\scriptsize \# input tensors}
+\Statex \textcolor{green!50!black}{\scriptsize \# \py{t\_inf.shape}$=[d_0,3,d_2]$, 
+\py{c\_scr}$= [s_1,\cdots,s_{d_0}]$,  \py{t\_snw.shape}$=[d_0,8]$}
+\Statex \textcolor{green!50!black}{\scriptsize \# $v_k:= \left\vert V_k\right\vert = s_1+\cdots+s_{d_0}$, \py{t\_sid.shape}$=[v_k,2]$}
+\Statex \textcolor{green!50!black}{\scriptsize \# $[i,j] \in $ \py{t\_sid} \textit{i.e.,} \py{t\_scr[j]} $\in \mathcal{H}(\py{t\_inf[i]})$} 
+%%%%%%%%%%%%%%%
+\vspace{0.5em}
+\State \py{t\_act,c\_act = find\_moves(t\_inf)} \hfill \textcolor{green!50!black}{\scriptsize \# find available moves}
+\Statex \textcolor{green!50!black}{\scriptsize \# \py{c\_act} $= [a_1,\cdots,a_{d_0}]$, \py{t\_act.shape} $= [\tilde{d}_0,3,d_2]$}
+\Statex \textcolor{green!50!black}{\scriptsize \# $\tilde{d}_0 = a_1+\cdots+a_{d_0}$}\Statex\textcolor{green!50!black}{\scriptsize\#$v_{k+1} = \left\vert V_{k+1}\right\vert =s_1a_1+\cdots+s_{d_0}a_{d_0}$}
+%%%%%%%%%%%%%%%
+\vspace{0.5em}
+\State $\py{t\_inf} \gets \py{t\_inf} \otimes \py{c\_act}$ \hfill \textcolor{green!50!black}{\scriptsize \# \py{t\_inf.shape}$=[\tilde{d}_0,3,d_2]$}
+% \State $\py{t\_snw} \gets \py{t\_snw} \otimes \py{c\_act}$ \hfill \textcolor{green!50!black}{\scriptsize \# \py{t\_snw.shape}$=[\tilde{d}_0,8]$}
+\State \py{t\_inf}, \py{t\_snw} $\gets \py{apply\_moves}(\py{t\_inf}, \py{t\_act}, \py{t\_snw})$
+\Statex \textcolor{green!50!black}{\scriptsize \# \py{t\_inf} retains shape. \py{t\_snw.shape}$=[\tilde{d}_0,8]$}
+\State \py{t\_cl1} $\gets$ \py{t\_sid[:,1]}$\otimes_{\tiny\py{c\_scr}}$\py{c\_act}
+\hfill 
+\textcolor{green!50!black}{\scriptsize\# See Section \ref{sec:RepeatBlocks}}
+\State \py{t\_edg} $\gets$ \py{arange(i\_sid)}$\otimes_{\py{c\_scr}}$\py{c\_act}
+\hfill \textcolor{green!50!black}{\scriptsize\# \py{i\_sid=sum(c\_scr)}}
+% \State \py{c\_tot} $\gets$ \py{c\_scr$\times$c\_act}
+% \State \py{t\_sft} $\gets$ \py{cumsum(cat([0,c\_tot[:-1]))}
+% \hfill \textcolor{green!50!black}{\scriptsize\# \py{t\_sft}$=[0,s_1a_1,s_1a_1+s_2a_2,\cdots]$}
+\State \py{c\_scr} $\gets$ \py{c\_scr$\otimes$c\_act}
+\hfill \textcolor{green!50!black}{\scriptsize\# \py{c\_scr}$=[s_1,\cdots,s_1,\cdots,s_{d_0},\cdots,s_{d_0}]$}
+\State \py{t\_cl0} $\gets$ \py{arange}(\py{i\_inf})$\otimes$\py{c\_scr}
+\State \py{t\_sid} $\gets$ \py{cat([t\_cl0,t\_cl1])}  \hfill \textcolor{green!50!black}{\scriptsize \#\py{t\_sid.shape}$=[v_{k+1},2]$}
+% \State \py{t\_edg} $\gets$ \py{t\_col1}+\py{t\_sft}$\otimes$\py{t\_tot}
+% \py{t\_edg} = \py{arange(c\_act.sum())} \otimes_{\py{c\_scr}} \py{c\_act}
+% \Statex\textcolor{green!50!black}{\scriptsize\#\py{t\_edge} connects $V_k$ to $V_{k+1}$. See Algorithm 2.}
+% \vspace{0.5em}
+\State Output \py{t\_inf, c\_scr, t\_snw, t\_sid, t\_edg}
+\end{algorithmic}
+\end{algorithm}

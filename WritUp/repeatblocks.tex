@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\newcommand{\py}[1]{\texttt{#1}}
+\begin{document}
+    
+\newpage 
+\section{Appendix}
+\subsection{RepeatBlocks}\label{sec:RepeatBlocks}
+RepeatBlocks is a generalization of \py{torch.repeat\_interleave} in which, instead of repeating individual elements, entire blocks of elements are repeated. Each block has a custom size and a custom repetition count.  The idea is best explained through an example. Consider the following
+ \[
+\py{t\_org = [1,2,3,4,5,6], t\_bsz = [2,3,1],t\_rpt = [1,3,2]}
+ \]
+Here \py{t\_org,t\_bsz,t\_rpt} are the input tensor, block sizes, and repeat counts respectively. The desired output denoted by $\py{t\_org} \otimes_{\py{t\_bsz}}\py{t\_rpt}$ is 
+\[
+\py{t\_org} \otimes_{\py{t\_bsz}}\py{t\_rpt = [1, 2, 3, 4, 5, 3, 4, 5, 3, 4, 5, 6, 6]}
+\]
+For convenience, let us denote \py{t\_rbk} = \py{t\_org} $\otimes_{\py{t\_bsz}}$\py{t\_rpt}.
+To construct \py{t\_rbk}, it suffices to build the corresponding index tensor \py{t\_idx}.
+\[
+\py{t\_idx = [0, 1, 2, 3, 4, 2, 3, 4, 2, 3, 4, 5, 5]}
+\]
+Note that \py{t\_rbk = t\_org[t\_idx]}. Next, consider the corresponding start indices of each repeated block 
+\[
+\py{t\_blk = [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5],}
+\]
+It is emphasized that using input tensors, \py{t\_blk} is given as below.
+\[
+ \py{t\_blk = (cat([0,t\_bsz[:-1]])$\otimes$\py{t\_rpt})}\otimes (\underbrace{\py{t\_bsz$\otimes$t\_rpt}}_{:=\py{t\_bls}}) 
+\]
+Deducting \py{t\_blk} from \py{t\_idx}, we arrive at the following tensor.
+\[
+\py{t\_pos = [0, 1, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 0]}
+\]
+Next, 
+\[
+\py{arange(t\_blk.shape[0])-t\_pos = [ 0,  0,  2,  2,  2,  5,  5,  5,  8,  8,  8, 11, 12]}
+\]
+ where a simple examination shows that the RHS is equal
+\[
+\py{cumsum(cat([0, t\_bls[:-1]]))$\otimes$t\_bls}.
+\]
+Putting pieces together, we arrive at Algorithm \ref{alg:RepeatBlocks}.
+\begin{algorithm}
+\caption{RepeatBlocks }
+\label{alg:RepeatBlocks}
+\begin{algorithmic}[1]
+%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%
+\State Input \py{t\_org, t\_bsz, t\_rpt}
+\Statex \textcolor{green!50!black}{\scriptsize \# \py{t\_org:input tensor, t\_bsz:blocks sizes, t\_rpt:repeat counts}}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_org = [1,2,3,4,5,6], t\_bsz = [2,3,1],t\_rpt = [1,3,2]}}
+%%%%%%%%%%%%%%%
+\State \py{t\_bgn} $\gets$ \py{cat([0,t\_bsz[:-1]])}$\otimes$\py{t\_rpt}
+\Statex \textcolor{green!50!black}{\scriptsize \# Compute beginning indices of each output's block}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_bgn = [0, 2, 2, 2, 5, 5]}}
+%%%%%%%%%%%%%%%
+\State \py{t\_bls} $\gets$ \py{t\_bsz}$\otimes$\py{t\_rpt}
+\Statex \textcolor{green!50!black}{\scriptsize \# Compute sizes of each output's block}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_bls = [2, 3, 3, 3, 1, 1]}}
+%%%%%%%%%%%%%%%
+\State \py{t\_blk} $\gets$ \py{t\_bgn}$\otimes$\py{t\_bls}
+\Statex \textcolor{green!50!black}{\scriptsize \# t\_blk[i] = j i.e., output[i] belongs to block j}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_blk = [0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5]}}
+%%%%%%%%%%%%%%%
+\State \py{t\_csm} $\gets$ \py{cumsum(0,t\_bls[:-1])}$\otimes$\py{t\_bls}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_csm=[ 0,  2,  5,  8, 11, 12]$\otimes$t\_bls=[ 0,  0,  2,  2,  2,  5,  5,  5,  8,  8,  8, 11, 12]}}
+\State \py{t\_pos} $\gets$ \py{arange(i\_blk)-t\_csm}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_pos=[0, 1, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 0]}}
+%%%%%%%%%%%%%%%
+\State \py{t\_idx} $\gets$ \py{t\_pos+t\_blk}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_idx=[0, 1, 2, 3, 4, 2, 3, 4, 2, 3, 4, 5, 5]}}
+%%%%%%%%%%%%%%%
+\State \py{t\_rbk} $\gets$ \py{t\_org[t\_idx]}
+\Statex \textcolor{green!50!black}{\scriptsize \# Ex: \py{t\_rbk=[1, 2, 3, 4, 5, 3, 4, 5, 3, 4, 5, 6, 6]}}
+%%%%%%%%%%%%%%%
+
+\State Output \py{t\_rbk} 
+\Statex \textcolor{green!50!black}{\scriptsize \# denoted by \py{t\_org}$\otimes_{\py{t\_bsz}}$\py{t\_rpt}}
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}

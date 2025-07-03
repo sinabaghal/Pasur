@@ -1,0 +1,114 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\providecommand \oddpage@label [2]{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Notation and Background}{1}{section.2}\protected@file@percent }
+\citation{nash1950equilibrium}
+\newlabel{eq:cfutl}{{1}{2}{Notation and Background}{equation.2.1}{}}
+\newlabel{eq:cfutl}{{2}{2}{Notation and Background}{equation.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Counterfactual Regret Minimization (CFR)}{2}{subsection.2.1}\protected@file@percent }
+\newlabel{eq:reg}{{3}{2}{Counterfactual Regret Minimization (CFR)}{equation.2.3}{}}
+\newlabel{eq:RM}{{4}{2}{Counterfactual Regret Minimization (CFR)}{equation.2.4}{}}
+\newlabel{eq:avsigma}{{5}{2}{Counterfactual Regret Minimization (CFR)}{equation.2.5}{}}
+\citation{zinkevich2007regret}
+\citation{tammelin2014solving}
+\newlabel{thm:avst}{{1}{3}{Counterfactual Regret Minimization (CFR)}{theorem.1}{}}
+\newlabel{thm:rm}{{2}{3}{Theorem 3,4, \cite {zinkevich2007regret}}{theorem.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Pasur}{3}{subsection.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Pasur Scoring System}}{4}{table.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:score}{{1}{4}{Pasur Scoring System}{table.caption.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Columns \texttt  {Acl}, \texttt  {Apt}, and \texttt  {Asr} represent the number of clubs, points, and surs collected or earned by Alex so far. \texttt  {Bcl}, \texttt  {Bpt}, and \texttt  {Bsr} are defined similarly for Bob. Once, at the end of any round, \texttt  {Acl} exceeds 7, both \texttt  {Acl} and \texttt  {Bcl} reset to zero, and the column \texttt  {CL} indicates which player collected at least 7 clubs. According to Pasur rules, this player earns 7 points. Collecting more than 7 clubs yields no additional points unless the card is also a point card (i.e., \textit  {e.g.}, $\textcolor {black}{A\clubsuit }$ or 2{\fontfamily  {pzd}\fontencoding  {U}\fontseries  {m}\fontshape  {n}\selectfont  \char 168} ). The column $\Delta $ shows the cumulative point difference up to the end of the previous round. $\Delta $ updates at the end of each round to reflect the points earned in that round. Finally, in the \textit  {CleanUp} phase, the player who made the last pick (as shown in column \texttt  {L}) collects all remaining cards from the pool. If any point cards are present, the corresponding point columns will be updated. If there are club cards in the CleanUp phase and neither player has yet reached 7 clubs, then the remaining clubs in the pool determine who earns the 7-club bonus. In such situations, the identity of the last player to pick becomes critical.     In the displayed game above, Alex earns the 7-club bonus. Bob gains 3 points from collecting $\textcolor {red}{10\diamondsuit }$, but he is trailing by 3 points from the rounds preceding the last. Additionally, Alex earns 1 point in the final round from capturing the $\textcolor {red}{A\heartsuit }$ card. This results in a final score with Alex leading by 8 points. See Table\nobreakspace  {}\ref {tab:score} for the Pasur scoring system. }}{5}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:game_0}{{1}{5}{Columns \texttt {Acl}, \texttt {Apt}, and \texttt {Asr} represent the number of clubs, points, and surs collected or earned by Alex so far. \texttt {Bcl}, \texttt {Bpt}, and \texttt {Bsr} are defined similarly for Bob. Once, at the end of any round, \texttt {Acl} exceeds 7, both \texttt {Acl} and \texttt {Bcl} reset to zero, and the column \texttt {CL} indicates which player collected at least 7 clubs. According to Pasur rules, this player earns 7 points. Collecting more than 7 clubs yields no additional points unless the card is also a point card (i.e., \textit {e.g.}, $\AC $ or 2\ding {168} ). The column $\Delta $ shows the cumulative point difference up to the end of the previous round. $\Delta $ updates at the end of each round to reflect the points earned in that round. Finally, in the \textit {CleanUp} phase, the player who made the last pick (as shown in column \texttt {L}) collects all remaining cards from the pool. If any point cards are present, the corresponding point columns will be updated. If there are club cards in the CleanUp phase and neither player has yet reached 7 clubs, then the remaining clubs in the pool determine who earns the 7-club bonus. In such situations, the identity of the last player to pick becomes critical. \\ \\ In the displayed game above, Alex earns the 7-club bonus. Bob gains 3 points from collecting $\TeD $, but he is trailing by 3 points from the rounds preceding the last. Additionally, Alex earns 1 point in the final round from capturing the $\AH $ card. This results in a final score with Alex leading by 8 points. See Table~\ref {tab:score} for the Pasur scoring system}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}PyTorch-Based Framework}{6}{section.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Mapping Cards to Indices}}{6}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:deck}{{2}{6}{Mapping Cards to Indices}{figure.caption.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Initial setup for a single game instance}}{7}{table.caption.5}\protected@file@percent }
+\newlabel{table:deck9}{{2}{7}{Initial setup for a single game instance}{table.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \texttt  {t\_inp} tensor at the beginning of the game for the initial setup shown in Table\nobreakspace  {}\ref {table:deck9}}}{7}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:tinp_ex}{{3}{7}{\py {t\_inp} tensor at the beginning of the game for the initial setup shown in Table~\ref {table:deck9}}{figure.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Summary of Tensors Used in Game Tree Construction}}{7}{table.caption.7}\protected@file@percent }
+\newlabel{tab:gametree_tensors_detailed}{{3}{7}{Summary of Tensors Used in Game Tree Construction}{table.caption.7}{}}
+\newlabel{table:tensors}{{3}{7}{Summary of Tensors Used in Game Tree Construction}{table.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Game Tree}}{8}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:gametreegeneration}{{4}{8}{Game Tree}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Unfolding Process \& In-Hand Update}}{8}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:in_hand_update}{{5}{8}{Unfolding Process \& In-Hand Update}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Game Tensor}{9}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:gametensor}{{3.1}{9}{Game Tensor}{subsection.3.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces State Encoding in \texttt  {t\_gme[0,:]}}}{9}{table.caption.10}\protected@file@percent }
+\newlabel{tab:state_encoding}{{4}{9}{State Encoding in \py {t\_gme[0,:]}}{table.caption.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}Compressed Game Tensor}{9}{subsubsection.3.1.1}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Compressed Game Tensor}}{10}{algorithm.1}\protected@file@percent }
+\newlabel{cs:compressedgametensor}{{1}{10}{Compressed Game Tensor}{algorithm.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Leg Status Conditions for Cards}}{10}{table.caption.11}\protected@file@percent }
+\newlabel{table:card_leg_conditions}{{5}{10}{Leg Status Conditions for Cards}{table.caption.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Compressed Game Tensor Values in \texttt  {t\_cmp}}}{10}{table.caption.12}\protected@file@percent }
+\newlabel{table:compressedgametensor}{{6}{10}{Compressed Game Tensor Values in \py {t\_cmp}}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Actions}{10}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:actions}{{3.2}{10}{Actions}{subsection.3.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Find Actions}{11}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces ApplyActions}}{11}{algorithm.2}\protected@file@percent }
+\newlabel{alg:applyactions}{{2}{11}{ApplyActions}{algorithm.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Score Tensors}{11}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:scoretensor}{{3.3}{11}{Score Tensors}{subsection.3.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Column definitions for the score tensor}}{11}{table.caption.13}\protected@file@percent }
+\newlabel{table:score_tensor_cols}{{7}{11}{Column definitions for the score tensor}{table.caption.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Column definitions for the running-score tensor}}{12}{table.caption.14}\protected@file@percent }
+\newlabel{table:running_score_cols}{{8}{12}{Column definitions for the running-score tensor}{table.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces An example illustrating how the Full Game Tensor \texttt  {t\_fgm} associates nodes in the Game Tree with entries in the Score Tensor \texttt  {t\_scr}. Colors are used to indicate rows of \texttt  {t\_scr}, consistent with Figure\nobreakspace  {}\ref {fig:gametreegeneration}. Each row of \texttt  {t\_scr} is represented by a tensor of size\nobreakspace  {}4, as described in Table\nobreakspace  {}\ref {table:score_tensor_cols}.}}{12}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:t_fgm_example}{{6}{12}{An example illustrating how the Full Game Tensor \py {t\_fgm} associates nodes in the Game Tree with entries in the Score Tensor \py {t\_scr}. Colors are used to indicate rows of \py {t\_scr}, consistent with Figure~\ref {fig:gametreegeneration}. Each row of \py {t\_scr} is represented by a tensor of size~4, as described in Table~\ref {table:score_tensor_cols}}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}In-Hand Updates}{12}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:inhandupdates}{{3.4}{12}{In-Hand Updates}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}RepeatBlocks}{12}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces RepeatBlocks }}{13}{algorithm.3}\protected@file@percent }
+\newlabel{alg:RepeatBlocks}{{3}{13}{RepeatBlocks}{algorithm.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Full Game Tree}{13}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces An illustration of how \texttt  {t\_fgm} is updated.}}{14}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:t_fgm}{{7}{14}{An illustration of how \py {t\_fgm} is updated}{figure.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces An illustration of between-hand processing}}{15}{figure.caption.17}\protected@file@percent }
+\newlabel{fig00:bethand}{{8}{15}{An illustration of between-hand processing}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Between-Hand Updates}{15}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:bethand}{{3.5}{15}{Between-Hand Updates}{subsection.3.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces An illustration of between-hand updates for \texttt  {t\_fgm}.}}{16}{figure.caption.18}\protected@file@percent }
+\newlabel{fig01:bethand}{{9}{16}{An illustration of between-hand updates for \py {t\_fgm}}{figure.caption.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Infoset Tensors}{16}{subsection.3.6}\protected@file@percent }
+\newlabel{sec:infosettensor}{{3.6}{16}{Infoset Tensors}{subsection.3.6}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces Infoset Tensor}}{16}{algorithm.4}\protected@file@percent }
+\newlabel{cs:infosettensor}{{4}{16}{Infoset Tensor}{algorithm.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Algorithms}{17}{subsection.3.7}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces PlayStep}}{17}{algorithm.5}\protected@file@percent }
+\newlabel{alg:your_algorithm}{{5}{17}{PlayStep}{algorithm.5}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces StrategyEvalStep}}{17}{algorithm.6}\protected@file@percent }
+\newlabel{alg:your_algorithm}{{6}{17}{StrategyEvalStep}{algorithm.6}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces SimulateGameRun}}{18}{algorithm.7}\protected@file@percent }
+\newlabel{alg:your_algorithm}{{7}{18}{SimulateGameRun}{algorithm.7}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces BetweenHands}}{18}{algorithm.8}\protected@file@percent }
+\newlabel{alg:bethand}{{8}{18}{BetweenHands}{algorithm.8}{}}
+\bibstyle{plain}
+\bibdata{bib}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces An illustration of how \texttt  {t\_edg} is constructed under ex. sampling regime.}}{19}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:tedge}{{10}{19}{An illustration of how \py {t\_edg} is constructed under ex. sampling regime}{figure.caption.19}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8}External Sampling}{19}{subsection.3.8}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces An illustration of how \texttt  {t\_sid} is updated under ext. sampling regime.}}{19}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:tsid}{{11}{19}{An illustration of how \py {t\_sid} is updated under ext. sampling regime}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Tree-Based Fitting of Game Strategies}{19}{section.4}\protected@file@percent }
+\newlabel{sec:tree}{{4}{19}{Tree-Based Fitting of Game Strategies}{section.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5} Experimental Results}{19}{section.5}\protected@file@percent }
+\newlabel{sec:Experimental}{{5}{19}{Experimental Results}{section.5}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {9}{\ignorespaces ExternalSampling}}{20}{algorithm.9}\protected@file@percent }
+\newlabel{alg:exsampling}{{9}{20}{ExternalSampling}{algorithm.9}{}}
+\gdef \@abspage@last{20}

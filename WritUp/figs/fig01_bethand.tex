@@ -1,0 +1,93 @@
+\begin{figure}[h]
+  \centering
+\[
+\begin{bmatrix}
+\py{0} & \tikz\fill[green] (0,0) rectangle (0.2,0.2); \\
+\py{0} & \tikz\fill[red] (0,0) rectangle (0.2,0.2); \\
+\py{0} & \tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2); \\
+\py{1} & \tikz\fill[green] (0,0) rectangle (0.2,0.2); \\
+\py{1} & \tikz\fill[red] (0,0) rectangle (0.2,0.2); \\
+\py{1} & \tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2); \\
+\py{2} & \tikz\fill[orange] (0,0) rectangle (0.2,0.2); \\
+\py{2} & \tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2); \\
+\py{3} & \tikz\fill[orange] (0,0) rectangle (0.2,0.2); \\
+\py{3} & \tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2); \\
+\py{4} & \tikz\fill[orange] (0,0) rectangle (0.2,0.2); \\
+\py{4} & \tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);
+\end{bmatrix}
+\begin{bmatrix}
+\tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[green, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[brown, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[black, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=brown, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\end{bmatrix}
+\quad
+\xrightarrow{\hspace{0.25cm}\py{cat}\hspace{0.25cm}}
+\quad
+\begin{bmatrix}
+\tikz\fill[green] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[red] (0,0) rectangle (0.2,0.2);& \tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[green, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[green] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[red] (0,0) rectangle (0.2,0.2);& \tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange] (0,0) rectangle (0.2,0.2);& \tikz\fill[brown, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange] (0,0) rectangle (0.2,0.2);& \tikz\fill[black, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange] (0,0) rectangle (0.2,0.2);& \tikz\fill[fill=brown, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2); & \tikz\fill[fill=blue!50, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\
+\end{bmatrix}
+\quad
+\xrightarrow{\hspace{0.25cm}\py{unique}\hspace{0.25cm}}
+\quad
+\begin{bmatrix}
+\tikz\fill[green] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[red] (0,0) rectangle (0.2,0.2);& \tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[green, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange] (0,0) rectangle (0.2,0.2);& \tikz\fill[brown, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[red, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[orange] (0,0) rectangle (0.2,0.2);& \tikz\fill[black, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2);& \tikz\fill[orange, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\ 
+\tikz\fill[fill=blue!50] (0,0) rectangle (0.2,0.2); & \tikz\fill[fill=blue!50, rounded corners=2pt]               (0,0) rectangle (0.2,0.2); \\
+\end{bmatrix}
+\quad
+\xrightarrow{\hspace{0.25cm}\py{sum}\hspace{0.25cm}}
+\quad
+\begin{bmatrix}
+\tikz\fill[red] (0,0) circle (0.1); \\ 
+\tikz\fill[green] (0,0) circle (0.1);  \\ 
+\tikz\fill[fill=blue!50] (0,0) circle (0.1);  \\ 
+\tikz\fill[fill=blue!50] (0,0) circle (0.1); \\ 
+\tikz\fill[orange] (0,0) circle (0.1); \\ 
+\tikz\fill[fill=blue!50] (0,0) circle (0.1);  \\ 
+\tikz\fill[orange] (0,0) circle (0.1); \\ 
+\tikz\fill[fill=blue!50] (0,0) circle (0.1); \\ 
+\tikz\fill[fill=blue!50] (0,0) circle (0.1);  \\
+\end{bmatrix}
+\quad
+\xrightarrow{\hspace{0.25cm}\py{unique}\hspace{0.25cm}}
+\quad
+\begin{bmatrix}
+\tikz\fill[red] (0,0) circle (0.1); \\ 
+\tikz\fill[green] (0,0) circle (0.1);  \\ 
+\tikz\fill[fill=blue!50] (0,0) circle (0.1);  \\ 
+\tikz\fill[orange] (0,0) circle (0.1); \\ 
+\end{bmatrix}
+\]
+  \caption{An illustration of between-hand updates for \py{t\_fgm}.}
+  \label{fig01:bethand}
+\end{figure}
+
+% \qquad
+% \xrightarrow{\hspace{1cm}}
+% \qquad

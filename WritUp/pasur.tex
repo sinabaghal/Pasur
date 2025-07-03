@@ -1,0 +1,85 @@
+
+% Pasur is a traditional card game and requires a standard 52-card deck (no jokers) and is played by 2 to 4 players. In this paper, we focus on the two-player version, with players referred to as \textbf{Alex} and \textbf{Bob} along with the \textbf{Dealer}.
+
+% The game begins with four cards placed face-up on the table to form the initial pool. The initial pool must not contain any Jacks. If a Jack appears among the initial four cards, it is returned to the deck and replaced. If multiple Jacks appear or a replacement is also a Jack, the dealer reshuffles and redeals.
+
+% Once the pool cards are valid and face-up, the dealer deals four cards to each player, starting from the player on their left (assumed to be Alex). The players then take turns, starting with Alex. On each turn, a player must play one card from their hand. The played card will either:
+
+% \begin{itemize}
+%     \item Be added to the pool of face-up cards, or
+%     \item Capture one or more cards from the pool.
+% \end{itemize}
+
+% If capturing is possible, the player \emph{must} capture; they may not simply add a card to the pool. Captured cards are used to calculate the players' scores at the end of the game. Table~\ref{tab:score} shows the scoring system used in Pasur. Notably, a \textbf{Sur}—which is defined below—awards 5 bonus points.
+
+% A \textbf{Sur} occurs when a player captures all the cards from the pool in a single move. However, there are two exceptions:
+% \begin{itemize}
+%     \item A Sur is not possible using a Jack.
+%     \item Surs cannot be scored during the final round of play.
+% \end{itemize}
+
+% \begin{table}[h!]
+% \centering
+% \begin{tabular}{|c|c|}
+% \hline
+% \textbf{Rule} & \textbf{Points} \\
+% \hline
+% Most Clubs & 7 \\
+% Each Jack & 1 \\
+% Each Ace & 1 \\
+% Each \;Sur & 5 \\
+% 10{\color{red}\ding{117}}& 3 \\
+% 2{\ding{168}}& 2 \\
+% \hline
+% \end{tabular}
+% \caption{Pasur Scoring System}
+% \label{tab:score}
+% \end{table}
+% \subsubsection{A Gamplay Example}
+
+
+% \input{figs/game}
+
+Pasur is a traditional card game played with a standard 52-card deck (excluding jokers), and it supports 2 to 4 players. In this paper, we focus on the two-player variant, where the players are referred to as \textbf{Alex} and \textbf{Bob}, along with a \textbf{Dealer} who manages the game.
+
+The game begins with four cards placed face-up on the table to form the initial pool. This pool must not contain any Jacks. If a Jack appears among the initial four cards, it is returned to the deck and replaced. If multiple Jacks are dealt, or if a replacement card is also a Jack, the dealer reshuffles and redeals.
+
+Once the pool is valid and face-up, the dealer deals four cards to each player, starting with the player on their left (assumed to be Alex). Players then take turns beginning with Alex. On each turn, a player must play one card from their hand. The played card will either:
+
+\begin{itemize}
+    \item Be added to the pool of face-up cards, or
+    \item Capture one or more cards from the pool, following these rules:
+    \begin{itemize}
+        \item A numeric card can capture a combination of numeric cards from the pool if their total sum equals 11.
+        \item A Queen can only capture another single Queen. The same rule applies to Kings.
+        \item A Jack captures all cards in the pool (including other Jacks), except for Kings and Queens.
+    \end{itemize}
+\end{itemize}
+
+If a capture is possible, the player \emph{must} capture; they cannot simply add a card to the pool. Captured cards are retained and used to calculate each player’s score at the end of the game. Table~\ref{tab:score} outlines the scoring system used in Pasur. Notably, a \textbf{Sur}—defined below—grants a 5-point bonus.
+
+A \textbf{Sur} occurs when a player captures all the cards from the pool in a single move. There are two important exceptions:
+\begin{itemize}
+    \item A Sur cannot be made using a Jack.
+    \item Surs are not permitted during the final round of play.
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Rule} & \textbf{Points} \\
+\hline
+Most Clubs & 7 \\
+Each Jack & 1 \\
+Each Ace & 1 \\
+Each \;Sur & 5 \\
+10{\color{red}\ding{117}} & 3 \\
+2{\ding{168}} & 2 \\
+\hline
+\end{tabular}
+\caption{Pasur Scoring System}
+\label{tab:score}
+\end{table}
+
+\input{figs/game}

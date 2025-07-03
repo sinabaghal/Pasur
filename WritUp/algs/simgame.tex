@@ -1,0 +1,36 @@
+
+\begin{algorithm}
+\caption{SimulateGameRun}
+\label{alg:your_algorithm}
+\begin{algorithmic}[1]
+\State Initialize \py{t\_dck,t\_inf,t\_sid,t\_scr,t\_m52,t\_mdd, V\_ann,V\_bnn,M\_snn}
+
+\Statex \textcolor{green!50!black}{\scriptsize\# 
+$\gets$ \py{random deck, zeros(1,3,4), zeros(1,2), zeros(1,4), zerbo(52), zerbo(52),3*zeros nn }}
+\State \py{t\_m52[t\_dck[:4]] $\gets$ True}, \py{t\_inf[0,0,:] $\gets$ 3, t\_dck $\gets$ t\_dck[4:]}
+\Statex \textcolor{green!50!black}{\scriptsize\#
+\py{deal pool cards}}
+\vspace{0.2em}
+\State\py{for i\_rnd in range(6):}
+\vspace{0.5em}
+\State \hspace*{1em}\py{t\_inf, t\_dck,t\_m52,t\_mdd $\gets$ DealandUpdate()}
+\Statex \hspace*{1em}\textcolor{green!50!black}{\scriptsize\# \py{DealandUpdate(t\_dck,t\_inf,t\_m52,t\_mdd)}}
+\vspace{0.2em}
+\State \hspace*{1em}\py{c\_snw $\gets$ zeros(i\_inf,8), c\_scr $\gets$ v\_count(t\_sid[:,0])}
+\vspace{0.2em}
+\State \hspace*{1em}\py{for i\_trn in range(4):}
+\State \hspace*{2em}\py{for i\_ply in range(2):}
+\vspace{0.5em}
+\Statex \hspace*{3em}\textcolor{green!50!black}{\scriptsize\# \py{update c\_scr after StrategyEvalStep}}
+\State \hspace*{3em}\py{t\_inf,c\_scr,t\_snw,t\_sid,t\_edg} $\gets$\py{PlayStep()}
+\Statex \hspace*{3em}\textcolor{green!50!black}{\scriptsize\# \py{PlayStep(t\_inf,c\_scr,t\_snw,t\_sid)}}
+\State \hspace*{3em}\py{t\_sig,t\_nn} $\gets$ \py{StrategyEvalStep()}
+\Statex \hspace*{3em}\textcolor{green!50!black}{\scriptsize\#\py{t\_inf[:,0,:][t\_inf[:,0,:]==i\_ply+1] = 0 \# hide info. NB: t\_inf from disk}}
+\Statex \hspace*{3em}\textcolor{green!50!black}{\scriptsize\#\py{StrategyEvalStep(t\_inf, t\_scr, t\_sid, t\_edg, V\_pnn)}}
+\vspace{0.2em}
+\State \hspace*{1em}\py{if i\_rnd == 5: t\_snw $\gets$ CleanUpPool()}
+\Statex \hspace*{1em}\textcolor{green!50!black}{\scriptsize\#\py{CleanUpPool(t\_inf,t\_snw)}}
+\State  \hspace*{1em}\py{t\_inf,t\_scr,c\_scr,t\_sid,t\_edg $\gets$ BetweenHands()}
+
+\end{algorithmic}
+\end{algorithm}

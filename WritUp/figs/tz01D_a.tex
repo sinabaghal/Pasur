@@ -1,0 +1,71 @@
+% \documentclass{article}
+% \usepackage{tikz}
+% \usetikzlibrary{patterns, decorations.pathmorphing, arrows.meta}
+% \newcommand{\pyvar}[1]{\texttt{#1}}
+% \usepackage{graphicx,scalerel}
+% \usepackage{adjustbox}
+% \usetikzlibrary{calc}
+% \input{cardscommands}
+% \begin{document}
+% SUITS = ['♣', '♦', '♥', '♠'] 
+\begin{figure}[h]
+    \centering
+\begin{tikzpicture}
+    % Define grid dimensions
+    \def\n{1} % N = 5 rows
+    \def\m{20} % M = 5 columns
+    \def\cellsize{0.7} % Size of each cell
+
+    % Draw the grid
+    \foreach \i in {0,...,\n} {
+        \draw[lightgray] (0,\i*\cellsize) -- (\m*\cellsize,\i*\cellsize); % Horizontal lines
+    }
+    % \foreach \j in {0,...,\m} {
+    %     \draw[lightgray] (\j*\cellsize,0) -- (\j*\cellsize,\n*\cellsize); % Vertical lines
+    % }
+
+    Place dots in the middle row (row 3, columns 2, 3, and 4)
+    \foreach \j in {0,1,2} {
+        \fill[black] ({(1-\j)/2+\m*\cellsize/2}, 0.5*\cellsize) circle (0.03); % Dots
+    }
+
+    \foreach \j in {0,...,\m} {
+        \ifnum\j<7 % Check if j < 10
+            \draw[lightgray] (\j*\cellsize,0) -- (\j*\cellsize,\n*\cellsize); % Draw line
+        \else
+            \ifnum\j>13 % Check if j > 20
+                \draw[lightgray] (\j*\cellsize,0) -- (\j*\cellsize,\n*\cellsize); % Draw line
+            \fi
+        \fi
+        }
+
+    % Draw the outer rectangle
+    \draw[black] (0,0) rectangle (\m*\cellsize, \n*\cellsize);
+
+    % Add the shape label below the grid
+    % \node[below] at ({\m/2*\cellsize}, 4.5*\cellsize) {\pyvar{t\_z[:,0,:]}};
+
+    % \draw[->, thin, decorate, decoration={coil, segment length=7mm, amplitude=2mm}] 
+    %     ({(\m-2)*\cellsize+0.1}, \n*\cellsize+0.1) -- ++(2,1) % Arrow starts at (5,5) and extends 2 units right
+    %     node[above, right, align=left] {\small A card has \\ \;$\cdot$ a rank\\ \;$\cdot$ a suit}; % Text at the end of the arrow
+
+    \node at (0.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\AC$};
+    \node at (1.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\AD$};
+    \node at (2.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\AH$};
+    \node at (3.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\AS$};
+    \node at (4.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\TwC$};
+    \node at (5.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\TwD$};
+
+    \node at (14.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\QH$};
+    \node at (15.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\QS$};
+    \node at (16.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\KC$};
+    \node at (17.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\KD$};
+    \node at (18.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\KH$};
+    \node at (19.5*\cellsize, \n*\cellsize-0.4*\cellsize) {\small $\KS$};
+
+    
+\end{tikzpicture}
+\caption{Mapping Cards to Indices}
+\label{fig:deck}
+\end{figure}
+% \end{document}

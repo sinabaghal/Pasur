@@ -1,0 +1,23 @@
+% \floatname{algorithm}{CodeSnippet}
+\begin{algorithm}
+\caption{ApplyActions}
+\label{alg:applyactions}
+\begin{algorithmic}[1]
+\State Input \py{t\_gme, t\_act, i\_ply, i\_trn}
+\Statex \textcolor{green!50!black}{\scriptsize \# \py{t\_act.shape[0] = t\_gme.shape[0]} after expansion \py{t\_gme} $\gets$ \py{t\_gme} $\otimes$ \py{t\_brf}}
+\State \py{t\_mpk} $\gets$ \py{any(t\_act[:,1,:], dim=1)}
+\Statex \textcolor{green!50!black}{\scriptsize \# Whether a pick action occurs}
+
+\State \py{t\_gme[t\_mpk,0,:]+=(2-i\_ply)*t\_act[t\_mpk,0,:]}
+\Statex \textcolor{green!50!black}{\scriptsize \# Add lay card to pool (only if no pick)}
+
+\State \py{t\_gme[t\_mpk,0,:]-=(1+i\_ply)*t\_act[t\_mpk,0,:]}
+\Statex \textcolor{green!50!black}{\scriptsize \# Remove lay card from player's hand}
+
+\State \py{t\_gme[t\_mpk,0,:]-=3*t\_act[t\_mpk,1,:]}
+\Statex \textcolor{green!50!black}{\scriptsize \# Remove picked cards from the pool}
+
+\State \py{t\_gme[:,i\_ply+1,:]+=(i\_trn+1)*t\_act[:,0,:]+10*(i\_trn+1)*t\_act[:,1,:]}
+\Statex \textcolor{green!50!black}{\scriptsize \# Update player record: lay (weighted by i\_trn+1) + pick (weighted by 10 × i\_trn+1)}
+\end{algorithmic}
+\end{algorithm}

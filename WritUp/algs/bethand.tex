@@ -1,0 +1,16 @@
+\begin{algorithm}
+\caption{BetweenHands}
+\label{alg:bethand}
+\begin{algorithmic}[1]
+\State Input \py{t\_inf,t\_sid,t\_scr,t\_dck}
+\State \py{t\_inf, t\_lnk = unique\_con(t\_inf,dim=0)} 
+\State \py{t\_snw, t\_wid = unique\_con(t\_snw,dim=0)} 
+\State \py{t\_prs} $\gets$ \py{cat([t\_sid[:,1],t\_wid[t\_sid[:,0]]])}
+\State \py{t\_prs, t\_pid} $\gets$ \py{unique\_con(t\_prs,dim=0)}
+\State \py{t\_scr} $\gets$ \py{t\_scr[t\_prs[:,0]]+t\_snw[t\_prs[:,1]]}
+\State \py{t\_scr,t\_fid} $\gets$ \py{unique\_con(t\_scr,dim=0)}
+\State \py{t\_sid[:,1]} $\gets$ \py{t\_fid[t\_pid]}
+\State \py{t\_sid[:,0]} $\gets$ \py{t\_lnk[t\_sid[:,0]]}
+\State \py{t\_sid} $\gets$ \py{unique(t\_sid)}
+\end{algorithmic}
+\end{algorithm}

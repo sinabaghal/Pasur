@@ -1,0 +1,31 @@
+CFR is an iterative algorithm that converges to a Nash equilibrium in any finite two-player zero-sum game with a theoretical convergence bound of \( O\left( \sqrt{\frac{1}{T}} \right) \). 
+At the heart of CFR lies the concept of \textit{regret}. For a strategy profile $\sigma$, \textit{instantaneous regret} of playing $a$ vs. $\sigma$ at $I$ is denoted by 
+\begin{equation}\label{eq:reg}
+    r(I,a) := u^{\sigma}(I,a)-u^{\sigma}(I)
+\end{equation}
+In CFR, a \textit{regret matching} (RM) is performed at each iteration. According to RM, at iteration $T$, $\sigma^{T+1}_p(I)$  is determined using regrets \eqref{eq:reg} accumulated up to time $T$. Formally, 
+\begin{equation}\label{eq:RM}
+    \sigma^{T+1}_p(I) \propto R^T_+(I,a):= \left(\sum_{t=1}^T r^t(I,a)\right)_+
+\end{equation}
+$R^T_+(I,a)$ is called \textit{counterfactual regret} for infoset $I$ action $a$. Under update rule \eqref{eq:RM}, average strategy is then defined as follows
+\begin{equation}\label{eq:avsigma}
+\bar{\sigma}_i^T(I)(a) \propto \sum_{t=1}^{T} \pi_i^{\sigma^t}(I) \, \sigma^t(I)(a).
+\end{equation}
+The following two well-established results show that under RM \eqref{eq:RM}, the average strategy \eqref{eq:avsigma} converges to a Nash equilibrium in zero-sum two-player games. 
+\begin{theorem}\label{thm:avst}
+    In a zero-sum game, average strategy \eqref{eq:avsigma} is a $2\epsilon$-Nash equilibrium provided that the total regret which is defined below is less than $\epsilon$ for $p\in \{0,1\}$.
+    \[R^T_p:=\max_{\sigma'_p}\frac{1}{T}\sum_{t=1}^T\left(u_p(\sigma'_p,\sigma_{-p}^t)-u_p(\sigma_p^t,\sigma^t_{-p})\right)\]
+\end{theorem}
+The following theorem states that $R_p^T \to 0$ as $T\to +\infty$ under RM \eqref{eq:RM}.
+\begin{theorem}[Theorem 3,4, \cite{zinkevich2007regret}]\label{thm:rm}
+    Under RM \eqref{eq:RM}, the following bound holds 
+    \[
+    R_p^T = \mathcal{O}\left(\frac{1}{\sqrt{T}}\right).
+    \]
+    Moreover, total regret is lower bounded by counterfactual regrets defined in \eqref{eq:RM}.
+\end{theorem}
+
+In this paper, we also use a variant of CFR known as CFR$^+$~\cite{tammelin2014solving}, which differs from vanilla CFR only in the way it updates counterfactual regrets. These regrets, initialized at zero, are updated according to the following rule:
+\begin{equation}
+R^{+,T}(I, a) = \left( R^{+,T-1}(I, a) + u^{\sigma^T}(I, a) - u^{\sigma^T}(I) \right)^+
+\end{equation}

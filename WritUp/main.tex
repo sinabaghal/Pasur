@@ -1,0 +1,34 @@
+\documentclass{article}
+\input{commands}
+
+
+   
+\title{Solving Pasur Using GPU-Accelerated CFR}
+\begin{document}
+\maketitle
+\tableofcontents
+\section{Introduction}
+\section{Notation and Background}
+\input{notation}
+\subsection{Counterfactual Regret Minimization (CFR)}
+\input{cfr}
+\subsection{Pasur}
+\input{pasur}
+% \section{Deep Counterfactual Regret Minimization}
+\section{PyTorch-Based Framework}
+\input{pytorch}
+% \input{figs/process}
+\input{inhand}
+
+
+\subsection{Algorithms}
+\input{algorithms}
+\input{algs/bethand}
+\newpage
+\subsection{External Sampling}
+\input{exsampling}
+\section{Tree-Based Fitting of Game Strategies}\label{sec:tree}
+\section{ Experimental Results}\label{sec:Experimental}
+\bibliographystyle{plain}
+\bibliography{bib} 
+\end{document}

@@ -1,0 +1,112 @@
+%%%%%%% START OF USEPACKAGE %%%%%%%%
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pifont}
+\usepackage{bm}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{wrapfig}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+\usepackage{amssymb}  % For card symbols
+% \documentclass[a4paper, 12pt]{article}
+% \usepackage[margin=1in]{geometry}
+% \usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{graphicx} % For \resizebox
+\input{cardscommands}
+\usepackage{xcolor}
+% \usepackage{amssymb}
+\usepackage{caption}
+\usepackage{colortbl}
+\usepackage{float} % for [H] placement, optional
+\definecolor{myrowcolor}{HTML}{CCFFCC}  
+% \usepackage[backend=bibtex]{biblatex}  % If using biblatex (more modern)
+\newtheorem{theorem}{Theorem}
+\usepackage{geometry}
+
+% Configuring page margins to increase text width
+\geometry{
+  left=1.5in,
+  right=1.5in,
+  top=1in,
+  bottom=1in
+}
+
+
+%%%%%%% END OF USEPACKAGE %%%%%%%%
+\setlength{\parskip}{0.5em}
+\newcommand{\py}[1]{\texttt{#1}}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathmorphing}
+\tikzset{
+  midarrow/.style={
+    decoration={markings, mark=at position 0.5 with {\arrow{>}}},
+    postaction={decorate}
+  }
+}
+
+\newcommand{\drawsmallboxwitharrows}[6]{%
+    % Assume we are inside a tikzpicture already
+    \begin{scope}[shift={(#5)}]
+      % Draw the box with fill color
+      \node[draw, fill=#6, minimum width=.1cm, minimum height=.1cm] (box) at (#1,0) {#4};
+      
+      % Draw the arrows
+      \foreach \col/\x in {#2} {
+        \draw[\col, thick, midarrow] 
+          (#1+\x,0.7+\x/2) 
+          to[out=270,in=90] 
+          (box.north);
+      }
+    \end{scope}
+}
+\newcommand{\drawboxwitharrows}[6]{%
+    % Assume we are inside a tikzpicture already
+    \begin{scope}[shift={(#5)}]
+      % Draw the box with fill color
+      \node[draw, fill=#6, minimum width=.5cm, minimum height=.5cm] (box) at (#1,0) {#4};
+      
+      % Draw the arrows
+      \foreach \col/\x in {#2} {
+        \draw[\col, thick, midarrow] 
+          (#1+\x,0.7+\x/2) 
+          to[out=270,in=90] 
+          (box.north);
+      }
+    \end{scope}
+}
+
+
+
+\tikzset{
+  midarrow/.style={
+    decoration={markings, mark=at position 0.5 with {\arrow{>}}},
+    postaction={decorate}
+  }
+}
+
+\usetikzlibrary{patterns} 
+
+% \input{cardscommands}
+% \newcommand{\drawboxwitharrows}[6]{%
+%     % Assume we are inside a tikzpicture already
+%     \begin{scope}[shift={(#5)}]
+%       % Draw the box
+%       \node[draw, minimum width=.5cm, minimum height=.5cm] (box) at (#1,0) {#4};
+      
+%       % Draw the arrows
+%       \foreach \col/\x in {#2} {
+%         \draw[\col, thick, midarrow] 
+%           (#1+\x,0.7+\x/2) 
+%           to[out=270,in=90] 
+%           (box.north);
+%       }
+%     \end{scope}
+% }

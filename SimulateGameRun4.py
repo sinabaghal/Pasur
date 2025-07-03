@@ -28,16 +28,16 @@ def get_col(i):
 
 
 
-def get_prq(t_mdl, t_sid, t_scr, t_m52, i_hnd,i_trn,i_ply):
+def get_prq(t_cmp, t_fgm, t_scr, t_m52, i_hnd,i_trn,i_ply):
 
     
     t_tmp = torch.cat([t_m52,torch.tensor([False, False,False, False,False,False,False,False])])
     # t_scr = t_scr[:,[0,1,3]].clone()
 
-    t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8)
-    t_prq[:,t_tmp]       = t_mdl[t_sid[:,0]]
+    t_prq = torch.zeros((t_fgm.shape[0], 60), dtype=torch.int8)
+    t_prq[:,t_tmp]       = t_cmp[t_fgm[:,0]]
     # t_prq[:,52]          = t_prq[:,52].astype("int32")
-    t_prq[:,53:56]       = t_scr[t_sid[:,1]][:,[0,1,3]] #53,54,55
+    t_prq[:,53:56]       = t_scr[t_fgm[:,1]][:,[0,1,3]] #53,54,55
     t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8) #56,57,58
     t_prq                = t_prq.cpu()
     data = {get_col(i): t_prq[:, i] for i in range(t_prq.shape[1])}
@@ -73,8 +73,8 @@ def simulategamerun(t_stk):
  
     t_dck   = t_stk.clone()
     d_fls = {}
-    t_scrs, t_mdls, t_sids, t_m52s = {}, {}, {}, {}
-    # t_scrs, t_infs, t_sids, t_m52s = {}, {}, {}, {}
+    t_scrs, t_cmps, t_fgms, t_m52s = {}, {}, {}, {}
+    # t_scrs, t_infs, t_fgms, t_m52s = {}, {}, {}, {}
     # t_nns   = {}
 
     t_m52 = torch.tensor([True if i in t_stk[:4] else False for i in range(52)], device=device)
@@ -86,7 +86,7 @@ def simulategamerun(t_stk):
     t_stk   = t_stk[4:]
 
     t_scr   = torch.zeros((1,len(d_scr)), device=device,dtype=INT8)
-    t_sid   = torch.zeros((1,2), device=device,dtype=torch.int32)
+    t_fgm   = torch.zeros((1,2), device=device,dtype=torch.int32)
     # dfs    = {}
     for i_hnd in i_hnds:
         torch.cuda.empty_cache()
@@ -101,7 +101,7 @@ def simulategamerun(t_stk):
 
 
         torch.cuda.empty_cache()
-        _, c_scr = torch.unique(t_sid[:,0],dim=0,return_counts=True)
+        _, c_scr = torch.unique(t_fgm[:,0],dim=0,return_counts=True)
 
         d_msk = get_d_mask(t_m52, t_stk[:8])
         t_stk = t_stk[8:]
@@ -124,29 +124,32 @@ def simulategamerun(t_stk):
 
 
                 i_cod         = f'{i_hnd}_{i_trn}_{i_ply}'
-                i_sid = t_sid.shape[0]
-                t_act, c_act  = find_moves(t_inf,i_ply, d_msk, d_pad) 
+                i_sid = t_fgm.shape[0]
+                t_act, t_brf  = find_moves(t_inf,i_ply, d_msk, d_pad) 
 
-                t_inf         = torch.repeat_interleave(t_inf, c_act, dim=0)
+                t_inf         = torch.repeat_interleave(t_inf, t_brf, dim=0)
                 # if i_hnd == 5: import pdb; pdb.set_trace()
-                t_snw         = torch.repeat_interleave(t_snw, c_act, dim=0)
+                t_snw         = torch.repeat_interleave(t_snw, t_brf, dim=0)
 
                 t_inf, t_snw  = apply_moves(t_inf, t_act, t_snw, d_msk,  i_hnd, i_ply, i_trn)
                 
                 
-                t_cl1         = repeatedblocks(t_sid[:,1], c_scr, c_act)
-                t_edg         = repeatedblocks(torch.arange(t_sid.shape[0], device=device),c_scr,c_act)
-                c_edg         = c_act.repeat_interleave(c_scr)
-                c_scr         = torch.repeat_interleave(c_scr, c_act, dim=0)
+                t_cl1         = repeatedblocks(t_fgm[:,1], c_scr, t_brf)
+                t_edg         = repeatedblocks(torch.arange(t_fgm.shape[0], device=device),c_scr,t_brf)
+                c_edg         = t_brf.repeat_interleave(c_scr)
+                c_scr         = torch.repeat_interleave(c_scr, t_brf, dim=0)
                 t_cl0         = torch.repeat_interleave(torch.arange(t_inf.shape[0],device=device), c_scr)
-                t_sid         = torch.stack([t_cl0,t_cl1], dim=1)
+                t_fgm         = torch.stack([t_cl0,t_cl1], dim=1)
 
 
                 ## CONSTRUCT INFOSET I 
                 
-                t_mdl         = t_inf[:,1,:]-t_inf[:,2,:]
-                t_mdl[torch.logical_and(t_inf[:,0,:]==3, t_mdl==0)] = 110 ### Card was already in the pool 
-                t_mdl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_mdl==0)] = 100  ### Player has the card
+                t_cmp         = t_inf[:,1,:]-t_inf[:,2,:]
+                t_lpm         = torch.logical_and(t_inf[:,0,:]==0, t_cmp!= 0)
+                t_cmp[t_lpm]  =  110+t_cmp[t_lpm]
+                t_cmp[torch.logical_and(t_inf[:,0,:]==3, t_cmp==0)] = 110 ### Card was already in the pool 
+                t_cmp[torch.logical_and(t_inf[:,0,:]==1, t_cmp==0)] = 100  ### Player has the card
+                t_cmp[torch.logical_and(t_inf[:,0,:]==2, t_cmp==0)] = 105  ### Player has the card
 
            
 
@@ -154,7 +157,7 @@ def simulategamerun(t_stk):
 
                 t_sgm = 1/torch.repeat_interleave(c_edg, c_edg)
 
-                # assert t_sgm.shape[0] == t_mdl.shape[0]
+                # assert t_sgm.shape[0] == t_cmp.shape[0]
 
                 d_fls[f'i_sid_{i_cod}'] = i_sid #TODO
                 # d_fls[f't_sgm_{i_cod}'] = torch.zeros_like(t_sgm, device=device).to(torch.float32)
@@ -162,14 +165,14 @@ def simulategamerun(t_stk):
                 d_fls[f't_edg_{i_cod}'] = t_edg.contiguous() #TODO
                 # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8)
                 d_fls[f'c_edg_{i_cod}'] = c_edg.contiguous()
-                # d_fls[f'c_act_{i_cod}'] = c_act
+                # d_fls[f't_brf_{i_cod}'] = t_brf
                 
-                t_mdls[i_cod]  = t_mdl.clone()
-                t_sids[i_cod]  = t_sid.clone()
-                # d_fls[f'i_sid_{i_cod}'] = t_sid.shape[0] #TODO
+                t_cmps[i_cod]  = t_cmp.clone()
+                t_fgms[i_cod]  = t_fgm.clone()
+                # d_fls[f'i_sid_{i_cod}'] = t_fgm.shape[0] #TODO
 
 
-                # t_nns[i_cod]  = t_mdl
+                # t_nns[i_cod]  = t_cmp
                 # t_infs[i_cod]  = t_inf
         
 
@@ -202,8 +205,8 @@ def simulategamerun(t_stk):
         d_fls[f't_lnf_{i_hnd}'] = t_lnk.contiguous()
         
         t_snw, t_wid = torch.unique(t_snw,dim=0, sorted=False, return_inverse=True) 
-        t_prs        = torch.stack([t_sid[:,1], t_wid[t_sid[:,0]]],dim=1)
-        t_sid[:,0]   = t_lnk[t_sid[:,0]]
+        t_prs        = torch.stack([t_fgm[:,1], t_wid[t_fgm[:,0]]],dim=1)
+        t_fgm[:,0]   = t_lnk[t_fgm[:,0]]
 
         t_prs,t_pid  = torch.unique(t_prs,dim=0,sorted=False,return_inverse=True)
         t_scr        = t_scr[t_prs[:,0]]+t_snw[t_prs[:,1]]
@@ -219,12 +222,12 @@ def simulategamerun(t_stk):
 
         t_scr, t_fid  = torch.unique(t_scr, dim=0,sorted=False,return_inverse=True)
         
-        t_sid[:,1]   = t_fid[t_pid]
-        t_sid, t_lnk = torch.unique(t_sid,dim=0,return_inverse=True)
+        t_fgm[:,1]   = t_fid[t_pid]
+        t_fgm, t_lnk = torch.unique(t_fgm,dim=0,return_inverse=True)
 
         # if saving:  to_zstd([t_lnk], ['t_lnk'], folder, i_hnd) 
         d_fls[f't_lnk_{i_hnd}'] = t_lnk
-        d_fls[f't_sid_{i_hnd}'] = t_sid.shape[0]
+        d_fls[f't_fgm_{i_hnd}'] = t_fgm.shape[0]
         
         t_c52        = t_m52.clone()
         t_m52[t_c52] = torch.any(t_inf>0, dim=0)
@@ -238,9 +241,9 @@ def simulategamerun(t_stk):
         else:
             t_inf = F.pad(t_inf, (0, 0, 0, 2))
 
-    d_fls['t_scr_6'], d_fls['t_sid_6'] = t_scr.contiguous(), t_sid.contiguous() #TODO
+    d_fls['t_scr_6'], d_fls['t_fgm_6'] = t_scr.contiguous(), t_fgm.contiguous() #TODO
     
-    return d_fls, t_mdls, t_sids, t_scrs, t_m52s
+    return d_fls, t_cmps, t_fgms, t_scrs, t_m52s
 
 def find_reach_probs(d_fls, tr_sgm, i_cfr):
 
@@ -261,7 +264,7 @@ def find_reach_probs(d_fls, tr_sgm, i_cfr):
     
 
         t_lnk = d_fls[f't_lnk_{i_hnd}']  
-        t_sum = torch.zeros(d_fls[f't_sid_{i_hnd}'], dtype = torch.float64, device=device)  
+        t_sum = torch.zeros(d_fls[f't_fgm_{i_hnd}'], dtype = torch.float64, device=device)  
         t_sum.scatter_add_(dim=0, index=t_lnk, src=t_rpr)
         # t_rpr = 100*t_rpr
         # t_rpr = t_sum / t_sum.sum()
@@ -272,9 +275,9 @@ def find_reach_probs(d_fls, tr_sgm, i_cfr):
 
 def find_futl(d_fls):
 
-    t_scr, t_sid = d_fls['t_scr_6'], d_fls['t_sid_6']
+    t_scr, t_fgm = d_fls['t_scr_6'], d_fls['t_fgm_6']
     t_fsc  = 7*(2*(t_scr[:,-1] % 2)-1)
-    t_sev  = t_fsc[t_sid[:,1]].to(torch.float32)
+    t_sev  = t_fsc[t_fgm[:,1]].to(torch.float32)
     t_lnk  = d_fls[f't_lnk_5'] 
     t_snw  = d_fls[f't_snw_5']
     t_futl  = t_sev[t_lnk] + t_snw[t_lnk]
@@ -370,10 +373,10 @@ if __name__ == "__main__":
     
     t_dks = torch.load(f"decks_10000.pt")
     i_dck = 9
-    alg = 'cfr+'
-    i_iter = 1000
+    alg = 'cfr'
+    i_iter = 10000
     t_dck = t_dks[i_dck,:].to(device)
-    d_fls, t_mdls, t_sids, t_scrs, t_m52s  = simulategamerun(t_dck.clone())
+    d_fls, t_cmps, t_fgms, t_scrs, t_m52s  = simulategamerun(t_dck.clone())
     l_smp  = []
     tr_sgm = {f't_sgm_{i_cod}': d_fls[f't_sgm_{i_cod}'].to(torch.float64) for i_cod in i_cods}
     tf_sgms  = {f't_sgm_{i_cod}': d_fls[f't_sgm_{i_cod}'].to(torch.float64) for i_cod in i_cods}
@@ -386,7 +389,7 @@ if __name__ == "__main__":
         t_utl  = t_futl.to(torch.float64)
         d0_rpr = find_reach_probs(d_fls, tr_sgm, 0)
         d1_rpr = find_reach_probs(d_fls, tr_sgm, 1)
-        b_flg = i_cnt > i_iter/10
+        b_flg = i_cnt > i_iter/2
         for i_hnd in reversed(range(6)):
             
             t_utl, tf_sgms,  tr_sgm = find_utl(i_hnd, t_utl,  b_flg, d_fls, tr_sgm, tf_sgms, d0_rpr, d1_rpr, alg)
@@ -427,12 +430,12 @@ if __name__ == "__main__":
                 # if i_cod.split('_')[0] != '5': continue ### LAST 
 
                 t_sgm = t_sgms[i_cod]
-                t_mdl = t_mdls[i_cod] 
-                t_sid = t_sids[i_cod] 
+                t_cmp = t_cmps[i_cod] 
+                t_fgm = t_fgms[i_cod] 
                 
-                t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8, device=device)
-                t_prq[:,t_m52]       = t_mdl[t_sid[:,0]]
-                t_prq[:,53:56]       = t_scr[t_sid[:,1]] #53,54,55
+                t_prq = torch.zeros((t_fgm.shape[0], 60), dtype=torch.int8, device=device)
+                t_prq[:,t_m52]       = t_cmp[t_fgm[:,0]]
+                t_prq[:,53:56]       = t_scr[t_fgm[:,1]] #53,54,55
                 t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device) #56,57,58
 
                 t_prq[torch.logical_and(F.pad(t_nnd, (0, 8))==1, t_prq==0)] = -127

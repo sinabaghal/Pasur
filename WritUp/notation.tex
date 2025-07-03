@@ -1,0 +1,24 @@
+
+In \textit{Imperfect-Information Extensive-Form Games} there is a finite set of players ($\mathcal{P}$). A \textit{node} $h$ at time $T$ is defined by all the information revealed at a , particularly the actions taken by players $\mathcal{P}$. \textit{Terminal nodes}, denoted by $\mathcal{Z}$, are defined as those nodes where no further action is available. For each player $u_p\in \mathcal{P}$, there is a payoff function $p:\mathcal{Z}\to \mathbb{R}$. In this paper, we focus on the \textit{zero-sum} two-player setting \textit{i.e.,}  $\mathcal{P}=\{0,1\}$ and $u_0=-u_1$. 
+
+Imperfect information is represented by \textit{information sets}
+(infosets) for each player $p\in \mathcal{P}$. It is emphasized that at player $p$'s turn at infoset $I$, all nodes $h,h'\in I$ are identical from $p$'s perspective. In this situation, we say infoset $I$ belongs to $p$ and we denote the set of all such infosets by $\mathcal{I}_p$. Actions available at infoset $I$ are also denoted by $A(I)$. A \textit{strategy} $\sigma_p(I):A(I)\to \mathbb{R}^{\geq 0}$ is a distribution over actions in $A(I)$. The strategy of other players is denoted by $\sigma_{-p}$. We denote by $u_p(\sigma_p,\sigma_{-p})$ the expected payoff for $p$ if players' actions are governed by strategy profile $\sigma:=\{\sigma_p\}_{p\in \mathcal{P}}$. 
+
+\textit{Reach probability} $\pi^{\sigma}(h)$ is defined as the probability of arriving at node $h$, if all players play according to $\sigma$. For $h\in A(I)$ and $I\in \mathcal{I}_p$, we denote by $\pi^{\sigma}_{-p}(h)$ the probability of arriving at $h$ in the event where $p$ chooses to reach $h$ and other players follow $\sigma$. Define $\pi^{\sigma}_p(I):=\sum_{h\in I} \pi^{\sigma}_p(h)$ and $\pi^{\sigma}_{-p}(I):=\sum_{h\in I} \pi^{\sigma}_{-p}(h)$. \textit{Counterfactual utility} at infoset $I\in \mathcal{I}_p$ is defined as 
+\begin{equation}\label{eq:cfutl}
+    u^{\sigma}(I) := \sum_{h\in I, h'\in \mathcal{Z}}  \pi^{\sigma}_{-p}(h)\pi^{\sigma}(h,h')u_i(h')
+\end{equation}
+Similarly, counterfactual utility for $a\in A(I)$, $u^{\sigma}(I,a)$ is defined as in \eqref{eq:cfutl}, except that $p$ chooses $a$ with probability 1 once it reaches $I$. Formally, if $h.a$ denotes the node wherein action $a$ is chosen at node $h$, then 
+\begin{equation}\label{eq:cfutl}
+    u^{\sigma}(I,a) := \sum_{h\in I, h'\in \mathcal{Z}}  \pi^{\sigma}_{-p}(h)\pi^{\sigma}(h.a,h')u_i(h')
+\end{equation}
+Finally, in a two-player extensive game a \textit{Nash equilibrium} \cite{nash1950equilibrium} is a strategy profile $\boldsymbol{\sigma}^*$ for which the following holds
+\[
+u_p(\sigma^*_p,\sigma^*_{-p}) = \max_{\sigma'_p}u_p(\sigma'_p, \sigma^*_{-p}).
+\]
+In other words, $\sigma_p$ is the \textit{best response} to $\sigma_{-p}$ for each $p\in \mathcal{P}$. An $\epsilon$-Nash equilibrium (in a two-player game, for example) is also defined as 
+\[
+u_p(\sigma^*_p,\sigma^*_{-p}) +\epsilon \geq \max_{\sigma'_p}  u_p(\sigma'_p, \sigma^*_{-p}), \quad \forall p\in \{0,1\}.
+\]
+We are now ready to provide an overview of CFR next; for a complete discussion, see Zinkevich et al.\ (2007). 
+

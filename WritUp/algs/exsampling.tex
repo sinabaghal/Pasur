@@ -1,0 +1,47 @@
+\begin{algorithm}
+\caption{ExternalSampling}
+\label{alg:exsampling}
+\begin{algorithmic}[1]
+\State Input \py{t\_edg,c\_edg,t\_sgm}
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#t\_edg links lower to upper nodes, while c\_edg specifies the degree of each upper node. \#Ex: t\_edg = [0,1,2,0,1,2,3,4,3,4,3,4], c\_edg = c\_act$\otimes$c\_scr = [2,2,2,3,3]}}
+\State \py{t\_inv = stable\_argsort(t\_edg)} 
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#t\_inv = [0,3,1,4,2,5,6,8,10,7,9,11]}}
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#use t\_inv when sorting edges.1st green maps to index 0, 2nd green maps to index 3, etc}}
+\State \py{t\_idx = empty\_like(t\_inv)}
+\State \py{t\_idx[t\_inv] $\gets$ arange(len(t\_inv))}
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#t\_idx =[ 0,  2,  4,  1,  3,  5,  6,  9,  7, 10,  8, 11]}}
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#use t\_idx  when mapping back sorted edges}}
+\State \py{i\_max = c\_edg.max()}
+\State \py{t\_msk = arange(i\_max).unsqueeze(0) < c\_edg.unsqueeze(1)}
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#t\_msk = tensor([[ T,  T, F],
+        [ T,  T, F],
+        [ T,  T, F],
+        [ T,  T,  T],
+        [ T,  T,  T]])}}
+\State \py{t\_mtx = zeros\_like(t\_msk)}
+\State \py{t\_mtx[t\_msk]  $\gets$ t\_sgm[t\_inv]}
+\State \py{t\_smp = multinomial(t\_mtx).squeeze(1)}
+\Statex\textcolor{green!50!black}{\scriptsize\py{\#sampled indices for each row}}
+\State \py{t\_gps = cat([0, c\_edg.cumsum()[:-1]])}
+\State  \py{t\_res = zeros\_like(t\_sgm, dtype=bool)}
+\State \py{t\_res[t\_gps + t\_smp] $\gets$ True}
+\State \py{t\_res $\gets$ t\_res[t\_idx]}
+%     t_mtx         = torch.zeros_like(t_msk, 
+\end{algorithmic}
+\end{algorithm}
+
+% def extsampling(t_edg, c_edg, t_sgm):
+
+%     t_res         = torch.zeros_like(t_sgm, dtype=torch.bool, device=device)
+%     t_idx         = torch.argsort(t_edg)
+%     t_inv         = torch.empty_like(t_idx, device=device)
+%     t_inv[t_idx]  = torch.arange(len(t_idx),device=device)
+%     i_max         = c_edg.max()
+%     t_msk         = torch.arange(i_max, device=device).unsqueeze(0) < c_edg.unsqueeze(1)
+%     t_mtx         = torch.zeros_like(t_msk, dtype=t_sgm.dtype)
+%     t_mtx[t_msk]  = t_sgm[t_inv]
+%     t_smp         = torch.multinomial(t_mtx, num_samples=1).squeeze(1) 
+%     t_gps         = torch.cat([torch.tensor([0], device=device), c_edg.cumsum(0)[:-1]]) # group starts 
+%     t_res[t_gps + t_smp] = True 
+%     t_res         = t_res[t_idx]
+%     return t_res

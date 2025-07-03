@@ -1,0 +1,19 @@
+\begin{algorithm}
+\caption{StrategyEvalStep}
+\label{alg:your_algorithm}
+\begin{algorithmic}[1]
+%%%%%%%%%%%%%%%
+\Statex\textcolor{green!50!black}{\scriptsize \#\py{The strategy profile at the current information set is evaluated using the neural network v\_pnn. The input to this network, denoted by t\_nn, consists of two components: t\_nnl and t\_nnr.}}
+\State Input \py{t\_inf,t\_scr,t\_sid,t\_edg,v\_pnn} 
+\Statex \textcolor{green!50!black}{\scriptsize \# \py{t\_inf.shape}$=[\tilde{d}_0,3,d_2]$}
+\State \py{t\_sum} $\gets$ \py{zeros(v\_k)} \hfill \textcolor{green!50!black}{\scriptsize\# \py{t\_sid.shape[0]$=v_k$}}
+% \State \py{t\_inf, \_ , \_ , t\_sid, t\_edg}$\gets$\py{PlayStep(t\_inf, c\_scr, t\_snw, t\_sid)}
+\State \py{t\_nnl} $\gets$ \py{t\_inf[t\_sid[:,0]]}\hfill \textcolor{green!50!black}{\scriptsize\# \py{t\_nnl.shape=$[v_{k+1},3,d_2]$ }}
+\State \py{t\_nnr} $\gets$ \py{t\_scr[t\_sid[:,1]]}
+\State \py{t\_nn = cat([t\_nnl,t\_nnr])}
+\State \py{t\_adv} $\gets$ \py{v\_pnn(t\_nn)}
+\State \py{t\_sum.scatter\_add\_(0,t\_edg,t\_adv)}
+\State \py{t\_sig} $\gets$ \py{t\_reg/t\_sum[t\_edge]}
+\State Output \py{t\_sig,t\_nn}
+\end{algorithmic}
+\end{algorithm}

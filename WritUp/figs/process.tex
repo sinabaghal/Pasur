@@ -1,0 +1,185 @@
+\begin{figure}[!p]
+\centering
+\scalebox{0.5}{
+    \begin{tikzpicture}
+
+       %%% DECK COUNT 40 LAYER 0
+      \drawboxwitharrows{0}{red/0.2}{dummy}{0}{2cm,0cm}{none}
+      %%% DECK COUNT 40 LAYER 1
+      \drawboxwitharrows{0}{red/0.2}{dummy}{0}{0cm, -2cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{1}{1cm, -2cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{2}{2cm, -2cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{3}{3cm, -2cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{4}{4cm, -2cm}{none}
+      \draw (-0.5cm, -2.5cm) -- (4.5cm, -2.5cm);
+
+        %%% DOTS
+      \node[rotate=60] at  (0.5cm, -3.2cm) {\dots\dots};    
+      \node[rotate=90] at (2cm, -3.2cm) {\dots\dots};        
+      \node[rotate=-60] at (3.5cm, -3.2cm) {\dots\dots};      
+
+      
+      %%% DECK COUNT 40 LAYER END
+      \drawboxwitharrows{0}{red/0.2}{dummy}{0}{-2cm, -5cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{1}{-1cm, -5cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{2}{0cm, -5cm} {none}
+      \node[rotate=0] at  (2cm, -5cm) {\dots\dots};
+      \drawboxwitharrows{0}{red/0.2}{dummy}{-3}{4cm,  -5cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{-2}{5cm,  -5cm}{none}
+      \drawboxwitharrows{0}{red/0.2}{dummy}{-1}{6cm,  -5cm}{none}
+        \draw (-2.5cm, -5.5cm) -- (-0.5cm, -5.5cm);
+        \draw (-0.3cm, -5.5cm) -- (0.4cm, -5.5cm);
+        \draw (3.5cm, -5.5cm) -- (5.5cm, -5.5cm);
+        \draw (5.7cm, -5.5cm) -- (6.4cm, -5.5cm);
+
+
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-2, -5.3) to[out=-80, in=60] (0, -7.75); 
+         \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (4, -5.3) to[out=-80, in=60] (-1, -7.75); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-1, -5.3) to[out=-80, in=120] (5, -7.75); 
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (0, -5.3) to[out=-80, in=60] (-1, -7.75); 
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (5, -5.3) to[out=-80, in=60] (0, -7.75); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (6, -5.3) to[out=-80, in=60] (5, -7.75); 
+        
+        %%% DECK COUNT 32 LAYER 0
+      \drawboxwitharrows{0}{}{dummy}{0}  {-1cm,  -8cm}{none}
+      \drawboxwitharrows{0}{}{dummy}{1}  {0cm,   -8cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, red/0.05}{dummy}{2}  {1cm,   -8cm}   {none}
+      \drawboxwitharrows{0}{blue!50/0.4, black/0.05}{dummy}{3}  {2cm,   -8cm} {none}
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}{4}  {3cm,   -8cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, green/0.05}{dummy}{5}  {4cm,   -8cm} {none}
+      \drawboxwitharrows{0}{}{dummy}{6}  {5cm,   -8cm}{none}
+
+       %%% DECK COUNT 32 LAYER 1
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {0}    {-4cm,  -10cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {1}    {-3cm,  -10cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4}{dummy}                                       {2}    {-2cm,  -10cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4}{dummy}                                       {3}    {-1cm,  -10cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4}{dummy}                                       {4}    {0cm,   -10cm}{none}
+      \node[rotate=0] at  (3cm, -10cm) {\dots\dots};
+      \drawboxwitharrows{0}{green/0.4, red/0.05}{dummy}                                       {-3}   {6cm,   -10cm}{none}
+      \drawboxwitharrows{0}{green/0.4, red/0.05}{dummy}                                       {-2}   {7cm,   -10cm}{none}
+      \drawboxwitharrows{0}{green/0.4, red/0.05}{dummy}                                       {-1}   {8cm,   -10cm}{none}
+       \draw (-4.5cm,    -10.5cm) -- (-2.5cm, -10.5cm);
+        \draw (-2.2cm, -10.5cm) -- (0.4cm, -10.5cm);
+        \draw (5.7cm, -10.5cm) -- (8.5cm, -10.5cm);
+
+            %%% DOTS
+      \node[rotate=-60] at  (-1cm, -12.2cm) {\dots\dots\dots};    
+      \node[rotate=90] at (3cm, -12.2cm) {\dots\dots\dots};        
+      \node[rotate=60] at (7cm, -12.2cm) {\dots\dots\dots};      
+
+        %%% DECK COUNT 32 LAYER END
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {0}    {-8cm,  -14cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {1}    {-7cm,  -14cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {2}    {-6cm,  -14cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {3}    {-5cm,  -14cm}{none}
+      \drawboxwitharrows{0}{blue!50/0.4, orange/0.05}{dummy}                                       {4}    {-4cm,   -14cm}{none}
+      \node[rotate=0] at  (3cm, -14cm) {\dots\dots\dots\dots\dots\dots};
+      \drawboxwitharrows{0}{green/0.4, red/0.05}{dummy}                                       {-3}   {10cm,   -14cm}{none}
+      \drawboxwitharrows{0}{green/0.4, red/0.05}{dummy}                                       {-2}   {11cm,   -14cm}{none}
+      \drawboxwitharrows{0}{green/0.4, red/0.05}{dummy}                                       {-1}   {12cm,   -14cm}{none}
+       \draw (-4.5cm,    -10.5cm) -- (-2.5cm, -10.5cm);
+        \draw (-2.2cm, -10.5cm) -- (0.4cm, -10.5cm);
+        \draw (5.7cm, -10.5cm) -- (8.5cm, -10.5cm);
+
+       \draw (-8.4cm,    -14.5cm) -- (-7.6cm, -14.5cm);
+       \draw (-7.4cm,    -14.5cm) -- (-6.6cm, -14.5cm);
+       \draw (-6.4cm,    -14.5cm) -- (-5.6cm, -14.5cm);
+       \draw (-5.4cm,    -14.5cm) -- (-3.6cm, -14.5cm);
+        \draw (9.7cm, -14.5cm) -- (12.5cm, -14.5cm);
+
+        
+        \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-8, -14.3) to[out=-140, in=-2] (-1, -16.3); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-8, -14.3) to[out=-100, in=-2] (-1, -16.3); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-7, -14.3) to[out=-120, in=1] (0, -16.3); 
+          \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-7, -14.3) to[out=-90, in=1] (0, -16.3); 
+         \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-6, -14.3) to[out=-120, in=-2] (-2, -16.3); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-6, -14.3) to[out=-90, in=-2] (-2, -16.3); 
+         \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-5, -14.3) to[out=-120, in=-2] (-2, -16.3); 
+          \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-5, -14.3) to[out=-90, in=-2] (-2, -16.3); 
+
+          %%%%%%%%%%% RIGHT 
+          \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (10, -14.3) to[out=-60, in=10] (4, -16.3); 
+            \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (10, -14.3) to[out=-40, in=10] (4, -16.3); 
+           \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (11, -14.3) to[out=-60, in=10] (7, -16.3); 
+           \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (11, -14.3) to[out=-40, in=10] (7, -16.3); 
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (12, -14.3) to[out=-60, in=10] (5, -16.3); 
+          \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (12, -14.3) to[out=-40, in=10] (5, -16.3); 
+
+         
+            %%% DOTS
+      \node[rotate=90] at (1cm, -19cm) {\dots\dots\dots};        
+      \node[rotate=90] at (3cm, -19cm) {\dots\dots\dots};        
+      \node[rotate=90] at (5cm, -19cm) {\dots\dots\dots};        
+
+
+       \drawboxwitharrows{0}{red/-0.2, blue!50/0.4, green/0.05}{dummy}{0}  {-1cm,  -22cm}{none}
+      \drawboxwitharrows{0}{red/-0.2, blue!50/0.4, orange/0.05}{dummy}{1}  {0cm,   -22cm}{none}
+       \drawboxwitharrows{0}{green/-0.2, blue!50/0.4, red/0.05}{dummy}{2}  {1cm,   -22cm}{none}
+        \node[rotate=0] at (3cm, -22cm) {\dots\dots\dots};   
+      \drawboxwitharrows{0}{black/-0.2, blue!50/0.4, orange/0.05}{dummy}{-3}  {5cm,  -22cm}{none}
+      \drawboxwitharrows{0}{red/-0.2, blue!50/0.4, green/0.05}{dummy}{-2}  {6cm,   -22cm}  {none}
+      \drawboxwitharrows{0}{black/-0.2, blue!50/0.4, red/0.05}{dummy}{-1}  {7cm,   -22cm}  {none}
+            %%% DOTS
+      \node[rotate=60] at (1cm, -25cm) {\dots\dots\dots};        
+      \node[rotate=90]  at (3cm, -25cm) {\dots\dots\dots};        
+      \node[rotate=-60]  at (5cm, -25cm) {\dots\dots\dots};    
+
+             \drawboxwitharrows{0}{red/-0.2, blue!50/0.4, green/0.05}{dummy}{0}  {-5cm,  -28cm} {none}
+      \drawboxwitharrows{0}{red/-0.2, blue!50/0.4, orange/0.05}{dummy}{1}        {-4cm,   -28cm}{none}
+      \drawboxwitharrows{0}{green/-0.2, blue!50/0.4, red/0.05}{dummy}{2}         {-3cm,   -28cm}{none}
+        \node[rotate=0] at (3cm, -28cm) {\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots\dots};   
+      \drawboxwitharrows{0}{black/-0.2, blue!50/0.4, orange/0.05}{dummy}{-3}     {9cm,   -28cm} {none}
+      \drawboxwitharrows{0}{red/-0.2, blue!50/0.4, green/0.05}{dummy}{-2}        {10cm,   -28cm}{none}
+      \drawboxwitharrows{0}{black/-0.2, blue!50/0.4, red/0.05}{dummy}{-1}        {11cm,   -28cm}{none}
+
+            \draw (-5.3cm,    -28.5cm) -- (-4.7cm, -28.5cm);
+            \draw (-4.3cm,    -28.5cm) -- (-3.7cm, -28.5cm);
+            \draw (-3.3cm,    -28.5cm) -- (-2.7cm, -28.5cm);
+            \draw (8.7cm,    -28.5cm) -- (9.4cm, -28.5cm);
+            \draw (9.7cm,    -28.5cm) -- (10.4cm, -28.5cm);
+            \draw (10.7cm,    -28.5cm) -- (11.4cm, -28.5cm);
+
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-5, -28.3) to[out=-70, in=60] (5, -30.7); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-5, -28.3) to[out=-90, in=60] (5, -30.7); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-4, -28.3) to[out=-80, in=60] (1, -30.7); 
+         \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-4, -28.3) to[out=-60, in=60] (1, -30.7); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-3, -28.3) to[out=-80, in=60] (2, -30.7); 
+         \draw[black, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-3, -28.3) to[out=-60, in=60] (2, -30.7); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-4, -28.3) to[out=-80, in=60] (1, -30.7); 
+         \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-4, -28.3) to[out=-60, in=60] (1, -30.7); 
+         \draw[black, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (10, -28.3) to[out=-80, in=60] (4, -30.7); 
+         \draw[orange, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (10, -28.3) to[out=-60, in=60] (4, -30.7); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (9, -28.3) to[out=-80, in=60] (3, -30.7); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (9, -28.3) to[out=-60, in=60] (3, -30.7); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (11, -28.3) to[out=-80, in=60] (3, -30.7); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (11, -28.3) to[out=-60, in=60] (3, -30.7); 
+
+
+         
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (5, -28.3) to[out=-80, in=60] (6, -30.7); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (5, -28.3) to[out=-60, in=60] (6, -30.7); 
+
+         
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (2, -28.3) to[out=-80, in=60] (7, -30.7); 
+         \draw[red, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (2, -28.3) to[out=-60, in=60] (7, -30.7); 
+         
+         \draw[blue!50, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-2, -28.3) to[out=-80, in=60] (7, -30.7); 
+         \draw[green, thick, decoration={markings, mark=at position 0.5 with {\arrow{>}}}, postaction={decorate}] (-2, -28.3) to[out=-60, in=60] (7, -30.7); 
+
+
+      \drawboxwitharrows{0}{}{dummy}{0}                     {1cm,  -31cm} {none}
+      \drawboxwitharrows{0}{}{dummy}{1}                     {2cm,  -31cm} {none}
+      \drawboxwitharrows{0}{}{dummy}{2}                     {3cm,  -31cm} {none}
+      \drawboxwitharrows{0}{}{dummy}{3}                     {4cm,   -31cm}{none}
+      \drawboxwitharrows{0}{}{dummy}{4}                     {5cm,   -31cm}{none}
+      \drawboxwitharrows{0}{}{dummy}{5}                     {6cm,   -31cm}{none}
+      \drawboxwitharrows{0}{}{dummy}{6}                     {7cm,   -31cm}{none}
+
+
+    \end{tikzpicture}
+    }
+    \caption{Game Tree}
+    \label{fig:gametreegeneration}
+\end{figure}
+\newpage
