@@ -47,8 +47,11 @@ def n_actions(t_2x40, t_2764x40, t_40x2764, t_tuples):
     tc_lay = t_inds[:,0].bincount(minlength=t_tmp.shape[0]).to(TYPE2)
     t_lay = torch.zeros((t_inds.shape[0],2,m), device=device, dtype=TYPE)
     t_lay[torch.arange(t_lay.shape[0], device=device),0,t_inds[:, 1]] = 1
+    import pdb; pdb.set_trace()
     # import pdb; pdb.set_trace()
     return t_pick, tc_pick,t_lay, tc_lay
+
+
 # j_actions(t_2x44 = t_2x52[:,:,t_cur_n+t_cur_j], t_cur_j=t_cur_j)
 def j_actions(t_2x44,i_cur_n):
 
