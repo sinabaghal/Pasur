@@ -4,47 +4,74 @@ from Imports import device, INT8
 import random 
 import os
 
-lm_cur_k = [48,49,50,51]
-lm_cur_q = [44,45,46,47]
-lm_cur_j = [40, 41, 42, 43]
-lm_cur_n = [x for x in range(40)]
-lm_cur_c = [4*x for x in range(13)]
-lm_cur_p = [0,1,2,3,4,37,40,41,42,43]
-lm_cur_s = [1,1,1,1,2,3,1,1,1,1]
+l_k = [48,49,50,51]
+l_q = [44,45,46,47]
+l_j = [40, 41, 42, 43]
+l_n = [x for x in range(40)]
+l_c = range(0,52,4) 
+# l_c = [4*x for x in range(13)]
+l_p = [0,1,2,3,4,37,40,41,42,43]
+l_s = [1,1,1,1,2,3,1,1,1,1]
 
 ## Convert unique result to the full result for numeric cards 
-def expand_unique(t_cnt,t_inverse_indices):
+def inverseunique(t_cnt,t_inx):
 
-    cumsum = torch.zeros(t_cnt.shape[0]+1,dtype=torch.int32, device=device)
-    cumsum[1:] = torch.cumsum(t_cnt,dim=0)
-    start_indices = cumsum[t_inverse_indices]
-    end_indices = cumsum[t_inverse_indices + 1]
-    lengths = end_indices - start_indices  
-    total_length = lengths.sum()  
-    range_offsets = torch.arange(total_length, device=device) - torch.repeat_interleave(lengths.cumsum(0) - lengths, lengths)
-    res = start_indices.repeat_interleave(lengths) + range_offsets
+    t_cms = torch.zeros(t_cnt.shape[0]+1,dtype=torch.int32, device=device)
+    t_cms[1:] = t_cnt.cumsum(0)
+    # t_cms[1:] = torch.cumsum(t_cnt,dim=0)
+    t_bgn, t_len = t_cms[t_inx], t_cnt[t_inx]
+    # t_bgn, t_end = t_cms[t_inx], t_cms[t_inx + 1]
+    # t_len = t_end - t_bgn  
+    t_lns = t_len.cumsum(0)
+    t_ofs = torch.arange(t_lns[-1], device=device) - torch.repeat_interleave(t_lns - t_len, t_len)
+    # total_length = t_len.sum()  
+    # t_inu = t_bgn.repeat_interleave(t_len) + t_ofs
+    # assert torch.all(t_len == t_cnt[t_inx])
+    return t_bgn.repeat_interleave(t_len) + t_ofs
 
-    return res
+
+# def inverseunique(t_cnt,t_inx):
+
+#     t_cms = torch.zeros(t_cnt.shape[0]+1,dtype=torch.int32, device=device)
+#     t_cms[1:] = torch.cumsum(t_cnt,dim=0)
+#     t_bgn, t_len = t_cms[t_inx], t_cnt[t_inx]
+#     t_lns = t_len.cumsum()
+#     t_ofs = torch.arange(t_len.sum(), device=device) - torch.repeat_interleave(t_len.cumsum(0) - t_len, t_len)
+#     t_inu = t_bgn.repeat_interleave(t_len) + t_ofs
+#     return t_inu
 
 def pad_helper(dm, cur):
 
-    i_n    = dm['cur_n'].sum()
-    i_j    = dm['cur_j'].sum()
-    i_q    = dm['cur_q'].sum()
-    i_k    = dm['cur_k'].sum()
+    # i_n    = dm['cur_n'].sum()
+    # i_j    = dm['cur_j'].sum()
+    # i_q    = dm['cur_q'].sum()
+    # i_k    = dm['cur_k'].sum()
 
-    i_njqk = i_n+i_j+i_q+i_k
-    i_njk = i_n+i_j+i_k
-    i_njq = i_n+i_j+i_q
+    i_n, i_j, i_q, i_k = (dm[k].sum() for k in ['cur_n', 'cur_j', 'cur_q', 'cur_k'])
+    # i_n, i_j, i_q, i_k = (t_msk.sum() for t_msk in [t_inn, t_inj, t_inq, t_ink])
+
+    i_kq, i_jqk, i_njk, i_njq, i_njqk = i_k + i_q, i_j + i_q + i_k, i_n + i_j + i_k, i_n + i_j + i_q, i_n + i_j + i_q + i_k
+
+    i_pad = {'n':  i_jqk, 'j': i_kq, 'k': i_njq, 'q': i_njk}
+    t_pad = {'n':  None, 
+             'j':  None, 
+             'k': torch.hstack((torch.arange(i_k,i_njqk, device=device), torch.arange(i_k, device=device))), 
+             'q': torch.hstack((torch.arange(i_q,i_njq, device=device), torch.arange(i_q, device=device),torch.arange(i_njq,i_njqk, device=device)))}
     
-    if cur == 'j': 
-        return i_k+i_q, None
-    elif cur == 'k':
-        return i_njq, torch.hstack((torch.arange(i_k,i_njqk, device=device), torch.arange(i_k, device=device)))
-    elif cur == 'q':
-        return i_njk, torch.hstack((torch.arange(i_q,i_njq, device=device), torch.arange(i_q, device=device),torch.arange(i_njq,i_njqk, device=device)))
-    else:
-        return i_j + i_q + i_k, None
+    return i_pad[cur], t_pad[cur]
+
+    # i_njqk = i_n+i_j+i_q+i_k
+    # i_njk = i_n+i_j+i_k
+    # i_njq = i_n+i_j+i_q
+    
+    # if cur == 'j': 
+    #     return i_k+i_q, None
+    # elif cur == 'k':
+    #     return i_njq, torch.hstack((torch.arange(i_k,i_njqk, device=device), torch.arange(i_k, device=device)))
+    # elif cur == 'q':
+    #     return i_njk, torch.hstack((torch.arange(i_q,i_njq, device=device), torch.arange(i_q, device=device),torch.arange(i_njq,i_njqk, device=device)))
+    # else:
+    #     return i_j + i_q + i_k, None
 
 def partition(lst, size):
     random.shuffle(lst)
@@ -59,18 +86,18 @@ def get_d_mask(tm_52, l_next_cards):
     tm_52[lm_nxt_a] = True
     tm_52[lm_nxt_b] = True 
     _, dm['pad'] = torch.sort(torch.cat([t_nnzr,l_next_cards[:8]]))
-    dm['cur_s']  = torch.tensor(lm_cur_s,dtype = INT8, device=device)[tm_52[lm_cur_p]]
+    dm['cur_s']  = torch.tensor(l_s,dtype = INT8, device=device)[tm_52[l_p]]
     dm['cur_52'] = tm_52
 
 
     find_dm = lambda lm :  torch.tensor([idx in lm for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
 
-    dm['cur_k'] = find_dm(lm_cur_k)
-    dm['cur_q'] = find_dm(lm_cur_q)
-    dm['cur_j'] = find_dm(lm_cur_j)
-    dm['cur_n'] = find_dm(lm_cur_n)
-    dm['cur_c'] = find_dm(lm_cur_c)
-    dm['cur_p'] = find_dm(lm_cur_p)
+    dm['cur_k'] = find_dm(l_k)
+    dm['cur_q'] = find_dm(l_q)
+    dm['cur_j'] = find_dm(l_j)
+    dm['cur_n'] = find_dm(l_n)
+    dm['cur_c'] = find_dm(l_c)
+    dm['cur_p'] = find_dm(l_p)
     dm['nxt_a'] = find_dm(lm_nxt_a)
     dm['nxt_b'] = find_dm(lm_nxt_b)
 
@@ -128,13 +155,13 @@ def partition_folder(folder, MAX_FILES=100, MAX_TOTAL_SIZE_MB=100):
 # clear = lambda: os.system('cls')
 # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # TYPE = torch.int8
-# lm_cur_k = [48,49,50,51]
-# lm_cur_q = [44,45,46,47]
-# lm_cur_j = [40, 41, 42, 43]
-# lm_cur_n = [x for x in range(40)]
-# lm_cur_c = [4*x for x in range(13)]
-# lm_cur_p = [0,1,2,3,4,37,40,41,42,43]
-# lm_cur_s = [1,1,1,1,2,3,1,1,1,1]
+# l_k = [48,49,50,51]
+# l_q = [44,45,46,47]
+# l_j = [40, 41, 42, 43]
+# l_n = [x for x in range(40)]
+# l_c = [4*x for x in range(13)]
+# l_p = [0,1,2,3,4,37,40,41,42,43]
+# l_s = [1,1,1,1,2,3,1,1,1,1]
 
 
 
@@ -185,24 +212,24 @@ def partition_folder(folder, MAX_FILES=100, MAX_TOTAL_SIZE_MB=100):
 
 
 
-#     # dm['cur_k'] = torch.tensor([idx in lm_cur_k for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
-#     # dm['cur_q'] = torch.tensor([idx in lm_cur_q for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
-#     # dm['cur_j'] = torch.tensor([idx in lm_cur_j for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
-#     # dm['cur_n'] = torch.tensor([idx in lm_cur_n for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
-#     # dm['cur_c'] = torch.tensor([idx in lm_cur_c for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
-#     # dm['cur_p'] = torch.tensor([idx in lm_cur_p for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
+#     # dm['cur_k'] = torch.tensor([idx in l_k for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
+#     # dm['cur_q'] = torch.tensor([idx in l_q for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
+#     # dm['cur_j'] = torch.tensor([idx in l_j for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
+#     # dm['cur_n'] = torch.tensor([idx in l_n for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
+#     # dm['cur_c'] = torch.tensor([idx in l_c for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
+#     # dm['cur_p'] = torch.tensor([idx in l_p for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
 #     # dm['nxt_a'] = torch.tensor([idx in lm_nxt_a for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
 #     # dm['nxt_b'] = torch.tensor([idx in lm_nxt_b for idx, item in enumerate(tm_52) if item], dtype = bool, device=device)
 
 #     # for idx, item in enumerate(tm_52):
 #     #     if item:
             
-#     #         dm['cur_k'].append(idx in lm_cur_k) 
-#     #         dm['cur_q'].append(idx in lm_cur_q) 
-#     #         dm['cur_j'].append(idx in lm_cur_j) 
-#     #         dm['cur_n'].append(idx in lm_cur_n) 
-#     #         dm['cur_c'].append(idx in lm_cur_c) 
-#     #         dm['cur_p'].append(idx in lm_cur_p)
+#     #         dm['cur_k'].append(idx in l_k) 
+#     #         dm['cur_q'].append(idx in l_q) 
+#     #         dm['cur_j'].append(idx in l_j) 
+#     #         dm['cur_n'].append(idx in l_n) 
+#     #         dm['cur_c'].append(idx in l_c) 
+#     #         dm['cur_p'].append(idx in l_p)
 #     #         dm['nxt_a'].append(idx in lm_nxt_a)
 #     #         dm['nxt_b'].append(idx in lm_nxt_b)
             
@@ -241,8 +268,8 @@ def partition_folder(folder, MAX_FILES=100, MAX_TOTAL_SIZE_MB=100):
 #         if string not in index_map:
 #             index_map[string] = cur
 #             cur = cur+1
-#     res = dict(index_map)
-#     return torch.tensor([res[key] for key in strings], dtype=torch.int64, device=device)
+#     t_inv = dict(index_map)
+#     return torch.tensor([t_inv[key] for key in strings], dtype=torch.int64, device=device)
 
 
 # def display_row(t_row):
