@@ -1,9 +1,9 @@
 import torch 
 # from Utils import D_S2T
-
+from Imports import device
 TYPE = torch.int8
 TYPE2 = torch.int32
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")\
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")\
 
 def f(t,tm):
 

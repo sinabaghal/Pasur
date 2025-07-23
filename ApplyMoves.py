@@ -37,6 +37,7 @@ def apply_moves(t_gme, t_act, t_rus, d_msk, i_hnd, i_ply, i_trn):
         #     import pdb; pdb.set_trace()
         t_rus[t_msr,surs_cntr] += 5 ### PUT BACK
         # import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         # if f'{i_hnd}_{i_trn}_{i_ply}' == '3_3_0':
         #     import pdb; pdb.set_trace()
         # if t_msr.sum()>0: import pdb; pdb.set_trace()

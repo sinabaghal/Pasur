@@ -38,141 +38,141 @@
 \rowcolor{myrowcolor}
 
 
- 0\_0\_0 &$\FoC\;\FoD\;\SeD\;\QC$&$\ThD\;\ThH\;\FiC\;\KS$&$\AC\;\AS\;\ND\;\KD$&$\SeD$&&0 &0 &0 &0 &0 &0 &0 &0\\ \hline
+ 0\_0\_0 &$\ND\;\JD\;\JS\;\QD$&$\AD\;\SiC\;\SiS\;\QS$&$\ThS\;\SeC\;\NH\;\QH$&$\JD$&$\ThS\;\SeC\;\NH$&1 &0 &1 &0 &0 &0 &0 &A\\ \hline
 
- 0\_0\_1 &$\FoC\;\FoD\;\QC$&$\ThD\;\ThH\;\FiC\;\KS$&$\AC\;\AS\;\SeD\;\ND\;\KD$&$\FiC$&&0 &0 &0 &0 &0 &0 &0 &0\\ \hline
+ 0\_0\_1 &$\ND\;\JS\;\QD$&$\AD\;\SiC\;\SiS\;\QS$&$\QH$&$\QS$&$\QH$&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
  \rowcolor{myrowcolor}
 
- 0\_1\_0 &$\FoC\;\FoD\;\QC$&$\ThD\;\ThH\;\KS$&$\AC\;\AS\;\FiC\;\SeD\;\ND\;\KD$&$\QC$&&0 &0 &0 &0 &0 &0 &0 &0\\ \hline
+ 0\_1\_0 &$\ND\;\JS\;\QD$&$\AD\;\SiC\;\SiS$&&$\JS$&&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
 
- 0\_1\_1 &$\FoC\;\FoD$&$\ThD\;\ThH\;\KS$&$\AC\;\AS\;\FiC\;\SeD\;\ND\;\QC\;\KD$&$\ThH$&$\AS\;\SeD$&0 &0 &0 &1 &0 &0 &0 &B\\ \hline
+ 0\_1\_1 &$\ND\;\QD$&$\AD\;\SiC\;\SiS$&$\JS$&$\SiC$&&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
  \rowcolor{myrowcolor}
 
- 0\_2\_0 &$\FoC\;\FoD$&$\ThD\;\KS$&$\AC\;\FiC\;\ND\;\QC\;\KD$&$\FoC$&&0 &0 &0 &1 &0 &0 &0 &B\\ \hline
+ 0\_2\_0 &$\ND\;\QD$&$\AD\;\SiS$&$\SiC\;\JS$&$\ND$&&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
 
- 0\_2\_1 &$\FoD$&$\ThD\;\KS$&$\AC\;\FoC\;\FiC\;\ND\;\QC\;\KD$&$\ThD$&&0 &0 &0 &1 &0 &0 &0 &B\\ \hline
+ 0\_2\_1 &$\QD$&$\AD\;\SiS$&$\SiC\;\ND\;\JS$&$\SiS$&&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
  \rowcolor{myrowcolor}
 
- 0\_3\_0 &$\FoD$&$\KS$&$\AC\;\ThD\;\FoC\;\FiC\;\ND\;\QC\;\KD$&$\FoD$&$\ThD\;\FoC$&1 &0 &0 &1 &0 &0 &0 &A\\ \hline
+ 0\_3\_0 &$\QD$&$\AD$&$\SiC\;\SiS\;\ND\;\JS$&$\QD$&&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
 
- 0\_3\_1 &&$\KS$&$\AC\;\FiC\;\ND\;\QC\;\KD$&$\KS$&$\KD$&1 &0 &0 &1 &0 &0 &0 &B\\ \hline
- \rowcolor{myrowcolor}
-\hline 
-
-
- 1\_0\_0 &$\SiC\;\SiD\;\NH\;\JC$&$\SiH\;\SeC\;\JD\;\KH$&$\AC\;\FiC\;\ND\;\QC$&$\SiD$&$\FiC$&2 &0 &0 &0 &0 &0 &-1 &A\\ \hline
-
- 1\_0\_1 &$\SiC\;\NH\;\JC$&$\SiH\;\SeC\;\JD\;\KH$&$\AC\;\ND\;\QC$&$\JD$&$\AC\;\ND$&2 &1 &0 &2 &0 &0 &-1 &B\\ \hline
- \rowcolor{myrowcolor}
-
- 1\_1\_0 &$\SiC\;\NH\;\JC$&$\SiH\;\SeC\;\KH$&$\QC$&$\NH$&&2 &1 &0 &2 &0 &0 &-1 &B\\ \hline
-
- 1\_1\_1 &$\SiC\;\JC$&$\SiH\;\SeC\;\KH$&$\NH\;\QC$&$\KH$&&2 &1 &0 &2 &0 &0 &-1 &B\\ \hline
- \rowcolor{myrowcolor}
-
- 1\_2\_0 &$\SiC\;\JC$&$\SiH\;\SeC$&$\NH\;\QC\;\KH$&$\JC$&$\NH$&3 &1 &1 &2 &0 &0 &-1 &A\\ \hline
-
- 1\_2\_1 &$\SiC$&$\SiH\;\SeC$&$\QC\;\KH$&$\SiH$&&3 &1 &1 &2 &0 &0 &-1 &A\\ \hline
- \rowcolor{myrowcolor}
-
- 1\_3\_0 &$\SiC$&$\SeC$&$\SiH\;\QC\;\KH$&$\SiC$&&3 &1 &1 &2 &0 &0 &-1 &A\\ \hline
-
- 1\_3\_1 &&$\SeC$&$\SiC\;\SiH\;\QC\;\KH$&$\SeC$&&3 &1 &1 &2 &0 &0 &-1 &A\\ \hline
+ 0\_3\_1 &&$\AD$&$\SiC\;\SiS\;\ND\;\JS\;\QD$&$\AD$&&1 &0 &1 &0 &0 &5 &0 &B\\ \hline
  \rowcolor{myrowcolor}
 \hline 
 
 
- 2\_0\_0 &$\FiD\;\NC\;\TeH\;\KC$&$\AD\;\SiS\;\EC\;\ES$&$\SiC\;\SiH\;\SeC\;\QC\;\KH$&$\NC$&&3 &1 &0 &0 &0 &0 &-2 &0\\ \hline
+ 1\_0\_0 &$\ThD\;\FoS\;\EH\;\JH$&$\AH\;\SiD\;\EC\;\NC$&$\AD\;\SiC\;\SiS\;\ND\;\JS\;\QD$&$\EH$&&1 &0 &0 &0 &0 &0 &-4 &0\\ \hline
 
- 2\_0\_1 &$\FiD\;\TeH\;\KC$&$\AD\;\SiS\;\EC\;\ES$&$\SiC\;\SiH\;\SeC\;\NC\;\QC\;\KH$&$\EC$&&3 &1 &0 &0 &0 &0 &-2 &0\\ \hline
+ 1\_0\_1 &$\ThD\;\FoS\;\JH$&$\AH\;\SiD\;\EC\;\NC$&$\AD\;\SiC\;\SiS\;\EH\;\ND\;\JS\;\QD$&$\NC$&&1 &0 &0 &0 &0 &0 &-4 &0\\ \hline
  \rowcolor{myrowcolor}
 
- 2\_1\_0 &$\FiD\;\TeH\;\KC$&$\AD\;\SiS\;\ES$&$\SiC\;\SiH\;\SeC\;\EC\;\NC\;\QC\;\KH$&$\FiD$&$\SiH$&3 &1 &0 &0 &0 &0 &-2 &A\\ \hline
+ 1\_1\_0 &$\ThD\;\FoS\;\JH$&$\AH\;\SiD\;\EC$&$\AD\;\SiC\;\SiS\;\EH\;\NC\;\ND\;\JS\;\QD$&$\ThD$&$\EH$&1 &0 &0 &0 &0 &0 &-4 &A\\ \hline
 
- 2\_1\_1 &$\TeH\;\KC$&$\AD\;\SiS\;\ES$&$\SiC\;\SeC\;\EC\;\NC\;\QC\;\KH$&$\SiS$&&3 &1 &0 &0 &0 &0 &-2 &A\\ \hline
+ 1\_1\_1 &$\FoS\;\JH$&$\AH\;\SiD\;\EC$&$\AD\;\SiC\;\SiS\;\NC\;\ND\;\JS\;\QD$&$\EC$&&1 &0 &0 &0 &0 &0 &-4 &A\\ \hline
  \rowcolor{myrowcolor}
 
- 2\_2\_0 &$\TeH\;\KC$&$\AD\;\ES$&$\SiC\;\SiS\;\SeC\;\EC\;\NC\;\QC\;\KH$&$\KC$&$\KH$&4 &1 &0 &0 &0 &0 &-2 &A\\ \hline
+ 1\_2\_0 &$\FoS\;\JH$&$\AH\;\SiD$&$\AD\;\SiC\;\SiS\;\EC\;\NC\;\ND\;\JS\;\QD$&$\JH$&$\AD\;\SiC\;\SiS\;\EC\;\NC\;\ND\;\JS$&4 &0 &3 &0 &0 &0 &-4 &A\\ \hline
 
- 2\_2\_1 &$\TeH$&$\AD\;\ES$&$\SiC\;\SiS\;\SeC\;\EC\;\NC\;\QC$&$\ES$&&4 &1 &0 &0 &0 &0 &-2 &A\\ \hline
+ 1\_2\_1 &$\FoS$&$\AH\;\SiD$&$\QD$&$\SiD$&&4 &0 &3 &0 &0 &0 &-4 &A\\ \hline
  \rowcolor{myrowcolor}
 
- 2\_3\_0 &$\TeH$&$\AD$&$\SiC\;\SiS\;\SeC\;\EC\;\ES\;\NC\;\QC$&$\TeH$&&4 &1 &0 &0 &0 &0 &-2 &A\\ \hline
+ 1\_3\_0 &$\FoS$&$\AH$&$\SiD\;\QD$&$\FoS$&&4 &0 &3 &0 &0 &0 &-4 &A\\ \hline
 
- 2\_3\_1 &&$\AD$&$\SiC\;\SiS\;\SeC\;\EC\;\ES\;\NC\;\TeH\;\QC$&$\AD$&$\TeH$&4 &1 &0 &1 &0 &0 &-2 &B\\ \hline
- \rowcolor{myrowcolor}
-\hline 
-
-
- 3\_0\_0 &$\TwC\;\ThC\;\JS\;\QS$&$\SeS\;\ED\;\EH\;\QH$&$\SiC\;\SiS\;\SeC\;\EC\;\ES\;\NC\;\QC$&$\ThC$&$\ES$&5 &1 &0 &0 &0 &0 &-3 &A\\ \hline
-
- 3\_0\_1 &$\TwC\;\JS\;\QS$&$\SeS\;\ED\;\EH\;\QH$&$\SiC\;\SiS\;\SeC\;\EC\;\NC\;\QC$&$\SeS$&&5 &1 &0 &0 &0 &0 &-3 &A\\ \hline
- \rowcolor{myrowcolor}
-
- 3\_1\_0 &$\TwC\;\JS\;\QS$&$\ED\;\EH\;\QH$&$\SiC\;\SiS\;\SeC\;\SeS\;\EC\;\NC\;\QC$&$\JS$&$\SiC\;\SiS\;\SeC\;\SeS\;\EC\;\NC$&9 &1 &1 &0 &0 &0 &-3 &A\\ \hline
-
- 3\_1\_1 &$\TwC\;\QS$&$\ED\;\EH\;\QH$&$\QC$&$\QH$&$\QC$&9 &2 &1 &0 &0 &5 &-3 &B\\ \hline
- \rowcolor{myrowcolor}
-
- 3\_2\_0 &$\TwC\;\QS$&$\ED\;\EH$&&$\TwC$&&9 &2 &1 &0 &0 &5 &-3 &B\\ \hline
-
- 3\_2\_1 &$\QS$&$\ED\;\EH$&$\TwC$&$\EH$&&9 &2 &1 &0 &0 &5 &-3 &B\\ \hline
- \rowcolor{myrowcolor}
-
- 3\_3\_0 &$\QS$&$\ED$&$\TwC\;\EH$&$\QS$&&9 &2 &1 &0 &0 &5 &-3 &B\\ \hline
-
- 3\_3\_1 &&$\ED$&$\TwC\;\EH\;\QS$&$\ED$&&9 &2 &1 &0 &0 &5 &-3 &B\\ \hline
+ 1\_3\_1 &&$\AH$&$\FoS\;\SiD\;\QD$&$\AH$&$\FoS\;\SiD$&4 &0 &3 &1 &0 &0 &-4 &B\\ \hline
  \rowcolor{myrowcolor}
 \hline 
 
 
- 4\_0\_0 &$\FoH\;\FoS\;\SeH\;\JH$&$\TwD\;\FiH\;\NS\;\TeS$&$\TwC\;\ED\;\EH\;\QS$&$\FoH$&&0 &0 &0 &0 &0 &0 &-7 &0\\ \hline
+ 2\_0\_0 &$\AC\;\TwC\;\ED\;\TeH$&$\FiH\;\SeD\;\SeH\;\TeD$&$\QD$&$\ED$&&4 &0 &0 &0 &0 &0 &-2 &0\\ \hline
 
- 4\_0\_1 &$\FoS\;\SeH\;\JH$&$\TwD\;\FiH\;\NS\;\TeS$&$\TwC\;\FoH\;\ED\;\EH\;\QS$&$\TwD$&&0 &0 &0 &0 &0 &0 &-7 &0\\ \hline
+ 2\_0\_1 &$\AC\;\TwC\;\TeH$&$\FiH\;\SeD\;\SeH\;\TeD$&$\ED\;\QD$&$\SeD$&&4 &0 &0 &0 &0 &0 &-2 &0\\ \hline
  \rowcolor{myrowcolor}
 
- 4\_1\_0 &$\FoS\;\SeH\;\JH$&$\FiH\;\NS\;\TeS$&$\TwC\;\TwD\;\FoH\;\ED\;\EH\;\QS$&$\JH$&$\TwC\;\TwD\;\FoH\;\ED\;\EH$&1 &0 &3 &0 &0 &0 &-7 &A\\ \hline
+ 2\_1\_0 &$\AC\;\TwC\;\TeH$&$\FiH\;\SeH\;\TeD$&$\SeD\;\ED\;\QD$&$\TeH$&&4 &0 &0 &0 &0 &0 &-2 &0\\ \hline
 
- 4\_1\_1 &$\FoS\;\SeH$&$\FiH\;\NS\;\TeS$&$\QS$&$\TeS$&&1 &0 &3 &0 &0 &0 &-7 &A\\ \hline
+ 2\_1\_1 &$\AC\;\TwC$&$\FiH\;\SeH\;\TeD$&$\SeD\;\ED\;\TeH\;\QD$&$\SeH$&&4 &0 &0 &0 &0 &0 &-2 &0\\ \hline
  \rowcolor{myrowcolor}
 
- 4\_2\_0 &$\FoS\;\SeH$&$\FiH\;\NS$&$\TeS\;\QS$&$\SeH$&&1 &0 &3 &0 &0 &0 &-7 &A\\ \hline
+ 2\_2\_0 &$\AC\;\TwC$&$\FiH\;\TeD$&$\SeD\;\SeH\;\ED\;\TeH\;\QD$&$\AC$&$\TeH$&5 &0 &1 &0 &0 &0 &-2 &A\\ \hline
 
- 4\_2\_1 &$\FoS$&$\FiH\;\NS$&$\SeH\;\TeS\;\QS$&$\FiH$&&1 &0 &3 &0 &0 &0 &-7 &A\\ \hline
+ 2\_2\_1 &$\TwC$&$\FiH\;\TeD$&$\SeD\;\SeH\;\ED\;\QD$&$\TeD$&&5 &0 &1 &0 &0 &0 &-2 &A\\ \hline
  \rowcolor{myrowcolor}
 
- 4\_3\_0 &$\FoS$&$\NS$&$\FiH\;\SeH\;\TeS\;\QS$&$\FoS$&$\SeH$&1 &0 &3 &0 &0 &0 &-7 &A\\ \hline
+ 2\_3\_0 &$\TwC$&$\FiH$&$\SeD\;\SeH\;\ED\;\TeD\;\QD$&$\TwC$&&5 &0 &1 &0 &0 &0 &-2 &A\\ \hline
 
- 4\_3\_1 &&$\NS$&$\FiH\;\TeS\;\QS$&$\NS$&&1 &0 &3 &0 &0 &0 &-7 &A\\ \hline
+ 2\_3\_1 &&$\FiH$&$\TwC\;\SeD\;\SeH\;\ED\;\TeD\;\QD$&$\FiH$&&5 &0 &1 &0 &0 &0 &-2 &A\\ \hline
  \rowcolor{myrowcolor}
 \hline 
 
 
- 5\_0\_0 &$\AH\;\ThS\;\TeC\;\QD$&$\TwH\;\TwS\;\FiS\;\TeD$&$\FiH\;\NS\;\TeS\;\QS$&$\AH$&$\TeS$&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_0\_0 &$\AS\;\ThC\;\ES\;\NS$&$\TwS\;\FoC\;\FiC\;\SeS$&$\TwC\;\FiH\;\SeD\;\SeH\;\ED\;\TeD\;\QD$&$\ThC$&$\ED$&6 &0 &0 &0 &0 &0 &-1 &A\\ \hline
 
- 5\_0\_1 &$\ThS\;\TeC\;\QD$&$\TwH\;\TwS\;\FiS\;\TeD$&$\FiH\;\NS\;\QS$&$\TwS$&$\NS$&0 &0 &1 &0 &0 &0 &-4 &B\\ \hline
+ 3\_0\_1 &$\AS\;\ES\;\NS$&$\TwS\;\FoC\;\FiC\;\SeS$&$\TwC\;\FiH\;\SeD\;\SeH\;\TeD\;\QD$&$\FoC$&$\SeH$&6 &1 &0 &0 &0 &0 &-1 &B\\ \hline
  \rowcolor{myrowcolor}
 
- 5\_1\_0 &$\ThS\;\TeC\;\QD$&$\TwH\;\FiS\;\TeD$&$\FiH\;\QS$&$\QD$&$\QS$&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_1\_0 &$\AS\;\ES\;\NS$&$\TwS\;\FiC\;\SeS$&$\TwC\;\FiH\;\SeD\;\TeD\;\QD$&$\NS$&$\TwC$&7 &1 &2 &0 &0 &0 &-1 &A\\ \hline
 
- 5\_1\_1 &$\ThS\;\TeC$&$\TwH\;\FiS\;\TeD$&$\FiH$&$\TwH$&&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_1\_1 &$\AS\;\ES$&$\TwS\;\FiC\;\SeS$&$\FiH\;\SeD\;\TeD\;\QD$&$\FiC$&&7 &1 &2 &0 &0 &0 &-1 &A\\ \hline
  \rowcolor{myrowcolor}
 
- 5\_2\_0 &$\ThS\;\TeC$&$\FiS\;\TeD$&$\TwH\;\FiH$&$\TeC$&&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_2\_0 &$\AS\;\ES$&$\TwS\;\SeS$&$\FiC\;\FiH\;\SeD\;\TeD\;\QD$&$\ES$&&7 &1 &2 &0 &0 &0 &-1 &A\\ \hline
 
- 5\_2\_1 &$\ThS$&$\FiS\;\TeD$&$\TwH\;\FiH\;\TeC$&$\TeD$&&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_2\_1 &$\AS$&$\TwS\;\SeS$&$\FiC\;\FiH\;\SeD\;\ES\;\TeD\;\QD$&$\SeS$&&7 &1 &2 &0 &0 &0 &-1 &A\\ \hline
  \rowcolor{myrowcolor}
 
- 5\_3\_0 &$\ThS$&$\FiS$&$\TwH\;\FiH\;\TeC\;\TeD$&$\ThS$&&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_3\_0 &$\AS$&$\TwS$&$\FiC\;\FiH\;\SeD\;\SeS\;\ES\;\TeD\;\QD$&$\AS$&$\TeD$&7 &1 &6 &0 &0 &0 &-1 &A\\ \hline
 
- 5\_3\_1 &&$\FiS$&$\TwH\;\ThS\;\FiH\;\TeC\;\TeD$&$\FiS$&&0 &0 &1 &0 &0 &0 &-4 &A\\ \hline
+ 3\_3\_1 &&$\TwS$&$\FiC\;\FiH\;\SeD\;\SeS\;\ES\;\QD$&$\TwS$&&7 &1 &6 &0 &0 &0 &-1 &A\\ \hline
+ \rowcolor{myrowcolor}
 \hline 
 
-CleanUp &&&&&&1 &0 &4 &0 &0 &0 &-4 &A\\ \hline
+
+ 4\_0\_0 &$\ThH\;\TeS\;\KC\;\KH$&$\TwH\;\FiD\;\FiS\;\KD$&$\TwS\;\FiC\;\FiH\;\SeD\;\SeS\;\ES\;\QD$&$\KH$&&0 &0 &0 &0 &0 &0 &5 &0\\ \hline
+
+ 4\_0\_1 &$\ThH\;\TeS\;\KC$&$\TwH\;\FiD\;\FiS\;\KD$&$\TwS\;\FiC\;\FiH\;\SeD\;\SeS\;\ES\;\QD\;\KH$&$\TwH$&$\TwS\;\SeD$&0 &0 &0 &0 &0 &0 &5 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 4\_1\_0 &$\ThH\;\TeS\;\KC$&$\FiD\;\FiS\;\KD$&$\FiC\;\FiH\;\SeS\;\ES\;\QD\;\KH$&$\TeS$&&0 &0 &0 &0 &0 &0 &5 &B\\ \hline
+
+ 4\_1\_1 &$\ThH\;\KC$&$\FiD\;\FiS\;\KD$&$\FiC\;\FiH\;\SeS\;\ES\;\TeS\;\QD\;\KH$&$\KD$&$\KH$&0 &0 &0 &0 &0 &0 &5 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 4\_2\_0 &$\ThH\;\KC$&$\FiD\;\FiS$&$\FiC\;\FiH\;\SeS\;\ES\;\TeS\;\QD$&$\ThH$&$\ES$&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+
+ 4\_2\_1 &$\KC$&$\FiD\;\FiS$&$\FiC\;\FiH\;\SeS\;\TeS\;\QD$&$\FiD$&&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 4\_3\_0 &$\KC$&$\FiS$&$\FiC\;\FiD\;\FiH\;\SeS\;\TeS\;\QD$&$\KC$&&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+
+ 4\_3\_1 &&$\FiS$&$\FiC\;\FiD\;\FiH\;\SeS\;\TeS\;\QD\;\KC$&$\FiS$&&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+ \rowcolor{myrowcolor}
+\hline 
+
+
+ 5\_0\_0 &$\SiH\;\TeC\;\JC\;\KS$&$\TwD\;\FoD\;\FoH\;\QC$&$\FiC\;\FiD\;\FiH\;\FiS\;\SeS\;\TeS\;\QD\;\KC$&$\SiH$&$\FiH$&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+
+ 5\_0\_1 &$\TeC\;\JC\;\KS$&$\TwD\;\FoD\;\FoH\;\QC$&$\FiC\;\FiD\;\FiS\;\SeS\;\TeS\;\QD\;\KC$&$\TwD$&&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 5\_1\_0 &$\TeC\;\JC\;\KS$&$\FoD\;\FoH\;\QC$&$\TwD\;\FiC\;\FiD\;\FiS\;\SeS\;\TeS\;\QD\;\KC$&$\TeC$&&0 &0 &0 &0 &0 &0 &5 &A\\ \hline
+
+ 5\_1\_1 &$\JC\;\KS$&$\FoD\;\FoH\;\QC$&$\TwD\;\FiC\;\FiD\;\FiS\;\SeS\;\TeC\;\TeS\;\QD\;\KC$&$\FoD$&$\TwD\;\FiC$&0 &1 &0 &0 &0 &0 &5 &B\\ \hline
+ \rowcolor{myrowcolor}
+
+ 5\_2\_0 &$\JC\;\KS$&$\FoH\;\QC$&$\FiD\;\FiS\;\SeS\;\TeC\;\TeS\;\QD\;\KC$&$\JC$&$\FiD\;\FiS\;\SeS\;\TeC\;\TeS$&2 &1 &1 &0 &0 &0 &5 &A\\ \hline
+
+ 5\_2\_1 &$\KS$&$\FoH\;\QC$&$\QD\;\KC$&$\FoH$&&2 &1 &1 &0 &0 &0 &5 &A\\ \hline
+ \rowcolor{myrowcolor}
+
+ 5\_3\_0 &$\KS$&$\QC$&$\FoH\;\QD\;\KC$&$\KS$&$\KC$&3 &1 &1 &0 &0 &0 &5 &A\\ \hline
+
+ 5\_3\_1 &&$\QC$&$\FoH\;\QD$&$\QC$&$\QD$&3 &2 &1 &0 &0 &0 &5 &B\\ \hline
+\hline 
+
+CleanUp &&&&&&3 &2 &1 &0 &0 &0 &5 &B\\ \hline
 \end{tabular}
 }
 \end{center}
-\caption{Game ID = 18}
+\caption{Score = 13}
 \label{fig:game_18}
 \end{figure}
 

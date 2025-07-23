@@ -12,16 +12,18 @@ if not os.path.isfile(csv_file):
 
 
 
-def trainsinglexgboost(i_dck, id_gamma):
+def trainsinglexgboost(i_dck):
 
+    id_gamma = 0
     gamma = gammas[id_gamma]
-    df = pd.read_parquet(f"../PRQ/D{i_dck}")
+    df = pd.read_parquet(f"../PRQ2/D{i_dck}_1000_12")
 
-    os.makedirs(f"../MDL/D{i_dck}", exist_ok=True)
+    os.makedirs(f"../MDL2/D{i_dck}", exist_ok=True)
 
     X = df.drop(["SGM", "D"], axis=1)
     y = df["SGM"]
-    
+    y = np.ceil(y*100)
+    # import pdb; pdb.set_trace()
     # mask = (df.H== 0)  & (df.P==1) & (df['T'] == 0) 
     # mask = (df.H==5) & (df.A==3) & (df.B == 6) & (df.W == 0) 
     # mask = df.H == 4
@@ -55,7 +57,7 @@ def trainsinglexgboost(i_dck, id_gamma):
     "tree_method": "gpu_hist",         # use GPU accelerated histogram algorithm
     "predictor": "gpu_predictor",
     'lambda':0,
-    'gamma':gamma
+    'gamma':5
     # "gamma":0.01
     # optional: GPU for inference
     # "subsample": 0.2
@@ -73,30 +75,32 @@ def trainsinglexgboost(i_dck, id_gamma):
         num_boost_round=500,
         evals=evals,
         evals_result = evals_result,
-        verbose_eval=100, # prints every boosting round
-        early_stopping_rounds=100
+        verbose_eval=50 # prints every boosting round
+        # early_stopping_rounds=100
     )
-    bins = np.arange(0, 1.05, 0.05)  # bins from 0 to 1 in steps of 0.05
+    model.save_model(f"../MDL/D{i_dck}/model_1000_{i_dck}_cc.xgb")
+    # bins = np.arange(0, 1.05, 0.05)  # bins from 0 to 1 in steps of 0.05
 
-    rmse_values = evals_result['train']['rmse']
+    # rmse_values = evals_result['train']['rmse']
     
-    df = pd.DataFrame({
-    'Deck': i_dck,
-    'Gamma_ID': id_gamma,
-    'Iter': range(len(rmse_values)),
-    'RMSE': rmse_values
-    })
+    # df = pd.DataFrame({
+    # 'Deck': i_dck,
+    # 'Gamma_ID': id_gamma,
+    # 'Iter': range(len(rmse_values)),
+    # 'RMSE': rmse_values
+    # })
 
-    df.to_csv(csv_file, mode='a', header=False, index=False)
-    y_pred = np.clip(model.predict(dtrain), 0, 1)
-    # import pdb; pdb.set_trace()
-    max_abs_error = np.abs(y - y_pred)
-    hist, _ = np.histogram(max_abs_error, bins=bins)
+    # df.to_csv(csv_file, mode='a', header=False, index=False)
+    # y_pred = np.clip(model.predict(dtrain), 0, 1)
+    # # import pdb; pdb.set_trace()
+    # max_abs_error = np.abs(y - y_pred)
+    # print(max_abs_error)
+    # hist, _ = np.histogram(max_abs_error, bins=bins)
 
-    percentages = hist / len(max_abs_error) * 100
+    # percentages = hist / len(max_abs_error) * 100
 
-    for i in range(len(hist)):
-        print(f"[{bins[i]:.2f}, {bins[i+1]:.2f}): {percentages[i]:.2f}%")
+    # for i in range(len(hist)):
+    #     print(f"[{bins[i]:.2f}, {bins[i+1]:.2f}): {percentages[i]:.2f}%")
 
 
     # print(f"\n📈{max_abs_error:.4f}")
@@ -106,17 +110,20 @@ def trainsinglexgboost(i_dck, id_gamma):
     #     df_results.to_csv(f"../MDL/D{i}/res{i}_{i_hnd}.csv")
     # # return y, y_pred
     # # Save model if needed
-    model.save_model(f"../MDL/D{i_dck}/model_{i_dck}_{id_gamma}.xgb")
 
 
 if __name__ == '__main__':
 
-    N = 11
+    # N = 11
     # for i_dck in [f'{x}m' for x in range(N)]:
-    for i_dck in [9]:
+    df = pd.read_csv("../PRQ_Sizes.csv")
+    for i_dck in range(10):
+        # import pdb; pdb.set_trace()
+        # size = df[df.Deck == f"D{i_dck}"].Size.values[0]
+        # if 0<= size < 30:
     # for i_dck in list(range(N))+[f'{x}m' for x in range(N)]:
-        for id_gamma in [0]:
-            trainsinglexgboost(i_dck, id_gamma)
+        # for id_gamma in [0]:
+        trainsinglexgboost(i_dck)
 
     # df_eval = pd.DataFrame(evals_result["train"])
     

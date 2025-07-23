@@ -1,14 +1,15 @@
 import torch, math 
 from SelfPlay import playrandom
 # from NeuralNet import SNN
-from Imports import d_snw, d_scr
+from Imports import d_rus, d_scr
 import torch, sys, os, math
-from Imports import device, INT8, INT32, d_snw, d_scr
+from Imports import device, INT8, INT32, d_rus, d_scr
 # from NeuralNet import SNN, init_weights_zero
 # import torch.nn as nn
 import subprocess, re
 # from PyPDF2 import PdfMerger  
 import xgboost as xgb
+import numpy as np 
 # from tqdm import trange, tqdm
 # import numpy as np 
 
@@ -66,10 +67,10 @@ latex_0 = r"""
 \rowcolor{myrowcolor}
 """
 
-latex_1 = lambda game_id: r"""\end{tabular}
+latex_1 = lambda game_id, score: r"""\end{tabular}
 }
 \end{center}
-\caption{Game ID = """ + str(game_id) + r"""}
+\caption{Score = """ + str(score) + r"""}
 \label{fig:game_""" + str(game_id) + r"""}
 \end{figure}
 
@@ -158,33 +159,73 @@ def tp2(res, f):
         print(card_to_latex[x] + end_char, end='', file=f)
     print('$&', end='',file=f)
    
+def find_score(t):
+
+    res = 0
+    if t[-1] == 1:
+        res += 7
+    else:
+        res -= 7
+
+    return (res+t[2]).item()
 
 if __name__ == "__main__":
 
     N = 100
-    i_dcks = [9]
+    i_dcks = [10]
+    t_dks = torch.load(f"decks_10000.pt")
 
-    for i_dck in i_dcks:
+    wins = {'RR':[],'MR':[], 'RM':[], 'MM':[]}
+    scores = {'RR':[],'MR':[], 'RM':[], 'MM':[]}
+    
+    for i_dck in range(152,153):
 
-        bst = xgb.Booster()
-        bst.load_model(f'../MDL/D{i_dck}/model_{i_dck}_0.xgb')
-        t_dks = torch.load(f"decks_10000.pt")
+        # bst = xgb.Booster()
+        # bst.load_model(f'../MDL/D{i_dck}/model_{i_dck}_cc.xgb')
+        
         t_dck = t_dks[i_dck,:].to(device)
         # res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
         
-        
-        # tw_dks = torch.empty_like(t_dks)
-        # tw_dks[:,res==0] = t_dks[:,res == 1]
-        # tw_dks[:,res==1] = t_dks[:,res == 0]
-        # tw_dks[:,res==3] = t_dks[:,res == 3]
-        # if isinstance(i_dck, str):
+       
 
-        #     t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
-        # else:
-        #     t_dck = t_dks[i_dck,:].to(device)
-            
-        t_fsc, t_ltx_ = playrandom(t_dck, N=N, x_alx = bst, x_bob = bst, to_latex = True)
+        models = [('R','random')]
+        # models = [('R','random'), ('M',bst)]
+        for mdl0 in models:
+            for mdl1 in models:
+
+                code = f'{mdl0[0]}{mdl1[0]}'
+                t_fsc, t_scr_, t_ltx_ = playrandom(t_dck, N=N, x_alx = mdl0[1] , x_bob = mdl1[1], to_latex = True)
+                win   = 100*(t_fsc >= 0).sum().item()/N
+                score = t_fsc.sum().item() / N 
+                wins[code].append(win)
+                scores[code].append(score)
+                print(f'{code}{i_dck:<3} | Alex wins = {100*(t_fsc >= 0).sum().item() / N:6.2f}% | Average Score = {t_fsc.sum().item() / N:7.2f}')
+
+    # # import pdb; pdb.set_trace()
+    # print(100*"**")
+    # for key in wins.keys():
+    #     # import pdb; pdb.set_trace()
+    #     print(f'{key}: Average Win Rate = {np.array(wins[key]).mean():6.2f} | Average Score = {np.array(scores[key]).mean():7.2f}')
+
         
+    # import pdb; pdb.set_trace()
+    # wins = np.array(wins)
+    # scores = np.array(scores)
+    # print(f'Average Win Rate = {wins.mean():6.2f} | Average Score = {scores.mean():7.2f}')
+
+    # import pdb; pdb.set_trace()
+        # break 
+        # import pdb; pdb.set_trace()
+        # a2 = torch.sum(t_fsc2)
+        # import pdb; pdb.set_trace()
+        # t_fsc3, t_scr_, t_ltx_ = playrandom(t_dck, N=N, x_alx = 'random' , x_bob = 'random', to_latex = True)
+        # a3 = torch.sum(t_fsc3)
+        
+        # t_fsc4, t_scr_, t_ltx_ = playrandom(t_dck, N=N, x_alx = bst , x_bob = bst, to_latex = True)
+        # a4 = torch.sum(t_fsc4)
+
+        # a= torch.max(torch.tensor([a1,a2,a3,a4]))
+        # import pdb; pdb.set_trace()
         # i_gin = 0
 
         # with tqdm(seeds, desc="SelfPlaying:") as pbar:
@@ -213,6 +254,7 @@ if __name__ == "__main__":
             # if i_smp != 111:
             #     continue
             # print(i_smp)
+            # import pdb; pdb.set_trace()
             t_ltx = {key:t_ltx_[key][i_smp,:] for key in t_ltx_.keys()}
         
             with open(f"games/game_{i_smp}.txt", "w") as f:
@@ -241,7 +283,7 @@ if __name__ == "__main__":
                             lay     =  tp(clt_act[0],1)
                             pck     =  tp(clt_act[1],1)
                             dlt     =  t_scr[d_scr['pts_dlt']]
-                            lst     =  t_snw[d_snw['lst_pck']]
+                            lst     =  t_snw[d_rus['lst_pck']]
                             # if f'{i_trn}_{i_ply}' == '3_1':
                             #     import pdb; pdb.set_trace()
                             if lst == 1:   lst = 'A'
@@ -259,8 +301,8 @@ if __name__ == "__main__":
 
                             # import pdb; pdb.set_trace()
                             # \textbf{Acl} &  \textbf{Bcl} & \textbf{Apt} &  \textbf{Bpt} & \textbf{Asr} & \textbf{Bsr} & \textbf{$\Delta$}\\
-                            a_clb, a_sur, a_pt = t_snw[d_snw['a_clb']], t_snw[d_snw['a_sur']], t_snw[d_snw['a_pts']] 
-                            b_clb, b_sur, b_pt = t_snw[d_snw['b_clb']], t_snw[d_snw['b_sur']], t_snw[d_snw['b_pts']] 
+                            a_clb, a_sur, a_pt = t_snw[d_rus['a_clb']], t_snw[d_rus['a_sur']], t_snw[d_rus['a_pts']] 
+                            b_clb, b_sur, b_pt = t_snw[d_rus['b_clb']], t_snw[d_rus['b_sur']], t_snw[d_rus['b_pts']] 
 
                             a_clb += t_scr[d_scr['a_clb']]
                             b_clb += t_scr[d_scr['b_clb']]
@@ -299,8 +341,8 @@ if __name__ == "__main__":
                 tp2(torch.empty(0),f)
                 tp2(torch.empty(0),f)
                 t_snw  = t_ltx['t_snw_6'] 
-                a_clb, a_sur, a_pt = t_snw[d_snw['a_clb']], t_snw[d_snw['a_sur']], t_snw[d_snw['a_pts']] 
-                b_clb, b_sur, b_pt = t_snw[d_snw['b_clb']], t_snw[d_snw['b_sur']], t_snw[d_snw['b_pts']] 
+                a_clb, a_sur, a_pt = t_snw[d_rus['a_clb']], t_snw[d_rus['a_sur']], t_snw[d_rus['a_pts']] 
+                b_clb, b_sur, b_pt = t_snw[d_rus['b_clb']], t_snw[d_rus['b_sur']], t_snw[d_rus['b_pts']] 
 
                 a_clb += t_scr[d_scr['a_clb']]
                 b_clb += t_scr[d_scr['b_clb']]
@@ -315,7 +357,7 @@ if __name__ == "__main__":
                 print(f'{lst}', end='',file=f)
                 
                 print(r"\\ \hline", file=f)
-                print(latex_1(i_smp), file=f)
+                print(latex_1(i_smp, find_score(t_scr_[i_smp,:])), file=f)
 
 
 

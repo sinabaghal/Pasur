@@ -2,7 +2,7 @@ import torch, sys, os, math
 import torch.nn.functional as F
 from FindMoves import find_moves
 from ApplyMoves import apply_moves
-from Imports import device, INT8, INT32, d_snw, d_scr
+from Imports import device, INT8, INT32, d_rus, d_scr
 from CleanPool import cleanpool 
 # from NeuralNet import SNN, init_weights_zero
 # import torch.nn as nn
@@ -36,140 +36,138 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
     d_msk['cur_s'] = torch.tensor([1,1,1,1,2,3,1,1,1,1],dtype = INT8, device=device)
     d_msk['cur_52']= t_m52
 
-    i_pad_n, _       = pad_helper(d_msk, 'n') 
-    i_pad_k, t_pad_k = pad_helper(d_msk, 'k')
-    i_pad_q, t_pad_q = pad_helper(d_msk, 'q')
-    i_pad_j, _       = pad_helper(d_msk, 'j')
-    d_pad = {'i_pad_n': i_pad_n, 'i_pad_k':i_pad_k, 'i_pad_q':i_pad_q, 'i_pad_j':i_pad_j, 't_pad_k':t_pad_k, 't_pad_q':t_pad_q}
-
+    i_pdn, _     = pad_helper(d_msk, 'n') 
+    i_pdk, t_pdk = pad_helper(d_msk, 'k')
+    i_pdq, t_pdq = pad_helper(d_msk, 'q')
+    i_pdj, _       = pad_helper(d_msk, 'j')
+    d_pad = {'i_pdn': i_pdn, 'i_pdk':i_pdk, 'i_pdq':i_pdq, 'i_pdj':i_pdj, 't_pdk':t_pdk, 't_pdq':t_pdq}
     t_ltx   = {}
-
-    
     
     # t_dck   = t_dck.repeat(N,1)
     clt_dck = t_dck.clone()
-    t_inf   = torch.zeros((N,3,52), dtype=INT8, device=device)
-    # t_idx   = torch.arange(t_inf.shape[0], device=t_dck.device).unsqueeze(1).expand(-1, 4)
-    # t_inf[t_idx,0,t_dck[:,:4]] = 3
-    t_inf[:,0,t_dck[:4]] = 3
+    t_gme   = torch.zeros((N,3,52), dtype=INT8, device=device)
+    # t_idx   = torch.arange(t_gme.shape[0], device=t_dck.device).unsqueeze(1).expand(-1, 4)
+    # t_gme[t_idx,0,t_dck[:,:4]] = 3
+    t_gme[:,0,t_dck[:4]] = 3
 
     t_dck  = t_dck[4:]
-    # t_idx  = torch.arange(t_inf.shape[0], device=t_dck.device).unsqueeze(1).expand(-1, 4)
-    t_nnd  = torch.zeros((1,52), dtype =torch.float32, device=device)
-    t_scr  = torch.zeros((t_inf.shape[0],len(d_scr)), device=device,dtype=INT8)
+    # t_idx  = torch.arange(t_gme.shape[0], device=t_dck.device).unsqueeze(1).expand(-1, 4)
+    t_dlt  = torch.zeros((1,52), dtype =torch.float32, device=device)
+    t_scr  = torch.zeros((t_gme.shape[0],len(d_scr)), device=device,dtype=INT8)
     
     
 
     for i_hnd in range(6):
 
-        t_snw     = torch.zeros((t_inf.shape[0],len(d_snw)), device=device,dtype=INT8)
+        t_rus     = torch.zeros((t_gme.shape[0],len(d_rus)), device=device,dtype=INT8)
         ct_scr    = t_scr[:,[0,1,3]].clone()
         
         if i_hnd > 0: 
-            t_nnd[:,clt_dck[:8*i_hnd+4]] = 1
+            t_dlt[:,clt_dck[:8*i_hnd+4]] = 1
         # torch.cuda.empty_cache()
-        t_inf[:,0, t_dck[:4]]  = 1
-        t_inf[:,0, t_dck[4:8]] = 2
+        t_gme[:,0, t_dck[:4]]  = 1
+        t_gme[:,0, t_dck[4:8]] = 2
         t_dck                        = t_dck[8:]
         
         if to_latex: t_ltx[f't_scr_{i_hnd}'] = t_scr.squeeze(0).clone()
 
         for i_trn in range(4):
             for i_ply in range(2):
+
+                
                 
                 i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
-                # print(i_cod, t_inf.shape[0])
+                # print(i_cod, t_gme.shape[0])
 
-                t_act, c_act  = find_moves(t_inf,i_ply, d_msk, d_pad) 
-
-
-                if to_latex: t_ltx['t_dck_'+i_cod] = t_inf[:,0,:].clone()
-
-                t_inf          = torch.repeat_interleave(t_inf, c_act, dim=0)
-                t_snw          = torch.repeat_interleave(t_snw, c_act, dim=0)
-                t_inf, t_snw   = apply_moves(t_inf, t_act, t_snw, d_msk,  i_hnd, i_ply, i_trn)
+                t_act, c_act  = find_moves(t_gme,i_ply, d_msk, d_pad) 
 
 
-                # t_prq = torch.zeros((t_sid.shape[0], 60), dtype=torch.int8, device=device)
-                # t_prq[:,t_m52]       = t_mdl[t_sid[:,0]]
-                # t_prq[:,53:56]       = t_scr[t_sid[:,1]] #53,54,55
-                # t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device) #56,57,58
+                if to_latex: t_ltx['t_dck_'+i_cod] = t_gme[:,0,:].clone()
 
-                # t_prq[torch.logical_and(F.pad(t_nnd, (0, 8))==1, t_prq==0)] = -127
+                # import pdb; pdb.set_trace()
+                t_gme          = torch.repeat_interleave(t_gme, c_act, dim=0)
+                t_rus          = torch.repeat_interleave(t_rus, c_act, dim=0)
+                t_gme, t_rus   = apply_moves(t_gme, t_act, t_rus, d_msk,  i_hnd, i_ply, i_trn)
+                # import pdb; pdb.set_trace()
+                t_cmp         = t_gme[:,1,:]-t_gme[:,2,:]
+                t_lpm         = torch.logical_and(t_gme[:, 0, :] == 0, (t_cmp != 0) & (t_cmp.abs() < 5))
+                t_cmp[t_lpm]  =  110+t_cmp[t_lpm] # Lay Pick Mask
+                t_cmp[torch.logical_and(t_gme[:,0,:]==3, t_cmp==0)] = 110 ### Card was already in the pool 
+                t_cmp[torch.logical_and(t_gme[:,0,:]==1, t_cmp==0)] = 100  ### Player has the card
+                t_cmp[torch.logical_and(t_gme[:,0,:]==2, t_cmp==0)] = 105  ### Player has the card
                 #  A	B	W	H	T	P	D
-                t_xgl                 = t_inf[:,1,:]-t_inf[:,2,:]
-                t_xgl[torch.logical_and(t_inf[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
-                t_xgl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
+                # t_xgl[torch.logical_and(t_gme[:,0,:]==3, t_xgl==0)] = 110        ### Card was already in the pool 
+                # t_xgl[torch.logical_and(t_gme[:,0,:]==i_ply+1, t_xgl==0)] = 100  ### Player has the card
 
-                t_xgb          = torch.zeros((t_inf.shape[0],58), dtype=torch.int8, device=device)
-                t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False,False,False], device=device)],dim=0)] = t_xgl
-                t_xgb[torch.logical_and(F.pad(t_nnd, (0, 6))==1, t_xgb==0)] = -127
-                t_xgb[:,52:55] = torch.repeat_interleave(ct_scr, c_act, dim=0)
-                t_xgb[:,55:58] = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device)
-                t_xgb_np = t_xgb.cpu().numpy()  
-                n_xgb = xgb.DMatrix(t_xgb_np)  
+                t_prq          = torch.zeros((t_gme.shape[0],58), dtype=torch.int8, device=device)
+                t_prq[:,torch.cat([t_m52,torch.tensor(6*[False], device=device)],dim=0)] = t_cmp
+                t_prq[torch.logical_and(F.pad(t_dlt, (0, 6))==1, t_prq==0)] = -127
+
+                #  t_prq[:,53:56]       = t_scr[t_fgm[:,1]] #53,54,55
+                #  t_prq[:,56:59]       = torch.tensor([i_hnd,i_trn,i_ply
+                                                         
+                t_prq[:,52:55] = torch.repeat_interleave(ct_scr, c_act, dim=0)
+                t_prq[:,55:58] = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device)
+                n_xgb = xgb.DMatrix(t_prq.cpu().numpy())  
                 
-                
-                # t_xgb[:,52:] = t_scr[t_sid[:,1]]
-
-
-                # t_xgl                 = t_inf[:,1,:]-t_inf[:,2,:]
-                # t_xgl[torch.logical_and(t_inf[:,0,:]==3, t_xgl==0)] = 110  ## already in pool
-                # t_xgl[torch.logical_and(t_inf[:,0,:]==i_ply+1, t_xgl==0)] = 100 ## holds
-
-                # t_xgb          = torch.zeros((t_inf.shape[0],56), dtype=torch.int8, device=device)
-                # t_xgb[:,torch.cat([t_m52,torch.tensor([False,False,False,False], device=device)],dim=0)] = t_xgl
-                # t_xgb[torch.logical_and(F.pad(t_nnd, (0, 4))==1, t_xgb==0)] = -127
-                
-
                
                 i_max         = c_act.max()
                 t_msk         = torch.arange(i_max, device=device).unsqueeze(0) < c_act.unsqueeze(1)
                 t_mtx         = torch.zeros_like(t_msk, device=device, dtype=torch.float32)
 
                 if i_ply == 0:
-                    if x_alx == 'random':
 
+                    if x_alx == 'random':
                         t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
                     else:
-                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_alx.predict(n_xgb)).to(device),0.00001)
+                        # import pdb; pdb.set_trace()
+                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_alx.predict(n_xgb)/100).to(device),0.00001)
                 else:
                     if x_bob == 'random':
                         
                         t_mtx[t_msk]  = torch.tensor(1,dtype=torch.float32, device=device) 
                     else:
-                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_bob.predict(n_xgb)).to(device),0.00001)
+                        t_mtx[t_msk]  = torch.clamp_min(torch.from_numpy(x_bob.predict(n_xgb)/100).to(device),0.00001)
 
                 
                 t_smp         = torch.multinomial(t_mtx, num_samples=1).squeeze(1) 
 
                 t_gps         = torch.cat([torch.tensor([0], device=device), c_act.cumsum(0)[:-1]]) # group starts 
-                m_exs         = torch.zeros(t_inf.shape[0], dtype=torch.bool, device=device)
+                m_exs         = torch.zeros(t_gme.shape[0], dtype=torch.bool, device=device)
                 
                 m_exs[t_gps + t_smp] = True 
-                
-                t_inf         = t_inf[m_exs]
-                t_snw         = t_snw[m_exs]
+                # import pdb; pdb.set_trace()
+                t_gme         = t_gme[m_exs]
+                t_rus         = t_rus[m_exs]
+                # print(t_rus[:,:3], t_rus[:,-4:])
+                # import pdb; pdb.set_trace()
+                # print(t_rus)
+                # print("Sum of Clubs: ", t_rus[:,:2].sum().item())
+                # print("Shape: ", t_rus.shape[0])
+                # import pdb; pdb.set_trace()
+                # print(t_rus)
+                # import pdb; pdb.set_trace()
                
 
                
                 if to_latex:
 
                     t_ltx['t_act_'+i_cod] =  t_act[m_exs].clone()
-                    t_ltx['t_snw_'+i_cod] =  t_snw.squeeze(0).clone()
+                    t_ltx['t_snw_'+i_cod] =  t_rus.squeeze(0).clone()
 
         
-
-        # d_snw = {'a_clb':0,'b_clb':1,'pts_dlt':2, 'lst_pck':3,'a_pts':4,'a_sur':5,'b_pts':6,'b_sur':7}
+        # print(10*"**")
+        # d_rus = {'a_clb':0,'b_clb':1,'pts_dlt':2, 'lst_pck':3,'a_pts':4,'a_sur':5,'b_pts':6,'b_sur':7}
+        # if i_hnd ==  5: import pdb; pdb.set_trace()
         
         if i_hnd ==  5: 
-            t_inf, t_snw = cleanpool(t_inf, t_snw, d_msk)
-            # if i_hnd ==  5: import pdb; pdb.set_trace()
+            t_gme, t_rus = cleanpool(t_gme, t_rus, d_msk)
             if to_latex: 
-                t_ltx['t_snw_6'] = t_snw.squeeze(0).clone()
+                t_ltx['t_snw_6'] = t_rus.squeeze(0).clone()
 
-        t_snw[:,d_snw['pts_dlt']]   = t_snw[:,d_snw['a_pts']] + t_snw[:,d_snw['a_sur']] - t_snw[:,d_snw['b_pts']] - t_snw[:,d_snw['b_sur']]
-        t_scr[:,:3] = t_scr[:,:3]+t_snw[:,:3].clone()
+        t_rus[:,d_rus['pts_dlt']]   = t_rus[:,d_rus['a_pts']] + t_rus[:,d_rus['a_sur']] - t_rus[:,d_rus['b_pts']] - t_rus[:,d_rus['b_sur']]
+        # if i_hnd ==  5: import pdb; pdb.set_trace()
+        t_scr[:,:3] = t_scr[:,:3]+t_rus[:,:3].clone()
         # if i_hnd ==  5: import pdb; pdb.set_trace()
         t_mal = t_scr[:,d_scr['a_clb']]>=7
         t_mbb = t_scr[:,d_scr['b_clb']]>=7
@@ -179,28 +177,30 @@ def playrandom(t_dck, N=1, x_alx = 'random', x_bob = 'random', to_latex = False)
         t_scr[:,0:2].masked_fill_(t_mcl.unsqueeze(-1), 0)
 
 
-        t_inf = t_inf[:,0,:].unsqueeze(1)
-        t_inf = F.pad(t_inf, (0, 0, 0, 2))
+        t_gme = t_gme[:,0,:].unsqueeze(1)
+        t_gme = F.pad(t_gme, (0, 0, 0, 2))
 
     # import pdb; pdb.set_trace()
     t_fsc = 7*(2*(t_scr[:,-1] % 2)-1)+t_scr[:,-2]
+    # print(t_fsc)
+    # import pdb; pdb.set_trace()
     # t_win = (t_fsc>=0).sum()/t_fsc.shape[0]
-    return t_fsc, t_ltx
+    return t_fsc, t_scr, t_ltx
 
 
 
 if __name__ == "__main__":
 
-    N = 10000
+    N = 1
     csv_file = '../MDL/scores_log.csv'
     res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
     
     t_dks = torch.load(f"decks_10000.pt")
     
-    tw_dks = torch.empty_like(t_dks)
-    tw_dks[:,res==0] = t_dks[:,res == 1]
-    tw_dks[:,res==1] = t_dks[:,res == 0]
-    tw_dks[:,res==3] = t_dks[:,res == 3]
+    # tw_dks = torch.empty_like(t_dks)
+    # tw_dks[:,res==0] = t_dks[:,res == 1]
+    # tw_dks[:,res==1] = t_dks[:,res == 0]
+    # tw_dks[:,res==3] = t_dks[:,res == 3]
 
 
     if not os.path.isfile(csv_file):
@@ -214,29 +214,31 @@ if __name__ == "__main__":
     
     # gamma_ids = [0,1,10]
     M = 11
-    for i_dck in list(range(M))+[f'{x}m' for x in range(M)]:
-
-        models = {id_gamma:load_model(i_dck, id_gamma) for id_gamma in gamma_ids}
+    for i_dck in [9]:
+        models = {}
+        # models = {id_gamma:load_model(i_dck, id_gamma) for id_gamma in gamma_ids}
         models[-1] = 'random'
+        t_dck = t_dks[i_dck,:].to(device)
         
-        if isinstance(i_dck, str):
+        # if isinstance(i_dck, str):
 
-            t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
-        else:
-            t_dck = t_dks[i_dck,:].to(device)
+        #     t_dck = tw_dks[int(i_dck[:-1]),:].to(device)
+        # else:
+        #     t_dck = t_dks[i_dck,:].to(device)
 
         scores = {}
         # gamma_ids + [-1]
-        for id_gamma_1 in [0,-1]:
-            for id_gamma_2 in [0,-1]:
+        for id_gamma_1 in [-1]:
+            for id_gamma_2 in [-1]:
 
                 t_fsc, _ = playrandom(t_dck, N=N, x_alx = models[id_gamma_1] , x_bob = models[id_gamma_2])
-                
+                break 
+                import pdb; pdb.set_trace()
                 scores[(id_gamma_1, id_gamma_2)] = (t_fsc>0).sum().item() / t_fsc.shape[0]
                 
 
-        df = pd.DataFrame([{'DECK': i_dck, 'Alex_Gamma': k[0], 'Bob_Gamma': k[1], 'Win Rate': v} for k, v in scores.items()])
-        df.to_csv(csv_file, mode='a', header=False, index=False)
+        # df = pd.DataFrame([{'DECK': i_dck, 'Alex_Gamma': k[0], 'Bob_Gamma': k[1], 'Win Rate': v} for k, v in scores.items()])
+        # df.to_csv(csv_file, mode='a', header=False, index=False)
         # import pdb; pdb.set_trace()
 
         # csv_file = '../MDL/scores_log.csv'

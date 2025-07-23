@@ -733,10 +733,9 @@ if __name__ == "__main__":
         # import pdb; pdb.set_trace()
 
     ALL_LOGS  = [10] 
-    ALL_ITERS = [1500,2000,10000]
+    ALL_ITERS = [800]
 
-    for tr in range(2):
+    for tr in range(5):
         for LOG_TOL in ALL_LOGS:
             for I_ITER in ALL_ITERS:
                 run_cfr(LOG_TOL,I_ITER,tr)
-    

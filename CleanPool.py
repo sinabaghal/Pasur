@@ -17,7 +17,7 @@ def cleanpool(t_gme, t_rus, d_msk):
     
     t_gme[tm_la,1,:] += 50*t_pla
     t_gme[tm_lb,2,:] += 50*t_plb
-
+    # import pdb; pdb.set_trace()
     t_rus[tm_la,d_rus['a_clb']] += t_pla[:,tm_c].count_nonzero(dim=1).to(INT8)
     t_rus[tm_lb,d_rus['b_clb']] += t_plb[:,tm_c].count_nonzero(dim=1).to(INT8)
 
