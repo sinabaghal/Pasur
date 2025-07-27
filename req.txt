@@ -3,4 +3,4 @@ pyarrow==20.0.0
 pandas==2.3.0
 dask==2025.5.1
 tqdm 
-pip install xgboost==1.7.3
+xgboost==1.7.3

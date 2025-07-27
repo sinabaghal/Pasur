@@ -18,17 +18,17 @@ def get_col(i):
 
     if i<52:
         return f"C{i}"
-    elif i == 52: return "SGM"
-    elif i == 53: return "A"
-    elif i == 54: return "B"
-    elif i == 55: return "W"
-    elif i == 56: return "H"
-    elif i == 57: return "T"
-    elif i == 58: return "P"
+    elif i == 52: return "A"
+    elif i == 53: return "B"
+    elif i == 54: return "W"
+    elif i == 55: return "H"
+    elif i == 56: return "T"
+    elif i == 57: return "P"
+    elif i == 58: return "SGM"
     elif i == 59: return "D"
 
 
-i_cods = [
+i_htps = [
             f'{i_hnd}_{i_trn}_{i_ply}'
             for i_hnd in range(6)
             for i_trn in range(4)
@@ -103,8 +103,8 @@ def simulategamerun(t_stk):
 
                 gc.collect()
                 torch.cuda.empty_cache()
-                i_cod         = f'{i_hnd}_{i_trn}_{i_ply}'
-                # print(i_cod)
+                i_htp         = f'{i_hnd}_{i_trn}_{i_ply}'
+                # print(i_htp)
                 i_sid = t_fgm.shape[0]
                 t_act, t_brf  = find_moves(t_gme,i_ply, d_msk, d_pad) 
                 
@@ -118,7 +118,7 @@ def simulategamerun(t_stk):
                 t_edg         = repeatedblocks(torch.arange(t_fgm.shape[0], device=device),c_scr,t_brf)
                 c_edg         = t_brf.repeat_interleave(c_scr)
                 t_sgm = 1/torch.repeat_interleave(c_edg, c_edg)
-                d_fls[f'c_edg_{i_cod}'] = c_edg.to(device='cpu')
+                d_fls[f'c_edg_{i_htp}'] = c_edg.to(device='cpu')
                 del c_edg
 
                 t_cl1         = repeatedblocks(t_fgm[:,1], c_scr, t_brf)
@@ -143,26 +143,26 @@ def simulategamerun(t_stk):
 
                 # assert t_sgm.shape[0] == t_cmp.shape[0]
 
-                d_fls[f'i_sid_{i_cod}'] = i_sid #TODO
-                # d_fls[f't_sgm_{i_cod}'] = torch.zeros_like(t_sgm, device=device).to(torch.float32)
-                d_fls[f't_sgm_{i_cod}'] = t_sgm.to(torch.float32).to(device='cpu') #TODO:64
-                # d_fls[f't_sgm_{i_cod}'] = t_sgm.to(torch.float32).to(device='cpu') #TODO:64
-                d_fls[f't_edg_{i_cod}'] = t_edg.contiguous().to(device='cpu') #TODO
-                # d_fls[f't_edg_{i_cod}'] = t_edg.contiguous().to(device='cpu') #TODO
-                # d_fls[f't_sgm_{i_cod}'] = torch.round(t_sgm*255).to(torch.uint8)
-                # d_fls[f'c_edg_{i_cod}'] = c_edg.contiguous().to(device='cpu')
-                # d_fls[f't_brf_{i_cod}'] = t_brf
+                d_fls[f'i_sid_{i_htp}'] = i_sid #TODO
+                # d_fls[f't_sgm_{i_htp}'] = torch.zeros_like(t_sgm, device=device).to(torch.float32)
+                d_fls[f't_sgm_{i_htp}'] = t_sgm.to(torch.float32).to(device='cpu') #TODO:64
+                # d_fls[f't_sgm_{i_htp}'] = t_sgm.to(torch.float32).to(device='cpu') #TODO:64
+                d_fls[f't_edg_{i_htp}'] = t_edg.contiguous().to(device='cpu') #TODO
+                # d_fls[f't_edg_{i_htp}'] = t_edg.contiguous().to(device='cpu') #TODO
+                # d_fls[f't_sgm_{i_htp}'] = torch.round(t_sgm*255).to(torch.uint8)
+                # d_fls[f'c_edg_{i_htp}'] = c_edg.contiguous().to(device='cpu')
+                # d_fls[f't_brf_{i_htp}'] = t_brf
                 
-                t_cmps[i_cod]  = t_cmp.to(device='cpu')
-                t_fgms[i_cod]  = t_fgm.to(device='cpu')
+                t_cmps[i_htp]  = t_cmp.to(device='cpu')
+                t_fgms[i_htp]  = t_fgm.to(device='cpu')
                 del t_cmp, t_sgm, t_lpm
-                # t_cmps[i_cod]  = t_cmp.clone().to(device='cpu')
-                # t_fgms[i_cod]  = t_fgm.clone().to(device='cpu')
-                # d_fls[f'i_sid_{i_cod}'] = t_fgm.shape[0] #TODO
+                # t_cmps[i_htp]  = t_cmp.clone().to(device='cpu')
+                # t_fgms[i_htp]  = t_fgm.clone().to(device='cpu')
+                # d_fls[f'i_sid_{i_htp}'] = t_fgm.shape[0] #TODO
 
 
-                # t_nns[i_cod]  = t_cmp
-                # t_infs[i_cod]  = t_gme
+                # t_nns[i_htp]  = t_cmp
+                # t_infs[i_htp]  = t_gme
         
 
         # d_scr = {'a_clb':0, 'b_clb':1, 'pts_dlt':2, 'max_clb':3}
@@ -245,7 +245,7 @@ def simulategamerun(t_stk):
 
 
 
-def find_reach_probs(d_fls, dt_edg, tr_sgm, i_cfr, i_hnd):
+def find_reach_probs(d_fls, gt_edg, g_sgm, i_cfr, i_hnd):
 
     i_h = d_fls[f't_fgm_{i_hnd -1}'] if i_hnd > 0 else 1
     t_rpr = torch.ones(i_h, dtype = torch.float32, device=device) #TODO:64
@@ -253,17 +253,17 @@ def find_reach_probs(d_fls, dt_edg, tr_sgm, i_cfr, i_hnd):
     for i_trn in range(4):
         for i_ply in range(2):
             
-            i_cod            = f'{i_hnd}_{i_trn}_{i_ply}'
+            i_htp            = f'{i_hnd}_{i_trn}_{i_ply}'
             # import pdb; pdb.set_trace()
-            t_sgm = torch.ones_like(tr_sgm[f't_sgm_{i_cod}']) if i_ply == i_cfr else tr_sgm[f't_sgm_{i_cod}']
-            t_edg          = dt_edg[f't_edg_{i_cod}']
+            t_sgm = torch.ones_like(g_sgm[i_htp]) if i_ply == i_cfr else g_sgm[i_htp]
+            t_edg          = gt_edg[i_htp]
             # import pdb; pdb.set_trace()
-            d_rpr[i_cod]   = t_sgm*t_rpr[t_edg]
-            t_rpr          = d_rpr[i_cod].clone()
+            d_rpr[i_htp]   = t_sgm*t_rpr[t_edg]
+            t_rpr          = d_rpr[i_htp].clone()
 
     return d_rpr
 
-def find_reach_probs2(d_fls, tr_sgm, i_cfr):
+def find_reach_probs2(d_fls, g_sgm, i_cfr):
 
 
     d_rpr = {}
@@ -272,14 +272,14 @@ def find_reach_probs2(d_fls, tr_sgm, i_cfr):
         for i_trn in range(4):
             for i_ply in range(2):
                 
-                i_cod            = f'{i_hnd}_{i_trn}_{i_ply}'
-                t_sgm = torch.ones_like(d_fls[f't_sgm_{i_cod}']) if i_ply == i_cfr else tr_sgm[f't_sgm_{i_cod}']
+                i_htp            = f'{i_hnd}_{i_trn}_{i_ply}'
+                t_sgm = torch.ones_like(d_fls[i_htp]) if i_ply == i_cfr else g_sgm[i_htp]
                 # if i_hnd == 1: import pdb; pdb.set_trace()
-                t_edg          = d_fls[f't_edg_{i_cod}']
-                d_rpr[i_cod]   = t_sgm*t_rpr[t_edg]
-                # print(d_fls[f'i_sid_{i_cod}'], t_rpr.shape[0])
-                # assert d_fls[f'i_sid_{i_cod}'] ==  t_rpr.shape[0]
-                t_rpr          = d_rpr[i_cod].clone()
+                t_edg          = d_fls[i_htp]
+                d_rpr[i_htp]   = t_sgm*t_rpr[t_edg]
+                # print(d_fls[f'i_sid_{i_htp}'], t_rpr.shape[0])
+                # assert d_fls[f'i_sid_{i_htp}'] ==  t_rpr.shape[0]
+                t_rpr          = d_rpr[i_htp].clone()
     
 
         t_lnk = d_fls[f't_lnk_{i_hnd}']  
@@ -292,7 +292,7 @@ def find_reach_probs2(d_fls, tr_sgm, i_cfr):
 
 
 
-# def find_reach_probs3(d_fls, tr_sgm):
+# def find_reach_probs3(d_fls, g_sgm):
 
 
 #     d_rpr = {}
@@ -301,11 +301,11 @@ def find_reach_probs2(d_fls, tr_sgm, i_cfr):
 #         for i_trn in range(4):
 #             for i_ply in range(2):
                 
-#                 i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
-#                 t_sgm =  tr_sgm[f't_sgm_{i_cod}']
-#                 t_edg          = d_fls[f't_edg_{i_cod}']
-#                 d_rpr[i_cod]   = t_sgm*t_rpr[t_edg]
-#                 t_rpr          = d_rpr[i_cod].clone()
+#                 i_htp = f'{i_hnd}_{i_trn}_{i_ply}'
+#                 t_sgm =  g_sgm[f't_sgm_{i_htp}']
+#                 t_edg          = d_fls[f't_edg_{i_htp}']
+#                 d_rpr[i_htp]   = t_sgm*t_rpr[t_edg]
+#                 t_rpr          = d_rpr[i_htp].clone()
 #                 # print(t_rpr.sum().item())
     
 
@@ -326,30 +326,29 @@ def find_futl(d_fls):
     return t_futl
 
 
-def find_utl(i_hnd, t_val, b_flg, d_fls,  dc_edg, dt_edg, tr_sgm, tf_sgms, d_regs, d0_rpr, d1_rpr, alg, TOL, i_cnt):
+def find_utl(i_hnd, t_val, b_flg, d_fls,  gc_edg, gt_edg, g_sgm, a_sgm, d_regs, g_rp0, g_rp1, alg, TOL, i_cnt):
 
-    # d_regs = {f't_reg_{i_cod}': torch.zeros(d_fls[f't_edg_{i_cod}'].shape[0] , dtype = torch.float64, device=device) for i_cod in i_cods}
+    # d_regs = {f't_reg_{i_htp}': torch.zeros(d_fls[f't_edg_{i_htp}'].shape[0] , dtype = torch.float64, device=device) for i_htp in i_htps}
    
     for i_trn in reversed(range(4)):
         for i_ply in reversed(range(2)):
 
-            i_cod  = f'{i_hnd}_{i_trn}_{i_ply}'
+            i_htp  = f'{i_hnd}_{i_trn}_{i_ply}'
+            i_sid  = d_fls[f'i_sid_{i_htp}'] 
 
             if i_ply == 1:   
                 
-                t_ply  = d0_rpr[i_cod] 
-                t_opp  = d1_rpr[i_cod]
+                t_ply  = g_rp0[i_htp] 
+                t_opp  = g_rp1[i_htp]
 
             else:            
                 
-                t_ply  = d1_rpr[i_cod] 
-                t_opp  = d0_rpr[i_cod]
+                t_ply  = g_rp1[i_htp] 
+                t_opp  = g_rp0[i_htp]
 
-            c_edg, t_edg  = dc_edg[f'c_edg_{i_cod}'], dt_edg[f't_edg_{i_cod}']
-            i_sid  = d_fls[f'i_sid_{i_cod}'] 
-            # c_edg, t_edg, t_sgm  = d_fls[f'c_edg_{i_cod}'], d_fls[f't_edg_{i_cod}'], tr_sgm[f't_sgm_{i_cod}']
+            c_edg, t_edg, t_sgm = gc_edg[i_htp], gt_edg[i_htp], g_sgm[i_htp]
+            # c_edg, t_edg, t_sgm  = d_fls[f'c_edg_{i_htp}'], d_fls[f't_edg_{i_htp}'], g_sgm[f't_sgm_{i_htp}']
             # i_sid, d_fls_c_edg, d_fls_t_edg
-            t_sgm         = tr_sgm[f't_sgm_{i_cod}']
             t_tmp         = t_sgm*t_val
             t_pt2         = torch.zeros(i_sid, dtype = torch.float32, device=device)  #TODO:64
             t_pt2.scatter_add_(0, t_edg, t_tmp) 
@@ -357,19 +356,21 @@ def find_utl(i_hnd, t_val, b_flg, d_fls,  dc_edg, dt_edg, tr_sgm, tf_sgms, d_reg
 
             t_val         =  t_pt2.clone()
 
-            t_msk = d_regs[f't_reg_{i_cod}']>=TOL
-            # t_fct = torch.zeros_like(d_regs[f't_reg_{i_cod}']).to(torch.float32) #TODO:64
-            t_fct = torch.zeros(d_regs[f't_reg_{i_cod}'].shape, dtype=torch.float32, device=d_regs[f't_reg_{i_cod}'].device)
+            # t_fct = torch.zeros_like(d_regs[f't_reg_{i_htp}']).to(torch.float32) #TODO:64
+            t_msk = d_regs[i_htp]>=TOL
+            t_fct = torch.zeros(d_regs[i_htp].shape, dtype=torch.float32, device=d_regs[i_htp].device)
             t_fct[t_msk] = i_cnt**1.5/(1+i_cnt**1.5)
             t_fct[~t_msk] = torch.tensor(0.7, device=device).to(torch.float32) #TODO:64
-            if alg == 'cfr':    d_regs[f't_reg_{i_cod}']  = t_fct*d_regs[f't_reg_{i_cod}'] + t_reg
-            elif alg == 'cfr+': d_regs[f't_reg_{i_cod}']  = torch.clamp(d_regs[f't_reg_{i_cod}']+t_reg, min=0.00)
+
+
+            if alg == 'cfr':    d_regs[i_htp]  = t_fct*d_regs[i_htp] + t_reg
+            elif alg == 'cfr+': d_regs[i_htp]  = torch.clamp(d_regs[i_htp]+t_reg, min=0.00)
             
             else:
                 NotImplementedError()
 
             t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)   #TODO:64
-            t_rts = torch.clamp(1000*d_regs[f't_reg_{i_cod}'], min=TOL).to(torch.float32) #TODO:64
+            t_rts = torch.clamp(1000*d_regs[i_htp], min=TOL).to(torch.float32) #TODO:64
             # import pdb; pdb.set_trace()
             t_sum.scatter_add_(0, t_edg, t_rts)
             t_msk          = t_sum[t_edg] <= TOL
@@ -378,13 +379,13 @@ def find_utl(i_hnd, t_val, b_flg, d_fls,  dc_edg, dt_edg, tr_sgm, tf_sgms, d_reg
             
             assert ~torch.isnan(t_sgm).any()
             if b_flg:
-                if   alg == 'cfr' : tf_sgms[f't_sgm_{i_cod}']  = ((1-1/(1+i_cnt))**2)*tf_sgms[f't_sgm_{i_cod}']+t_sgm*t_ply
-                elif alg == 'cfr+': tf_sgms[f't_sgm_{i_cod}']  += (1+i_cnt)*t_sgm*t_ply
+                if   alg == 'cfr' : a_sgm[i_htp]  = ((1-1/(1+i_cnt))**2)*a_sgm[i_htp]+t_sgm*t_ply
+                elif alg == 'cfr+': a_sgm[i_htp]  += (1+i_cnt)*t_sgm*t_ply
             
-            tr_sgm[f't_sgm_{i_cod}']   =  t_sgm.clone()
+            g_sgm[i_htp]   =  t_sgm.clone()
 
         
-    return t_val, tf_sgms,  tr_sgm, d_regs
+    return t_val, a_sgm,  g_sgm, d_regs
 
 if __name__ == "__main__":
 
@@ -398,21 +399,21 @@ if __name__ == "__main__":
         d_fls, t_cmps, t_fgms, t_scrs, t_m52s  = simulategamerun(t_dck.clone())
         # import pdb; pdb.set_trace()
         # d_fls = {k: v.cuda() for k, v in d_fls.items()}
-        tr_sgm = {f't_sgm_{i_cod}': d_fls[f't_sgm_{i_cod}'].to(dtype=torch.float32, device=device) for i_cod in i_cods} #TODO:64
-        tf_sgms  = {f't_sgm_{i_cod}': d_fls[f't_sgm_{i_cod}'].to(dtype=torch.float32, device=device) for i_cod in i_cods} #TODO:64
-        [d_fls.pop(f't_sgm_{i_cod}', None) for i_cod in i_cods]
-        # del d_fls[f't_sgm_{i_cod}'] for i_cod in i_cods
+        
+        # [d_fls.pop(f't_sgm_{i_htp}', None) for i_htp in i_htps]
+        # del d_fls[f't_sgm_{i_htp}'] for i_htp in i_htps
         t_futl   = find_futl(d_fls).to(torch.float32)
         # i_bar   = trange(I_TER, desc=f"Processing {alg}.  LOG_TOL = {LOG_TOL}")
         # for i_cnt in i_bar:
 
         #     for i_hnd in reversed(range(6)):
         # import pdb; pdb.set_trace()
-        d_regs = {f't_reg_{i_cod}': torch.zeros(d_fls[f't_edg_{i_cod}'].shape[0] , dtype = torch.float64, device=device) for i_cod in i_cods}
-
+        
+        t_sgms = {}
         for i_hnd in reversed(range(6)):
 
             # print(t_futl.shape[0])
+            i_hods = [i_htp for i_htp in i_htps if int(i_htp.split('_')[0])==i_hnd]
             i_bar   = trange(I_TER, desc=f"Processing {alg}. Hand {i_hnd}. t_futl.shape[0] = {t_futl.shape[0]:7.0f}")
             i_h = d_fls[f't_fgm_{i_hnd -1}'] if i_hnd > 0 else 1
             T_UTL = torch.zeros(i_h, device=device)
@@ -421,18 +422,23 @@ if __name__ == "__main__":
             t_rus  = d_fls[f't_rus_{i_hnd}'].to(dtype=torch.float32, device=device)  #TODO:64
             t_val  = t_futl[t_lnk] + t_rus
 
-            dc_edg = {f'c_edg_{i_cod}': d_fls[f'c_edg_{i_cod}'].to(device=device) for i_cod in i_cods if int(i_cod.split('_')[0])==i_hnd}
-            dt_edg = {f't_edg_{i_cod}': d_fls[f't_edg_{i_cod}'].to(device=device) for i_cod in i_cods if int(i_cod.split('_')[0])==i_hnd}
+            a_sgm   = {i_htp: d_fls[f't_sgm_{i_htp}'].to(dtype=torch.float32, device=device) for i_htp in i_hods} #TODO:64
+            g_sgm   = {i_htp: d_fls[f't_sgm_{i_htp}'].to(dtype=torch.float32, device=device) for i_htp in i_hods} #TODO:64
+            gc_edg  = {i_htp: d_fls[f'c_edg_{i_htp}'].to(device=device) for i_htp in i_hods}
+            gt_edg  = {i_htp: d_fls[f't_edg_{i_htp}'].to(device=device) for i_htp in i_hods}
+            d_regs  = {i_htp: torch.zeros(d_fls[f't_edg_{i_htp}'].shape[0] , dtype = torch.float32, device=device) for i_htp in i_hods}
             
+            [d_fls.pop(f't_sgm_{i_htp}', None) for i_htp in i_hods]
 
+            
             for i_cnt in i_bar:
 
                 # start_time = time.time()
 
-                d0_rpr, d1_rpr = find_reach_probs(d_fls, dt_edg, tr_sgm, 0, i_hnd), find_reach_probs(d_fls, dt_edg, tr_sgm,1, i_hnd)
-                # find_utl(i_hnd, t_val, b_flg, i_sid, c_edg, t_edg, tr_sgm, tf_sgms, d_regs, d0_rpr, d1_rpr, alg, TOL, i_cnt)
-                # t_utl, tf_sgms,  tr_sgm = find_utl(i_hnd, t_val,  i_cnt > 0, d_fls, tr_sgm, tf_sgms, d0_rpr, d1_rpr, alg, TOL, i_cnt)
-                t_utl, tf_sgms,  tr_sgm, d_regs = find_utl(i_hnd, t_val, i_cnt > 0, d_fls, dc_edg, dt_edg, tr_sgm, tf_sgms, d_regs, d0_rpr, d1_rpr, alg, TOL, i_cnt)
+                g_rp0, g_rp1 = find_reach_probs(d_fls, gt_edg, g_sgm, 0, i_hnd), find_reach_probs(d_fls, gt_edg, g_sgm,1, i_hnd)
+                # find_utl(i_hnd, t_val, b_flg, i_sid, c_edg, t_edg, g_sgm, a_sgm, d_regs, g_rp0, g_rp1, alg, TOL, i_cnt)
+                # t_utl, a_sgm,  g_sgm = find_utl(i_hnd, t_val,  i_cnt > 0, d_fls, g_sgm, a_sgm, g_rp0, g_rp1, alg, TOL, i_cnt)
+                t_utl, a_sgm,  g_sgm, d_regs = find_utl(i_hnd, t_val, i_cnt > 0, d_fls, gc_edg, gt_edg, g_sgm, a_sgm, d_regs, g_rp0, g_rp1, alg, TOL, i_cnt)
                 T_UTL += t_utl
                 T_UTLL[:,i_cnt] = T_UTL/(i_cnt+1)
 
@@ -440,41 +446,44 @@ if __name__ == "__main__":
                 #     print(f"Exiting early for {i_dck}")
                 #     return 
 
-
-            
+            # import pdb; pdb.set_trace()
+            [t_sgms.__setitem__(i_htp, a_sgm[i_htp].to('cpu')) for i_htp in i_hods]
+            del a_sgm,  g_sgm, d_regs,  gc_edg, gt_edg
             t_futl = T_UTL/I_ITER
+            gc.collect();torch.cuda.empty_cache()
                 
               
-        # t_rprs  = find_reach_probs3(d_fls, tr_sgm)
+        # t_rprs  = find_reach_probs3(d_fls, g_sgm)
 
-        t_sgms, ddf_dict  = {}, {}
-        t_dlt = torch.zeros((1,52), device=device)
         d_fls = {k: v.cuda() if torch.is_tensor(v) else v for k, v in d_fls.items()}
 
-        gc.collect();torch.cuda.empty_cache()
+        # gc.collect();torch.cuda.empty_cache()
 
-        for i_cod in i_cods:
+        for i_htp in i_htps:
 
-            i_sid         = d_fls[f'i_sid_{i_cod}']
+            i_sid         = d_fls[f'i_sid_{i_htp}']
             t_sum         = torch.zeros(i_sid, dtype = torch.float32, device=device)   #TODO:64
-            c_edg, t_edg, t_sgm  = d_fls[f'c_edg_{i_cod}'], d_fls[f't_edg_{i_cod}'],  tf_sgms[f't_sgm_{i_cod}']
+            c_edg, t_edg, t_sgm  = d_fls[f'c_edg_{i_htp}'], d_fls[f't_edg_{i_htp}'],  t_sgms[i_htp].to(device)
             t_sum.scatter_add_(0, t_edg, t_sgm)
             t_msk         = t_sum[t_edg] <= TOL
             t_sgm[~t_msk] = t_sgm[~t_msk]/t_sum[t_edg][~t_msk]
-            t_sgm[t_msk]   = (1/c_edg[t_edg])[t_msk].to(torch.float32)  #TODO:64
-            t_sgms[i_cod] = t_sgm.cpu()
+            t_sgm[t_msk]  = (1/c_edg[t_edg])[t_msk].to(torch.float32)  #TODO:64
+            t_sgms[i_htp] = t_sgm.cpu()
 
 
             
 
+        ddf_dict  = {}
+        t_dlt = torch.zeros((1,52), device='cpu')
+        # df_dict   = {}
         gc.collect();torch.cuda.empty_cache()
-        t_cmps = {k: v.cuda() for k, v in t_cmps.items()}
-        t_fgms = {k: v.cuda() for k, v in t_fgms.items()}
-        t_scrs = {k: v.cuda() for k, v in t_scrs.items()}
+        # t_cmps = {k: v.cuda() for k, v in t_cmps.items()}
+        # t_fgms = {k: v.cuda() for k, v in t_fgms.items()}
+        # t_scrs = {k: v.cuda() for k, v in t_scrs.items()}
         for i_hnd in i_hnds:
                 
             t_scr = t_scrs[i_hnd][:,[0,1,3]]
-            t_m52 = t_m52s[i_hnd]
+            t_m52 = t_m52s[i_hnd].to('cpu')
 
             if i_hnd > 0:
             
@@ -484,18 +493,18 @@ if __name__ == "__main__":
             for i_trn in range(4):
                 for i_ply in range(2):
 
-                    i_cod = f'{i_hnd}_{i_trn}_{i_ply}'
+                    i_htp = f'{i_hnd}_{i_trn}_{i_ply}'
 
 
-                    t_sgm = t_sgms[i_cod]
-                    t_cmp = t_cmps[i_cod] 
-                    t_fgm = t_fgms[i_cod] 
-                    # t_rpr = t_rprs[i_cod]
+                    t_sgm = t_sgms[i_htp]
+                    t_cmp = t_cmps[i_htp] 
+                    t_fgm = t_fgms[i_htp] 
+                    # t_rpr = t_rprs[i_htp]
                     
-                    t_prq = torch.zeros((t_fgm.shape[0], 60), dtype=torch.int8, device=device)
+                    t_prq = torch.zeros((t_fgm.shape[0], 60), dtype=torch.int8, device='cpu')
                     t_prq[:,t_m52]       = t_cmp[t_fgm[:,0]]
                     t_prq[:,52:55]       = t_scr[t_fgm[:,1]] #52,53,54
-                    t_prq[:,55:58]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device=device) #55,56,57
+                    t_prq[:,55:58]       = torch.tensor([i_hnd,i_trn,i_ply], dtype=torch.int8, device='cpu') #55,56,57
 
                     t_prq[torch.logical_and(F.pad(t_dlt, (0, 8))==1, t_prq==0)] = -127
                     t_prq                = t_prq.cpu()
@@ -511,25 +520,58 @@ if __name__ == "__main__":
                     df['SGM'] = torch.clamp(t_sgm.to(torch.float16), min=0.0, max=1.0)
                     df['D']  = np.full(len(df), i_dck, dtype=np.int32)
                     # df["RPO"] = t_rpr.to(device='cpu', dtype=torch.float16)
-                
-                    ddf = dd.from_pandas(df, npartitions=1)
-                    ddf_dict[i_cod] = ddf
-
+                    # mask = (df.H == 0) & (df['T'] == 0) & (df.P == 0)
+                    # print(i_htp, df.shape[0], df[mask].shape[0])
+                    ddf_dict[i_htp] = dd.from_pandas(df, npartitions=1)
+                    # df_dict[i_htp] = df
+                    # import pdb; pdb.set_trace()
         ddf_all = dd.concat(list(ddf_dict.values())).repartition(npartitions=1)
-        ddf_all.to_parquet(
-            f"../PRQ2/D{i_dck}_{I_ITER}_{LOG_TOL}",
-            engine="pyarrow",
-            write_index=False,
-            write_metadata_file=False  # optional, suppress _metadata if you want
-        )
+        import pdb; pdb.set_trace()
+        # ddf_all.to_parquet(
+        #     f"../PRQ/D{i_dck}",
+        #     engine="pyarrow",
+        #     write_index=False,
+        #     write_metadata_file=False  # optional, suppress _metadata if you want
+        # )
+        # ddf_all = dd.concat(list(ddf_dict.values())).repartition(npartitions=1)
+        # ddf_all.to_parquet(
+        #     f"../PRQ/D{i_dck}_{I_ITER}_{LOG_TOL}",
+        #     engine="pyarrow",
+        #     write_index=False,
+        #     write_metadata_file=False  # optional, suppress _metadata if you want
+        # )
+        # df = pd.read_parquet(f"../PRQ/D9")
+        # # import pdb; pdb.set_trace()
+        # # df = df_dict['0_0_0']
+        # mask = (df.H == 0) & (df['T'] == 0) & (df.P <= 1)
+        # RANKS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+        # SUITS = ['♣', '♦', '♥', '♠'] 
+        # deck =  torch.tensor(range(52))
+        # ranks = [math.floor(t/4) for t in deck]
+        # suits = [t.item()%4 for t in deck]
+        # p_dck = [f"{RANKS[rank]}{SUITS[suit]}" for (rank,suit) in zip(ranks,suits)]
+        # # 
+        # df = df[mask]
+        # # df = df[mask & mask2]
+        # # df = df[mask].iloc[:,:-7]
+
+        # df = df.loc[:, (df != 0).any(axis=0)]
+        # df.rename(columns={f'C{i}':p_dck[i] for i in range(52)}, inplace=True)
+        # # pd.set_option('display.max_columns', None)  
+        # # pd.set_option('display.max_rows', None)  
+        
+        # print(df)
+        
+        # import pdb; pdb.set_trace()
 
     ALL_LOGS  = [12] 
     ALL_ITERS = [1000]
-
+    # ALL_TRIES = range(2)
 
     
     # for tr in range(1):
-    for i_dck in range(10):
+    # for _ in range(10):
+    for i_dck in range(9,10):
         
         for LOG_TOL in ALL_LOGS:
             for I_ITER in ALL_ITERS:

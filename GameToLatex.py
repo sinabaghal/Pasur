@@ -171,35 +171,40 @@ def find_score(t):
 
 if __name__ == "__main__":
 
-    N = 100
-    i_dcks = [10]
+    N = 5
+    i_dcks = [9]
     t_dks = torch.load(f"decks_10000.pt")
 
     wins = {'RR':[],'MR':[], 'RM':[], 'MM':[]}
     scores = {'RR':[],'MR':[], 'RM':[], 'MM':[]}
     
-    for i_dck in range(152,153):
+    for i_dck in i_dcks:
 
-        # bst = xgb.Booster()
-        # bst.load_model(f'../MDL/D{i_dck}/model_{i_dck}_cc.xgb')
+        bst = xgb.Booster()
+        bst.load_model(f'../MDL/D{i_dck}/model_{i_dck}.xgb')
+
         
         t_dck = t_dks[i_dck,:].to(device)
         # res = torch.tensor([((x - 4) // 4) % 2 if x >= 4 else 3 for x in range(52)])
         
        
 
-        models = [('R','random')]
-        # models = [('R','random'), ('M',bst)]
+        # models = [('R','random')]
+        models = [('R','random'), ('M',bst)]
         for mdl0 in models:
             for mdl1 in models:
 
                 code = f'{mdl0[0]}{mdl1[0]}'
+
+                if code != 'MM': continue
+
                 t_fsc, t_scr_, t_ltx_ = playrandom(t_dck, N=N, x_alx = mdl0[1] , x_bob = mdl1[1], to_latex = True)
                 win   = 100*(t_fsc >= 0).sum().item()/N
                 score = t_fsc.sum().item() / N 
                 wins[code].append(win)
                 scores[code].append(score)
                 print(f'{code}{i_dck:<3} | Alex wins = {100*(t_fsc >= 0).sum().item() / N:6.2f}% | Average Score = {t_fsc.sum().item() / N:7.2f}')
+                # import pdb; pdb.set_trace()
 
     # # import pdb; pdb.set_trace()
     # print(100*"**")
